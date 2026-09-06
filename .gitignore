@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+
+# Local vector-store artifacts can be large; keep only if intentionally committed.
+# data/vectorstore/
