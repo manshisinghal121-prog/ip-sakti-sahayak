@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+pydantic
+langchain
+langchain-community
+llama-index
+qdrant-client
+sentence-transformers
+torch
+cohere
+python-dotenv
+pypdf
+markdown
