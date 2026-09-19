@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IP-SAKTI Sahayak — AI Assistant</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Serif+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F5F2EC; color: #2B2523; }
+    .font-serif-header { font-family: 'Cinzel', serif; }
+    .font-devanagari { font-family: 'Noto Serif Devanagari', serif; }
+    .bg-mandala {
+      background-image: radial-gradient(#9E4624 0.75px, transparent 0.75px), radial-gradient(#9E4624 0.75px, #F5F2EC 0.75px);
+      background-size: 30px 30px;
+      background-position: 0 0, 15px 15px;
+      opacity: 0.96;
+    }
+    .manuscript-card {
+      background-color: #FFFDF8;
+      border: 2px solid #C58529;
+      box-shadow: inset 0 0 12px rgba(197, 133, 41, 0.08), 0 4px 20px rgba(43, 37, 35, 0.06);
+    }
+    .manuscript-border {
+      border: 1px solid rgba(197, 133, 41, 0.3);
+      outline: 3px solid rgba(197, 133, 41, 0.15);
+    }
+    @keyframes pulse-red {
+      0%, 100% { background-color: #9E4624; }
+      50% { background-color: #EF4444; }
+    }
+    .recording-pulse { animation: pulse-red 1s infinite; }
+    .welcome-screen {
+      background: linear-gradient(135deg, rgba(43, 37, 35, 0.97), rgba(74, 107, 93, 0.9)), var(--welcome-hero-image) center/cover;
+    }
+    .welcome-screen::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(rgba(213, 154, 55, 0.22) 0.8px, transparent 0.8px);
+      background-size: 24px 24px;
+      pointer-events: none;
+    }
+    .welcome-content { animation: welcome-rise 700ms ease-out both; }
+    .welcome-card { animation: welcome-rise 700ms 120ms ease-out both; }
+    .hero-word { display: inline-block; opacity: 0; transform: translateY(16px); animation: hero-word-rise 500ms ease-out forwards; margin-right: 0.18em; }
+    @keyframes hero-word-rise { to { opacity: 1; transform: translateY(0); } }
+    .welcome-tile { animation: welcome-rise 600ms ease-out both; }
+    .welcome-tile:nth-child(1) { animation-delay: 220ms; }
+    .welcome-tile:nth-child(2) { animation-delay: 300ms; }
+    .welcome-tile:nth-child(3) { animation-delay: 380ms; }
+    .welcome-tile:nth-child(4) { animation-delay: 460ms; }
+    .welcome-tile.is-active { background-color: rgba(212, 154, 55, 0.18); border-color: rgba(212, 154, 55, 0.8); transform: translateY(-2px); }
+    .evidence-detail { animation: detail-reveal 350ms ease-out both; }
+    @keyframes detail-reveal {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes welcome-rise {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .welcome-screen.is-hidden { display: none; }
+    .welcome-kicker { text-shadow: 0 0 24px rgba(212, 154, 55, 0.25); }
+    .welcome-orbit { animation: orbit-float 5s ease-in-out infinite; }
+    @keyframes orbit-float { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-8px) rotate(2deg); } }
+    #mlClassificationCard { display: block !important; }
+    .source-pulse { animation: source-pulse 2.4s ease-in-out infinite; }
+    @keyframes source-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(134, 168, 149, 0.18); } 50% { box-shadow: 0 0 0 7px rgba(134, 168, 149, 0); } }
+    @media (max-width: 900px) {
+      .welcome-grid { grid-template-columns: 1fr !important; }
+      .welcome-screen { overflow-y: auto; }
+      body { height: auto; min-height: 100vh; overflow: auto; }
+      #workspaceHeader { flex-wrap: wrap; gap: 0.75rem; padding: 0.75rem 1rem; }
+      #workspaceHeader > div:first-child { min-width: 0; flex: 1 1 100%; }
+      #workspaceHeader > div:last-child { width: 100%; flex-wrap: wrap; gap: 0.5rem; }
+      #workspaceHeader > div:last-child > div { flex: 1 1 220px; min-width: 0; }
+      #workspaceHeader select { max-width: 100%; }
+      #workspaceMain { flex-direction: column; overflow: visible; padding: 0.75rem; }
+      #workspaceMain > section { width: 100% !important; min-height: 560px; }
+      #workspaceMain > section:first-child { min-height: 620px; }
+      #chatStream { min-height: 360px; }
+    }
+    @media (max-width: 640px) {
+      .welcome-screen > div { padding: 1.25rem; }
+      .welcome-grid { gap: 1.5rem; padding-top: 2.5rem; padding-bottom: 2.5rem; }
+      #heroHeadline { font-size: clamp(2rem, 11vw, 3.25rem); line-height: 1.08; }
+      .welcome-card { padding: 1rem; }
+      .welcome-card .welcome-orbit { height: 9rem; }
+      #evidenceDetail { min-height: 0; }
+      #workspaceHeader h1 { font-size: 1rem; }
+      #workspaceHeader p { font-size: 0.65rem; line-height: 1.25; }
+      #workspaceHeader > div:first-child > div:nth-child(2) { min-width: 0; }
+      #workspaceHeader > div:last-child > div { flex-basis: 100%; }
+      #workspaceMain { padding: 0.5rem; gap: 0.5rem; }
+      #workspaceMain > section { min-height: 500px; border-radius: 1rem; padding: 0.75rem; }
+      #workspaceMain > section:first-child { min-height: 580px; }
+      #inspectorPassageBox { min-height: 220px; }
+      #chatStream { padding: 0.75rem; }
+      #chatStream .max-w-xl, #chatStream .max-w-lg { max-width: 100%; }
+      #chatStream form { padding-left: 0.75rem; padding-right: 0.5rem; }
+      #chatStream form input { min-width: 0; width: 100%; }
+      #chatStream form button span { display: none; }
+      #patentChecklist .flex.items-center { align-items: flex-start; }
+      #comparisonPanel .grid { grid-template-columns: 1fr !important; }
+    }
+    .history-panel { animation: detail-reveal 220ms ease-out both; }
+    @media print {
+      body { background: white !important; overflow: visible !important; }
+      #welcomeScreen, #workspaceHeader, #chatStream, #userQueryInput, #micBtn, #patentChecklist, #safetyPanel, #comparisonPanel, button, form { display: none !important; }
+      #workspaceMain { display: block !important; padding: 0 !important; }
+      #workspaceMain > section { width: 100% !important; border: 0 !important; box-shadow: none !important; }
+      #workspaceMain > section:first-child { display: none !important; }
+      #workspaceMain > section:last-child { display: block !important; }
+      #inspectorPassageBox { min-height: 0 !important; }
+    }
+  </style>
+  <link rel="stylesheet" href="/frontend/botanical-decorations.css">
+</head>
+<body class="h-screen flex flex-col overflow-hidden bg-mandala" style="padding-top:38px">
+<nav style="position:fixed;top:0;left:0;right:0;z-index:60;background:#1E1A18;color:#F5F2EC;border-bottom:1px solid #C58529;padding:8px 18px;display:flex;gap:8px;align-items:center;justify-content:center;font-family:Plus Jakarta Sans,sans-serif;font-size:12px"><a href="/" style="color:#D49A37;text-decoration:none;font-weight:700">🏠 Home</a><a href="/patentability" style="color:#F5F2EC;text-decoration:none">⚖️ Patentability</a><a href="/compliance" style="color:#F5F2EC;text-decoration:none">📋 Compliance</a><a href="/herbs" style="color:#F5F2EC;text-decoration:none">🌿 Herb Library</a><a href="/assistant" style="color:#D49A37;text-decoration:none;font-weight:700">🤖 AI Sahayak</a></nav>
+
+  <!-- WELCOME / START PAGE -->
+  <section id="welcomeScreen" class="welcome-screen absolute inset-0 z-50 overflow-y-auto text-[#F5F2EC]">
+    <div class="relative max-w-6xl mx-auto min-h-screen px-6 py-8 md:px-12 md:py-10 flex flex-col justify-between">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-full bg-[#9E4624] border-2 border-[#D49A37] flex items-center justify-center text-xl shadow-lg">𑁍</div>
+          <div>
+            <div class="font-serif-header tracking-wider text-lg font-extrabold">IP-SAKTI Sahayak</div>
+            <div class="text-[11px] text-[#D49A37] font-devanagari">आयुर्वेद बौद्धिक संपदा सहायक</div>
+          </div>
+        </div>
+        <span class="source-pulse hidden sm:inline-flex items-center gap-2 text-xs text-[#EFEAE1]/75 border border-[#D49A37]/40 rounded-full px-3 py-1.5"><span class="w-2 h-2 rounded-full bg-[#86A895]"></span> Source-cited guidance</span>
+      </div>
+
+      <div class="welcome-grid grid grid-cols-[1.15fr_0.85fr] gap-10 items-center py-12">
+        <div class="welcome-content">
+          <div class="welcome-kicker text-xs uppercase tracking-[0.28em] text-[#D49A37] font-semibold mb-5">Ayurveda • IP • Compliance</div>
+          <h2 id="heroHeadline" class="font-serif-header font-extrabold text-4xl md:text-6xl leading-tight text-[#FFFDF8] max-w-3xl">Make traditional knowledge ready for its next chapter.</h2>
+          <p class="mt-5 max-w-xl text-base md:text-lg leading-relaxed text-[#EFEAE1]/80">A multilingual visual guide for patentability, TKDL review, AYUSH licensing, botanical drug evidence, and biodiversity approvals.</p>
+          <div class="mt-8 flex flex-wrap items-center gap-3">
+            <button onclick="enterWorkspace()" class="inline-flex items-center gap-2 bg-[#D49A37] hover:bg-[#E2B45A] text-[#2B2523] font-bold px-5 py-3 rounded-lg shadow-lg transition">Open Sahayak <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+            <button onclick="enterWorkspace(); setTimeout(() => sendSampleQuery('Can I patent Ashwagandha extract under Section 3(p)?'), 120)" class="inline-flex items-center gap-2 border border-[#EFEAE1]/45 hover:border-[#D49A37] hover:bg-[#EFEAE1]/10 text-[#FFFDF8] font-semibold px-4 py-3 rounded-lg transition"><i data-lucide="play-circle" class="w-4 h-4"></i> Try a sample</button>
+          </div>
+          <div class="mt-6 flex items-center gap-3 text-[11px] text-[#EFEAE1]/60"><span class="flex -space-x-2"><span class="w-7 h-7 rounded-full bg-[#9E4624] border border-[#F5F2EC]/50 flex items-center justify-center">🌿</span><span class="w-7 h-7 rounded-full bg-[#C58529] border border-[#F5F2EC]/50 flex items-center justify-center">⚖</span><span class="w-7 h-7 rounded-full bg-[#4A6B5D] border border-[#F5F2EC]/50 flex items-center justify-center">📜</span></span><span>Herbal visuals · legal sources · multilingual answers</span></div>
+        </div>
+
+        <div class="welcome-card manuscript-card rounded-2xl p-5 text-[#2B2523] relative overflow-hidden">
+          <div class="absolute -right-8 -top-8 text-[8rem] opacity-[0.08]">🌿</div>
+          <div class="relative flex items-center justify-between mb-5">
+            <div><div class="font-serif-header text-xl">Your evidence map</div></div>
+            <i data-lucide="sparkles" class="w-5 h-5 text-[#C58529]"></i>
+          </div>
+          <div class="relative space-y-3 text-sm">
+            <div class="flex gap-3 items-start border-b border-[#C58529]/25 pb-3"><span class="text-[#9E4624] font-bold">01</span><div><strong>Patentability</strong><p class="text-xs text-[#2B2523]/60 mt-0.5">Section 3(c), 3(d), 3(j), 3(p) and TKDL review</p></div></div>
+            <div class="flex gap-3 items-start border-b border-[#C58529]/25 pb-3"><span class="text-[#9E4624] font-bold">02</span><div><strong>AYUSH pathway</strong><p class="text-xs text-[#2B2523]/60 mt-0.5">Rule 158B, safety evidence and Schedule T GMP</p></div></div>
+            <div class="flex gap-3 items-start"><span class="text-[#9E4624] font-bold">03</span><div><strong>Biodiversity</strong><p class="text-xs text-[#2B2523]/60 mt-0.5">NBA access and benefit-sharing before filing</p></div></div>
+          </div>
+          <div class="welcome-orbit relative mt-5 overflow-hidden rounded-xl border border-[#C58529]/35 h-28 bg-[#EFEAE1]">
+            <img id="welcomeBotanicalImage" src="" alt="Botanical reference" class="w-full h-full object-cover opacity-80">
+            <div class="absolute inset-0 bg-gradient-to-r from-[#2B2523]/80 via-[#2B2523]/25 to-transparent"></div>
+            <div class="absolute left-3 bottom-3 text-[#FFFDF8]"><div class="text-[10px] uppercase tracking-[0.18em] text-[#D49A37]">Botanical reference</div><div id="welcomeBotanicalLabel" class="font-serif-header text-lg"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 pb-3">
+        <button onclick="showEvidence('patent', this)" class="welcome-tile text-left bg-[#1E1A18]/70 border border-[#D49A37]/25 rounded-xl p-3 text-[#F5F2EC] transition hover:bg-[#D49A37]/15"><i data-lucide="scale" class="w-4 h-4 text-[#D49A37] mb-2"></i><div class="text-xs font-bold">Section 3(p)</div><div class="text-[10px] text-[#EFEAE1]/60 mt-1">Traditional knowledge</div></button>
+        <button onclick="showEvidence('botanical', this)" class="welcome-tile text-left bg-[#1E1A18]/70 border border-[#D49A37]/25 rounded-xl p-3 text-[#F5F2EC] transition hover:bg-[#D49A37]/15"><i data-lucide="flask-conical" class="w-4 h-4 text-[#D49A37] mb-2"></i><div class="text-xs font-bold">Botanical drugs</div><div class="text-[10px] text-[#EFEAE1]/60 mt-1">Quality and efficacy</div></button>
+        <button onclick="showEvidence('ayush', this)" class="welcome-tile text-left bg-[#1E1A18]/70 border border-[#D49A37]/25 rounded-xl p-3 text-[#F5F2EC] transition hover:bg-[#D49A37]/15"><i data-lucide="shield-check" class="w-4 h-4 text-[#D49A37] mb-2"></i><div class="text-xs font-bold">Rule 158B</div><div class="text-[10px] text-[#EFEAE1]/60 mt-1">AYUSH licensing</div></button>
+        <button onclick="showEvidence('biodiversity', this)" class="welcome-tile text-left bg-[#1E1A18]/70 border border-[#D49A37]/25 rounded-xl p-3 text-[#F5F2EC] transition hover:bg-[#D49A37]/15"><i data-lucide="sprout" class="w-4 h-4 text-[#D49A37] mb-2"></i><div class="text-xs font-bold">NBA / ABS</div><div class="text-[10px] text-[#EFEAE1]/60 mt-1">Biodiversity pathway</div></button>
+      </div>
+      <div id="evidenceDetail" class="evidence-detail min-h-[58px] mb-4 border-l-2 border-[#D49A37] bg-[#1E1A18]/55 rounded-r-lg px-4 py-3 text-xs leading-relaxed text-[#EFEAE1]/80" aria-live="polite">Select an evidence tile to see how it guides your next step.</div>
+      <div class="border-t border-[#D49A37]/25 pt-3 text-[10px] text-[#EFEAE1]/55 flex flex-wrap gap-x-4 gap-y-1">
+        <span>Patents Act, 1970</span><span>Drugs & Cosmetics Rules</span><span>Biological Diversity Act, 2002</span><span>Botanical Drug Development Guidance</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- TOP HEADER -->
+  <header id="workspaceHeader" class="hidden bg-[#2B2523] text-[#F5F2EC] px-6 py-3.5 items-center justify-between border-b-2 border-[#C58529] shadow-md">
+    <div class="flex items-center space-x-3.5">
+      <button onclick="goBack()" title="Go back" aria-label="Go back" class="bg-[#1E1A18] hover:bg-[#9E4624] border border-[#C58529]/50 text-[#F5F2EC] p-2 rounded-lg transition shadow-sm">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+      </button>
+      <div class="w-10 h-10 rounded-full bg-[#9E4624] border-2 border-[#C58529] flex items-center justify-center text-xl text-[#FFFDF8] shadow">
+        𑁍
+      </div>
+      <div>
+        <h1 class="text-xl font-extrabold font-serif-header tracking-wider text-[#F5F2EC]">IP-SAKTI Sahayak</h1>
+        <p class="text-xs text-[#D49A37] flex items-center gap-1 font-medium">
+          <span class="font-devanagari">आयुर्वेद बौद्धिक संपदा एवं नियामक सहायक</span> • Multilingual Visual RAG
+        </p>
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-4">
+      <div class="flex items-center space-x-2 bg-[#1E1A18] border border-[#C58529]/40 px-3 py-1.5 rounded-lg text-xs">
+        <i data-lucide="user" class="w-4 h-4 text-[#D49A37]"></i>
+        <span class="text-[#EFEAE1]/70">Persona:</span>
+        <select id="personaSelect" class="bg-transparent text-[#F5F2EC] font-medium focus:outline-none cursor-pointer">
+          <option value="innovator" class="bg-[#2B2523]">Ayurvedic Startup / Innovator</option>
+          <option value="practitioner" class="bg-[#2B2523]">Practitioner / Vaidya</option>
+          <option value="exporter" class="bg-[#2B2523]">Exporter / Regulatory Specialist</option>
+        </select>
+      </div>
+
+      <!-- MULTILINGUAL SELECTOR -->
+      <div class="flex items-center space-x-2 bg-[#1E1A18] border border-[#C58529]/40 px-3 py-1.5 rounded-lg text-xs">
+        <i data-lucide="languages" class="w-4 h-4 text-[#4A6B5D]"></i>
+        <select id="langSelect" class="bg-transparent text-[#F5F2EC] font-medium focus:outline-none cursor-pointer">
+          <option value="en" class="bg-[#2B2523]">English</option>
+          <option value="hi" class="bg-[#2B2523]">Hindi (हिंदी)</option>
+          <option value="sa" class="bg-[#2B2523]">Sanskrit (संस्कृतम्)</option>
+          <option value="ta" class="bg-[#2B2523]">Tamil (தமிழ்)</option>
+          <option value="te" class="bg-[#2B2523]">Telugu (తెలుగు)</option>
+          <option value="bn" class="bg-[#2B2523]">Bengali (বাংলা)</option>
+          <option value="mr" class="bg-[#2B2523]">Marathi (मराठी)</option>
+          <option value="kn" class="bg-[#2B2523]">Kannada (ಕನ್ನಡ)</option>
+          <option value="ml" class="bg-[#2B2523]">Malayalam (മലയാളം)</option>
+        </select>
+      </div>
+
+      <!-- VOICE SPEECH INPUT (MIC) -->
+      <button id="micBtn" onclick="startVoiceInput()" title="Voice Input Query" class="bg-[#9E4624] hover:bg-[#8B3A1B] text-[#FFFDF8] border border-[#C58529] p-2 rounded-lg transition flex items-center justify-center shadow-sm">
+        <i data-lucide="mic" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN DUAL PANE LAYOUT -->
+  <main id="workspaceMain" class="hidden flex-1 overflow-hidden p-4 gap-4">
+
+    <!-- LEFT PANE: CHAT & VISUAL OUTPUT -->
+    <section class="w-1/2 bg-[#FFFDF8] border-2 border-[#9E4624]/20 rounded-2xl flex flex-col shadow-sm overflow-hidden">
+      
+      <div class="bg-[#EFEAE1]/80 px-5 py-3 border-b border-[#9E4624]/20 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <span class="text-base text-[#9E4624]">🌿</span>
+          <h2 class="font-bold text-[#2B2523] text-sm tracking-wide">Interactive Visual Sahayak</h2>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="hidden sm:inline text-[11px] bg-[#4A6B5D]/15 text-[#2D4A3E] border border-[#4A6B5D]/30 px-2.5 py-0.5 rounded-full font-semibold">
+            Sanskrit Shlokas & Visual Cards Active
+          </span>
+          <button onclick="clearChat()" title="Clear chat" aria-label="Clear chat" class="bg-[#FFFDF8] hover:bg-[#9E4624] hover:text-white border border-[#9E4624]/30 text-[#9E4624] p-1.5 rounded-lg transition">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+          </button>
+          <button onclick="exportReport()" title="Export report" aria-label="Export report" class="bg-[#FFFDF8] hover:bg-[#4A6B5D] hover:text-white border border-[#4A6B5D]/30 text-[#2D4A3E] p-1.5 rounded-lg transition">
+            <i data-lucide="download" class="w-4 h-4"></i>
+          </button>
+          <button onclick="printReport()" title="Print or save PDF" aria-label="Print or save PDF" class="bg-[#FFFDF8] hover:bg-[#4A6B5D] hover:text-white border border-[#4A6B5D]/30 text-[#2D4A3E] p-1.5 rounded-lg transition">
+            <i data-lucide="printer" class="w-4 h-4"></i>
+          </button>
+          <button onclick="toggleHistory()" title="Query history" aria-label="Query history" class="bg-[#FFFDF8] hover:bg-[#C58529] hover:text-white border border-[#C58529]/40 text-[#8B3A1B] p-1.5 rounded-lg transition">
+            <i data-lucide="history" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- CHAT STREAM -->
+      <div id="chatStream" class="flex-1 overflow-y-auto p-5 space-y-4">
+        <div class="space-y-1.5 mb-2">
+          <span class="text-xs font-semibold text-[#8B3A1B] flex items-center gap-1">🪔 Click a sample query to generate rich visuals:</span>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="sendSampleQuery('Is Ashwagandha extract patentable under Section 3(p)?')" class="bg-[#EFEAE1] hover:bg-[#E5DFD3] border border-[#C58529]/40 text-[#2B2523] text-xs px-3 py-1.5 rounded-full text-left transition">
+              🌿 Ashwagandha Patentability & Shloka
+            </button>
+            <button onclick="sendSampleQuery('Can I patent Haridra Turmeric formulation?')" class="bg-[#EFEAE1] hover:bg-[#E5DFD3] border border-[#C58529]/40 text-[#2B2523] text-xs px-3 py-1.5 rounded-full text-left transition">
+              🌼 Haridra (Turmeric) TKDL Case
+            </button>
+            <button onclick="sendSampleQuery('AYUSH Guduchi licensing rules')" class="bg-[#EFEAE1] hover:bg-[#E5DFD3] border border-[#C58529]/40 text-[#2B2523] text-xs px-3 py-1.5 rounded-full text-left transition">
+              🧪 Guduchi (Giloy) AYUSH Rule 158B
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- INPUT BOX -->
+      <div class="p-3.5 bg-[#EFEAE1]/60 border-t border-[#9E4624]/20">
+        <form onsubmit="handleUserSubmit(event)" class="flex items-center bg-[#FFFDF8] border border-[#C58529]/50 rounded-xl px-4 py-2 focus-within:border-[#9E4624] transition shadow-xs">
+          <input id="userQueryInput" type="text" placeholder="Ask about Ashwagandha, Haridra, Section 3(p), or AYUSH rules..." class="bg-transparent flex-1 text-sm text-[#2B2523] focus:outline-none placeholder-[#2B2523]/50">
+          <button type="submit" class="bg-[#9E4624] hover:bg-[#8B3A1B] text-white p-2 rounded-lg transition ml-2 shadow-xs flex items-center gap-1 text-xs font-semibold">
+            <span>Query</span> <i data-lucide="send" class="w-3.5 h-3.5"></i>
+          </button>
+        </form>
+      </div>
+
+    </section>
+
+    <!-- RIGHT PANE: SOURCE INSPECTOR & VISUAL METRICS -->
+    <section class="w-1/2 manuscript-card rounded-2xl p-5 flex flex-col overflow-y-auto">
+      
+      <div class="flex items-center justify-between pb-3 border-b-2 border-[#C58529]/40 mb-4">
+        <div class="flex items-center space-x-2">
+          <span class="text-xl text-[#C58529]">𑁍</span>
+          <div>
+            <h2 class="font-serif-header font-bold text-[#8B3A1B] text-base">Ayurvedic Source & Compliance Inspector</h2>
+            <p class="text-[11px] text-[#2B2523]/60">Tadapatra Manuscript & Statute Viewer</p>
+          </div>
+        </div>
+        <span class="bg-[#4A6B5D]/15 text-[#2D4A3E] border border-[#4A6B5D]/40 text-xs px-3 py-1 rounded-full font-bold">
+          Authenticated
+        </span>
+      </div>
+
+      <!-- VISUAL RISK METER WIDGET -->
+      <div id="riskGaugeWidget" class="bg-[#F5F2EC] border border-[#C58529]/40 rounded-xl p-3.5 mb-4">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="text-xs font-bold text-[#2B2523] flex items-center gap-1">⚖️ Patentability Risk Meter</span>
+          <span id="riskBadgeText" class="text-xs font-bold text-[#9E4624]">Select a Query</span>
+        </div>
+        <div class="w-full bg-[#EFEAE1] h-3 rounded-full overflow-hidden flex border border-[#C58529]/30">
+          <div id="riskBarLow" class="bg-[#4A6B5D] h-full w-1/3 opacity-30 transition-all duration-500"></div>
+          <div id="riskBarMod" class="bg-[#C58529] h-full w-1/3 opacity-30 transition-all duration-500"></div>
+          <div id="riskBarHigh" class="bg-[#9E4624] h-full w-1/3 opacity-30 transition-all duration-500"></div>
+        </div>
+      </div>
+
+      <!-- AI QUESTION CLASSIFICATION -->
+      <div id="mlClassificationCard" class="bg-[#FFFDF8] border border-[#4A6B5D]/30 rounded-xl p-3.5 mb-4">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-bold text-[#2D4A3E] flex items-center gap-1">🧠 AI Question Classification</span>
+          <span id="mlConfidenceBadge" class="text-[10px] bg-[#EFEAE1] text-[#2B2523]/55 px-2 py-0.5 rounded-full border border-[#C58529]/30">Awaiting query</span>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-[#4A6B5D]/10 border border-[#4A6B5D]/25 flex items-center justify-center text-lg">🔎</div>
+          <div class="min-w-0 flex-1">
+            <div id="mlCategoryText" class="text-sm font-bold text-[#2B2523]">No category yet</div>
+            <div class="text-[10px] text-[#2B2523]/55 mt-0.5">The ML model classifies the user's question before RAG retrieval.</div>
+          </div>
+        </div>
+
+        <div class="mt-3 h-1.5 bg-[#EFEAE1] rounded-full overflow-hidden border border-[#C58529]/20">
+          <div id="mlConfidenceBar" class="h-full w-0 bg-[#4A6B5D] transition-all duration-500"></div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 mt-3">
+          <div class="bg-[#F5F2EC] rounded-lg px-2.5 py-2 border border-[#C58529]/20">
+            <div class="text-[9px] uppercase tracking-wide text-[#2B2523]/50">Confidence level</div>
+            <div id="mlConfidenceLevel" class="text-xs font-bold text-[#2D4A3E] mt-0.5">Awaiting</div>
+          </div>
+          <div class="bg-[#F5F2EC] rounded-lg px-2.5 py-2 border border-[#C58529]/20">
+            <div class="text-[9px] uppercase tracking-wide text-[#2B2523]/50">RAG routing</div>
+            <div id="mlRoutingText" class="text-xs font-bold text-[#8B3A1B] mt-0.5">Awaiting query</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PATENTABILITY CHECKLIST -->
+      <div id="patentChecklist" class="bg-[#FFFDF8] border border-[#C58529]/40 rounded-xl p-3.5 mb-4">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-bold text-[#2B2523] flex items-center gap-1">✓ Patentability Checklist</span>
+          <span class="text-[10px] text-[#2B2523]/50">Awaiting query</span>
+        </div>
+        <div class="space-y-2 text-xs text-[#2B2523]/60">
+          <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#C58529]"></span> Ask a question to map the next compliance step.</div>
+        </div>
+      </div>
+
+      <div id="safetyPanel" class="bg-[#F5F2EC] border border-[#4A6B5D]/30 rounded-xl p-3.5 mb-4">
+        <div class="text-xs font-bold text-[#2D4A3E] flex items-center gap-1">🛡 Safety & use note</div>
+        <p class="text-[11px] text-[#2B2523]/65 mt-1">Ask about an herb to see its botanical identity and traditional-use context. This assistant does not replace a qualified clinician or regulator.</p>
+      </div>
+
+      <div id="comparisonPanel" class="hidden bg-[#FFFDF8] border border-[#C58529]/40 rounded-xl p-3.5 mb-4"></div>
+
+      <!-- DOCUMENT METADATA CARD -->
+      <div id="inspectorMetaCard" class="bg-[#F5F2EC] border border-[#C58529]/40 rounded-xl p-4 mb-4 manuscript-border">
+        <div class="text-xs text-[#9E4624] font-semibold mb-1">SELECT A SOURCE CITATION</div>
+        <h3 class="font-serif-header font-bold text-[#2B2523] text-base">Legal Statute Viewer</h3>
+        <p class="text-xs text-slate-600 mt-1">Click any [Ref 1], [Ref 2] source button in the chat to inspect the original legal document excerpt here.</p>
+      </div>
+
+      <!-- EXTRACTED PASSAGE BOX -->
+      <div id="inspectorPassageBox" class="bg-[#FFFDF8] border border-[#C58529]/50 rounded-xl p-4 flex-1 space-y-3">
+        <div class="text-xs font-bold text-[#8B3A1B]">📜 EXTRACTED STATUTE TEXT:</div>
+        <blockquote class="text-xs text-[#2B2523] leading-relaxed bg-[#F5F2EC]/80 p-3.5 rounded-lg border border-[#C58529]/30 font-serif italic">
+          "Query results will appear here."
+        </blockquote>
+      </div>
+      <p class="text-[10px] text-[#2B2523]/50 mt-3 leading-relaxed">For research and preliminary guidance only. Confirm current Indian law, WHO/WIPO guidance, clinical safety, and licensing requirements with qualified professionals and competent authorities.</p>
+
+    </section>
+
+  </main>
+
+  <script>
+    lucide.createIcons();
+
+    const welcomeBotanicals = [
+      { label: "Tulsi · Ocimum tenuiflorum", image: "https://upload.wikimedia.org/wikipedia/commons/4/44/Ocimum_tenuiflorum_3_09_2012.JPG" },
+      { label: "Ashwagandha · Withania somnifera", image: "https://upload.wikimedia.org/wikipedia/commons/2/24/Withania_somnifera_1DS-II_3-7489.jpg" },
+      { label: "Neem leaves · Azadirachta indica", image: "https://upload.wikimedia.org/wikipedia/commons/e/e2/Leaves_Azadirachta_indica_Heritage_tree_Philippines.jpg" },
+      { label: "Turmeric · Curcuma longa", image: "https://upload.wikimedia.org/wikipedia/commons/5/5b/Curcuma_longa_roots.jpg" },
+      { label: "Ginger root · Zingiber officinale", image: "https://upload.wikimedia.org/wikipedia/commons/7/7f/Ginger_Root_%28Zingiber_officinale%29.jpg" }
+    ];
+
+    function rotateWelcomeBotanical() {
+      const previousIndex = Number(localStorage.getItem("ipSaktiWelcomeBotanical") || "-1");
+      const nextIndex = (previousIndex + 1) % welcomeBotanicals.length;
+      const botanical = welcomeBotanicals[nextIndex];
+      localStorage.setItem("ipSaktiWelcomeBotanical", String(nextIndex));
+      document.documentElement.style.setProperty("--welcome-hero-image", `url("${botanical.image}")`);
+      document.getElementById("welcomeBotanicalImage").src = botanical.image;
+      document.getElementById("welcomeBotanicalImage").alt = botanical.label;
+      document.getElementById("welcomeBotanicalLabel").textContent = botanical.label;
+    }
+
+    rotateWelcomeBotanical();
+
+    function animateHeroHeadline() {
+      const headline = document.getElementById("heroHeadline");
+      const words = headline.textContent.trim().split(/\s+/);
+      headline.innerHTML = words.map((word, index) => `<span class="hero-word" style="animation-delay:${index * 85}ms">${word}</span>`).join(" ");
+    }
+
+    animateHeroHeadline();
+
+    let currentCitations = [];
+    let currentResponse = null;
+    let comparisonBase = null;
+    let queryHistory = JSON.parse(localStorage.getItem("ipSaktiQueryHistory") || "[]");
+
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>'"]/g, (character) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;"
+      }[character]));
+    }
+
+    const workspaceInitialMarkup = `
+      <div class="space-y-1.5 mb-2">
+        <span class="text-xs font-semibold text-[#8B3A1B] flex items-center gap-1">🪔 Click a sample query to generate rich visuals:</span>
+        <div class="flex flex-wrap gap-2">
+          <button onclick="sendSampleQuery('Is Ashwagandha extract patentable under Section 3(p)?')" class="bg-[#EFEAE1] hover:bg-[#E5DFD3] border border-[#C58529]/40 text-[#2B2523] text-xs px-3 py-1.5 rounded-full text-left transition">🌿 Ashwagandha Patentability & Shloka</button>
+          <button onclick="sendSampleQuery('Can I patent Haridra Turmeric formulation?')" class="bg-[#EFEAE1] hover:bg-[#E5DFD3] border border-[#C58529]/40 text-[#2B2523] text-xs px-3 py-1.5 rounded-full text-left transition">🌼 Haridra (Turmeric) TKDL Case</button>
+          <button onclick="sendSampleQuery('AYUSH Guduchi licensing rules')" class="bg-[#EFEAE1] hover:bg-[#E5DFD3] border border-[#C58529]/40 text-[#2B2523] text-xs px-3 py-1.5 rounded-full text-left transition">🧪 Guduchi (Giloy) AYUSH Rule 158B</button>
+        </div>
+      </div>`;
+
+    function resetWorkspaceState() {
+      document.getElementById("chatStream").innerHTML = workspaceInitialMarkup;
+      document.getElementById("userQueryInput").value = "";
+      currentCitations = [];
+      currentResponse = null;
+      comparisonBase = null;
+      document.getElementById("riskBadgeText").innerText = "Select a Query";
+      document.getElementById("mlCategoryText").innerText = "No category yet";
+      document.getElementById("mlConfidenceBadge").innerText = "Awaiting query";
+      document.getElementById("mlConfidenceBar").style.width = "0%";
+      document.getElementById("mlConfidenceLevel").innerText = "Awaiting";
+      document.getElementById("mlRoutingText").innerText = "Awaiting query";
+      document.getElementById("patentChecklist").innerHTML = `<div class="flex items-center justify-between mb-2"><span class="text-xs font-bold text-[#2B2523] flex items-center gap-1">✓ Patentability Checklist</span><span class="text-[10px] text-[#2B2523]/50">Awaiting query</span></div><div class="space-y-2 text-xs text-[#2B2523]/60"><div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#C58529]"></span> Ask a question to map the next compliance step.</div></div>`;
+      document.getElementById("safetyPanel").innerHTML = `<div class="text-xs font-bold text-[#2D4A3E] flex items-center gap-1">🛡 Safety & use note</div><p class="text-[11px] text-[#2B2523]/65 mt-1">Ask about an herb to see its botanical identity and traditional-use context. This assistant does not replace a qualified clinician or regulator.</p>`;
+      document.getElementById("comparisonPanel").classList.add("hidden");
+      document.getElementById("inspectorMetaCard").innerHTML = `<div class="text-xs text-[#9E4624] font-semibold mb-1">SELECT A SOURCE CITATION</div><h3 class="font-serif-header font-bold text-[#2B2523] text-base">Legal Statute Viewer</h3><p class="text-xs text-slate-600 mt-1">Click any [Ref 1], [Ref 2] source button in the chat to inspect the original legal document excerpt here.</p>`;
+    }
+
+    function clearChat() {
+      resetWorkspaceState();
+      document.getElementById("inspectorPassageBox").innerHTML = `<div class="text-xs font-bold text-[#8B3A1B]">📜 EXTRACTED STATUTE TEXT:</div><blockquote class="text-xs text-[#2B2523] leading-relaxed bg-[#F5F2EC]/80 p-3.5 rounded-lg border border-[#C58529]/30 font-serif italic">"Query results will appear here."</blockquote>`;
+    }
+
+    function toggleHistory() {
+      let panel = document.getElementById("historyPanel");
+      if (panel) {
+        panel.remove();
+        return;
+      }
+      panel = document.createElement("div");
+      panel.id = "historyPanel";
+      panel.className = "history-panel fixed top-20 right-5 z-40 w-80 max-w-[calc(100vw-2rem)] bg-[#FFFDF8] border-2 border-[#C58529] rounded-xl p-3 shadow-xl text-[#2B2523]";
+      panel.innerHTML = `<div class="flex items-center justify-between mb-2"><strong class="text-sm">Recent queries</strong><button onclick="this.closest('#historyPanel').remove()" aria-label="Close history" class="text-[#9E4624]">✕</button></div>${queryHistory.length ? queryHistory.slice(0, 6).map((item) => `<button data-query="${escapeHTML(item)}" onclick="document.getElementById('userQueryInput').value = this.dataset.query; this.closest('#historyPanel').remove()" class="block w-full text-left text-xs border-t border-[#C58529]/20 py-2 hover:text-[#9E4624]">${escapeHTML(item)}</button>`).join("") : '<p class="text-xs text-[#2B2523]/55 py-2">No queries yet.</p>'}`;
+      document.body.appendChild(panel);
+    }
+
+    function exportReport() {
+      if (!currentResponse) {
+        alert("Run a query before exporting a report.");
+        return;
+      }
+      const herb = currentResponse.herb_visual || {};
+      const roadmap = (currentResponse.compliance_roadmap || []).map((item) => `${item.step}. ${item.title} — ${item.status}`).join("\n");
+      const report = `IP-SAKTI Sahayak Preliminary Report\n\nQuery: ${currentResponse.query}\nLanguage: ${currentResponse.language}\n\nAI Classification: ${currentResponse.ml_category || "Not available"}\nML Confidence: ${currentResponse.ml_confidence ?? "Not available"}%\nConfidence Level: ${currentResponse.ml_confidence_level || "Not available"}\n\nHerb: ${herb.common_name || "Not identified"}\nBotanical name: ${herb.botanical_name || "Not identified"}\nVisual source: ${herb.image_url || "Not available"}\n\nAnswer:\n${currentResponse.answer}\n\nPatentability checklist:\n${roadmap}\n\nDisclaimer: For research and preliminary guidance only.`;
+      const blob = new Blob([report], { type: "text/plain;charset=utf-8" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "ip-sakti-preliminary-report.txt";
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+
+    function printReport() {
+      if (!currentResponse) {
+        alert("Run a query before printing a report.");
+        return;
+      }
+      window.print();
+    }
+
+    function compareHerb() {
+      if (!currentResponse?.herb_visual) return;
+      comparisonBase = currentResponse.herb_visual;
+      const panel = document.getElementById("comparisonPanel");
+      panel.classList.remove("hidden");
+      panel.innerHTML = `<div class="text-xs font-bold text-[#8B3A1B]">Compare herbs</div><p class="text-[11px] text-[#2B2523]/60 mt-1">Comparison base: <strong>${escapeHTML(comparisonBase.common_name)}</strong>. Run another herb query to compare botanical identity and active compounds.</p>`;
+    }
+
+    function updateComparison(herb) {
+      if (!comparisonBase || !herb || comparisonBase.common_name === herb.common_name) return;
+      const panel = document.getElementById("comparisonPanel");
+      panel.classList.remove("hidden");
+      panel.innerHTML = `<div class="flex items-center justify-between mb-2"><span class="text-xs font-bold text-[#8B3A1B]">Herb comparison</span><button onclick="comparisonBase = null; this.closest('#comparisonPanel').classList.add('hidden')" class="text-[10px] text-[#9E4624]">Clear</button></div><div class="grid grid-cols-2 gap-2 text-[11px]"><div class="bg-[#F5F2EC] rounded-lg p-2"><strong>${escapeHTML(comparisonBase.common_name)}</strong><br><em>${escapeHTML(comparisonBase.botanical_name)}</em><br><span class="text-[#2B2523]/65">${escapeHTML(comparisonBase.active_compounds.join(", "))}</span></div><div class="bg-[#F5F2EC] rounded-lg p-2"><strong>${escapeHTML(herb.common_name)}</strong><br><em>${escapeHTML(herb.botanical_name)}</em><br><span class="text-[#2B2523]/65">${escapeHTML(herb.active_compounds.join(", "))}</span></div></div>`;
+    }
+
+    function enterWorkspace() {
+      resetWorkspaceState();
+      document.getElementById("welcomeScreen").classList.add("is-hidden");
+      document.getElementById("workspaceHeader").classList.remove("hidden");
+      document.getElementById("workspaceHeader").classList.add("flex");
+      document.getElementById("workspaceMain").classList.remove("hidden");
+      document.getElementById("workspaceMain").classList.add("flex");
+    }
+
+    function goBack() {
+      const welcomeScreen = document.getElementById("welcomeScreen");
+      const workspaceHeader = document.getElementById("workspaceHeader");
+      const workspaceMain = document.getElementById("workspaceMain");
+      if (welcomeScreen.classList.contains("is-hidden")) {
+        welcomeScreen.classList.remove("is-hidden");
+        workspaceHeader.classList.add("hidden");
+        workspaceHeader.classList.remove("flex");
+        workspaceMain.classList.add("hidden");
+        workspaceMain.classList.remove("flex");
+        return;
+      }
+      if (window.history.length > 1) {
+        window.history.back();
+      }
+    }
+
+    const evidenceCopy = {
+      patent: "Patentability starts with the exclusions: test natural discoveries, known uses, plant parts, and traditional knowledge against Sections 3(c), 3(d), 3(j), and 3(p) of the Patents Act, 1970.",
+      botanical: "The Botanical Drug Development guidance points to identity, quality, batch consistency, manufacturing controls, safety, and clinical evidence. Ask about a named herb or extract to begin its evidence map.",
+      ayush: "Rule 158B separates classical formulations from modified or new products. New formulations need proof of safety, effectiveness, and Schedule T GMP compliance for licensing.",
+      biodiversity: "When biological resources or associated traditional knowledge are involved, map the NBA and Access and Benefit Sharing pathway before a patent filing."
+    };
+
+    function showEvidence(topic, tile) {
+      document.querySelectorAll(".welcome-tile").forEach((button) => button.classList.remove("is-active"));
+      tile.classList.add("is-active");
+      const detail = document.getElementById("evidenceDetail");
+      detail.classList.remove("evidence-detail");
+      void detail.offsetWidth;
+      detail.classList.add("evidence-detail");
+      detail.textContent = evidenceCopy[topic];
+    }
+
+    const welcomeTopics = ["patent", "botanical", "ayush", "biodiversity"];
+    let welcomeTopicIndex = 0;
+    let welcomeSequenceTimer = setInterval(() => {
+      const tiles = document.querySelectorAll(".welcome-tile");
+      if (document.getElementById("welcomeScreen").classList.contains("is-hidden")) {
+        clearInterval(welcomeSequenceTimer);
+        return;
+      }
+      showEvidence(welcomeTopics[welcomeTopicIndex], tiles[welcomeTopicIndex]);
+      welcomeTopicIndex = (welcomeTopicIndex + 1) % welcomeTopics.length;
+    }, 2600);
+
+    async function sendQueryToBackend(queryText) {
+      const chatStream = document.getElementById("chatStream");
+      const persona = document.getElementById("personaSelect").value;
+      const lang = document.getElementById("langSelect").value;
+      const apiHost = window.location.hostname || "127.0.0.1";
+      const apiBase = window.location.protocol === "file:" ? "http://127.0.0.1:8000" : window.location.origin;
+
+      // User Bubble
+      chatStream.innerHTML += `
+        <div class="flex justify-end my-2">
+          <div class="bg-[#9E4624] text-[#FFFDF8] px-4 py-2.5 rounded-2xl max-w-lg text-sm shadow-sm">
+            ${escapeHTML(queryText)}
+          </div>
+        </div>
+      `;
+
+      // Loading Indicator
+      const loadingId = "loading_" + Date.now();
+      chatStream.innerHTML += `
+        <div id="${loadingId}" class="flex items-center space-x-2 my-2 text-xs text-[#9E4624]">
+          <span class="animate-spin text-base">𑁍</span> Classifying question & fetching legal context...
+        </div>
+      `;
+      chatStream.scrollTop = chatStream.scrollHeight;
+
+      try {
+        const response = await fetch(`${apiBase}/api/v1/query`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: queryText, persona: persona, language: lang })
+        });
+        const data = await response.json();
+
+        document.getElementById(loadingId).remove();
+        currentResponse = data;
+        currentCitations = data.citations || [];
+        queryHistory = [queryText, ...queryHistory.filter((item) => item !== queryText)].slice(0, 12);
+        localStorage.setItem("ipSaktiQueryHistory", JSON.stringify(queryHistory));
+        updateComparison(data.herb_visual);
+
+        // Update ML classification card
+        const mlCategory = data.ml_category || "Needs More Information";
+        const mlConfidence = Number(data.ml_confidence || 0);
+        const mlLevel = data.ml_confidence_level || (
+          mlConfidence >= 80 ? "High" :
+          mlConfidence >= 60 ? "Moderate" :
+          "Low"
+        );
+
+        const readableCategory = mlCategory.replaceAll("_", " ");
+        document.getElementById("mlCategoryText").innerText = readableCategory;
+        document.getElementById("mlConfidenceBadge").innerText = `${mlConfidence.toFixed(2)}% confidence`;
+        document.getElementById("mlConfidenceLevel").innerText = mlLevel;
+        document.getElementById("mlRoutingText").innerText = readableCategory;
+        document.getElementById("mlConfidenceBar").style.width = `${Math.max(0, Math.min(100, mlConfidence))}%`;
+
+        // Keep the routing signal visible in the risk area too.
+        document.getElementById("riskGaugeWidget").querySelector("span").setAttribute(
+          "title",
+          `ML category: ${readableCategory}`
+        );
+
+        // Herb Visual Card HTML
+        let herbVisualHTML = "";
+        if (data.herb_visual) {
+          const h = data.herb_visual;
+          herbVisualHTML = `
+            <div class="bg-[#FFFDF8] border-2 border-[#C58529] rounded-xl p-4 my-2.5 shadow-sm">
+              <div class="relative h-36 overflow-hidden rounded-lg mb-3 border border-[#C58529]/30 bg-[#EFEAE1]">
+                <img src="${escapeHTML(h.local_image_url || h.image_url)}" alt="${escapeHTML(h.common_name)} herb" class="w-full h-full object-cover" onerror="if (this.dataset.fallback !== 'true') { this.dataset.fallback = 'true'; this.src = '${escapeHTML(h.image_url)}'; } else { this.style.display='none'; this.nextElementSibling.style.display='flex'; }">
+                <div style="display:none" class="absolute inset-0 items-center justify-center bg-[#EFEAE1] text-6xl">🌿</div>
+                <div class="absolute bottom-2 left-2 bg-[#2B2523]/80 text-[#FFFDF8] text-[10px] px-2 py-1 rounded font-semibold">HERB VISUAL • ${escapeHTML(h.common_name)}</div>
+              </div>
+              <div class="flex items-center justify-between border-b-2 border-[#C58529]/30 pb-2 mb-2">
+                <div>
+                  <h4 class="font-devanagari font-bold text-[#9E4624] text-base">${escapeHTML(h.sanskrit_name)}</h4>
+                  <span class="text-xs text-[#4A6B5D] italic font-semibold">${escapeHTML(h.botanical_name)} • ${escapeHTML(h.common_name)}</span>
+                </div>
+                <span class="text-xs bg-[#C58529]/20 text-[#8B3A1B] font-bold px-2.5 py-1 rounded-full border border-[#C58529]/40">${escapeHTML(h.element)}</span>
+              </div>
+
+              <!-- SANSKRIT SHLOKA BOX -->
+              <div class="bg-[#F5F2EC] p-3 rounded-lg border-l-4 border-[#9E4624] text-xs mb-3 space-y-1">
+                <div class="font-devanagari text-[#8B3A1B] font-bold text-sm leading-relaxed">${escapeHTML(h.shloka)}</div>
+                <div class="text-[11px] text-slate-700 italic">" ${escapeHTML(h.shloka_translation)} "</div>
+              </div>
+
+              <!-- PHYTOCHEMICALS & TKDL METRICS -->
+              <div class="grid grid-cols-2 gap-2 text-xs bg-[#EFEAE1]/70 p-2.5 rounded-lg text-slate-800 border border-[#C58529]/20">
+                <div><strong class="text-[#9E4624]">Active Compounds:</strong> ${escapeHTML(h.active_compounds.join(", "))}</div>
+                <div><strong class="text-[#2D4A3E]">TKDL Status:</strong> ${escapeHTML(h.tkdl_status)}</div>
+              </div>
+              <button onclick="compareHerb()" class="mt-2 text-[11px] text-[#2D4A3E] border border-[#4A6B5D]/35 hover:bg-[#4A6B5D]/10 px-2.5 py-1 rounded-lg font-semibold">Compare with next herb</button>
+            </div>
+          `;
+        }
+
+        // Citation Buttons
+        let citationButtonsHTML = "";
+        currentCitations.forEach((cit, index) => {
+          citationButtonsHTML += `
+            <button onclick="inspectCitation(${index})" class="bg-[#EFEAE1] hover:bg-[#E5DFD3] border border-[#C58529] text-[#9E4624] text-xs px-2.5 py-1 rounded font-medium flex items-center shadow-xs">
+              📜 ${escapeHTML(cit.ref)}: ${escapeHTML(cit.document.substring(0, 18))}...
+            </button>
+          `;
+        });
+
+        // Unique ID for speech playback
+        const msgId = "ans_" + Date.now();
+        window[msgId] = data.answer;
+
+        // AI Message Bubble
+        const mlSummaryHTML = `
+          <div class="bg-[#4A6B5D]/10 border-2 border-[#4A6B5D]/30 rounded-xl p-3 mb-1">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs font-bold text-[#2D4A3E]">🧠 AI Question Classification</span>
+              <span class="text-[10px] bg-[#4A6B5D] text-white px-2 py-1 rounded-full font-bold">${escapeHTML(mlLevel)}</span>
+            </div>
+            <div class="flex items-center justify-between mt-2 gap-3">
+              <div>
+                <div class="text-sm font-extrabold text-[#2B2523]">${escapeHTML(readableCategory)}</div>
+                <div class="text-[10px] text-[#2B2523]/55 mt-0.5">ML model → RAG routing</div>
+              </div>
+              <div class="text-right">
+                <div class="text-base font-extrabold text-[#8B3A1B]">${mlConfidence.toFixed(2)}%</div>
+                <div class="text-[9px] uppercase tracking-wide text-[#2B2523]/50">confidence</div>
+              </div>
+            </div>
+            <div class="mt-2 h-1.5 bg-[#EFEAE1] rounded-full overflow-hidden">
+              <div class="h-full bg-[#4A6B5D]" style="width:${Math.max(0, Math.min(100, mlConfidence))}%"></div>
+            </div>
+          </div>
+        `;
+
+        chatStream.innerHTML += `
+          <div class="flex items-start space-x-3 my-3">
+            <div class="w-8 h-8 rounded-full bg-[#4A6B5D] text-[#FFFDF8] flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
+              𑁍
+            </div>
+            <div class="bg-[#F5F2EC] border border-[#C58529]/30 p-4 rounded-2xl max-w-xl text-sm space-y-3 text-[#2B2523] shadow-xs">
+              ${mlSummaryHTML}
+              ${herbVisualHTML}
+              <div class="whitespace-pre-wrap leading-relaxed">${escapeHTML(data.answer)}</div>
+              <div class="pt-2 border-t border-[#C58529]/20 flex flex-wrap gap-2 items-center">
+                <span class="text-xs text-[#8B3A1B] font-semibold">Sources:</span>
+                ${citationButtonsHTML}
+                <button onclick="speakText('${msgId}')" class="ml-auto text-xs bg-[#9E4624] hover:bg-[#8B3A1B] text-white px-2.5 py-1 rounded font-medium flex items-center gap-1 shadow-xs">
+                  🔊 Listen
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+        chatStream.scrollTop = chatStream.scrollHeight;
+
+        // Update Risk Assessment Gauge
+        if (data.risk_assessment) {
+          const r = data.risk_assessment;
+          document.getElementById("riskBadgeText").innerText = r.level;
+          document.getElementById("riskBarLow").style.opacity = r.color === "emerald" ? "1" : "0.3";
+          document.getElementById("riskBarMod").style.opacity = r.color === "amber" ? "1" : "0.3";
+          document.getElementById("riskBarHigh").style.opacity = r.color === "red" ? "1" : "0.3";
+        }
+
+        if (data.herb_visual) {
+          document.getElementById("safetyPanel").innerHTML = `<div class="text-xs font-bold text-[#2D4A3E] flex items-center gap-1">🛡 Safety & use note · ${escapeHTML(data.herb_visual.common_name)}</div><p class="text-[11px] text-[#2B2523]/65 mt-1">${escapeHTML(data.herb_visual.shloka_translation)} Verify identity, contraindications, interactions, and intended use with a qualified clinician before relying on this information.</p>`;
+        }
+
+        if (data.compliance_roadmap) {
+          const statusStyles = {
+            Completed: "bg-[#4A6B5D] text-white",
+            "In Progress": "bg-[#C58529] text-[#2B2523]",
+            Required: "bg-[#9E4624] text-white",
+            Pending: "bg-[#EFEAE1] text-[#2B2523] border border-[#C58529]/40"
+          };
+          document.getElementById("patentChecklist").innerHTML = `
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold text-[#2B2523] flex items-center gap-1">✓ Patentability Checklist</span>
+              <span class="text-[10px] text-[#2B2523]/50">${data.compliance_roadmap.length} checkpoints</span>
+            </div>
+            <div class="space-y-2">
+              ${data.compliance_roadmap.map((item) => `
+                <div class="flex items-center gap-2 text-xs">
+                  <span class="w-5 h-5 rounded-full bg-[#F5F2EC] border border-[#C58529]/40 flex items-center justify-center text-[10px] font-bold text-[#9E4624]">${item.step}</span>
+                  <span class="flex-1 text-[#2B2523]">${escapeHTML(item.title)}</span>
+                  <span class="${statusStyles[item.status] || statusStyles.Pending} px-1.5 py-0.5 rounded text-[9px] font-bold whitespace-nowrap">${escapeHTML(item.status)}</span>
+                </div>
+              `).join("")}
+            </div>
+          `;
+        }
+
+        if (currentCitations.length > 0) {
+          inspectCitation(0);
+        }
+
+      } catch (err) {
+        document.getElementById(loadingId).remove();
+        chatStream.innerHTML += `
+          <div class="text-xs text-red-600 bg-red-100 p-3 rounded-lg">
+            Error connecting to API: ${err.message}. Make sure the backend is running on port 8000 and both devices are on the same network.
+          </div>
+        `;
+      }
+    }
+
+    function inspectCitation(index) {
+      if (!currentCitations[index]) return;
+      const c = currentCitations[index];
+      const sourceType = /WHO|WIPO/i.test(`${c.document} ${c.authority}`) ? "International guidance" : /Botanical|herb|plant/i.test(c.document) ? "Botanical evidence" : "Indian statutory source";
+      const sourceLinks = {
+        "PATENTS ACT": "https://ipindia.gov.in/",
+        "DRUGS AND COSMETICS": "https://cdsco.gov.in/",
+        "BIOLOGICAL DIVERSITY": "https://nbaindia.org/",
+        "BOTANICAL": "https://www.fda.gov/drugs/drug-development-process/drug-development-tools-botanical-drug-development"
+      };
+      const sourceKey = Object.keys(sourceLinks).find((key) => c.document.toUpperCase().includes(key));
+      const sourceLink = sourceKey ? `<a href="${sourceLinks[sourceKey]}" target="_blank" rel="noopener" class="text-[10px] text-[#2D4A3E] underline">Open official source ↗</a>` : "<span class=\"text-[10px] text-[#2B2523]/50\">Official link unavailable</span>";
+
+      document.getElementById("inspectorMetaCard").innerHTML = `
+        <div class="flex justify-between items-start mb-1">
+          <span class="text-xs font-semibold text-[#9E4624]">${escapeHTML(c.ref)}</span>
+          <div class="flex gap-1"><span class="text-[10px] bg-[#4A6B5D]/15 text-[#2D4A3E] px-2 py-0.5 rounded font-bold">${sourceType}</span><span class="text-xs bg-[#C58529]/20 text-[#8B3A1B] px-2 py-0.5 rounded font-mono font-bold">${escapeHTML(c.jurisdiction)}</span></div>
+        </div>
+        <h3 class="font-serif-header font-bold text-[#2B2523] text-base mb-1">${escapeHTML(c.document)}</h3>
+        <div class="text-xs text-[#2D4A3E] font-semibold">Provision: Section ${escapeHTML(c.section)}${c.page ? ` · Page ${escapeHTML(c.page)}` : ""}</div>
+        <div class="text-xs text-slate-500">Authority: ${escapeHTML(c.authority)}</div>
+        <div class="mt-2">${sourceLink}</div>
+      `;
+
+      document.getElementById("inspectorPassageBox").innerHTML = `
+        <div class="text-xs font-bold text-[#8B3A1B]">📜 EXTRACTED STATUTE TEXT:</div>
+        <blockquote class="text-xs text-[#2B2523] leading-relaxed bg-[#F5F2EC]/80 p-3.5 rounded-lg border border-[#C58529]/30 font-serif italic">
+          "${escapeHTML(c.snippet)}"
+        </blockquote>
+      `;
+    }
+
+    function handleUserSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById("userQueryInput");
+      if (!input.value.trim()) return;
+      sendQueryToBackend(input.value.trim());
+      input.value = "";
+    }
+
+    function sendSampleQuery(text) {
+      document.getElementById("userQueryInput").value = text;
+      sendQueryToBackend(text);
+    }
+
+    // OPEN DIRECTLY INTO THE ASSISTANT WORKSPACE WHEN A HERB LINK PASSES A QUERY
+    window.addEventListener("DOMContentLoaded", function () {
+      const params = new URLSearchParams(window.location.search);
+      const initialQuery = params.get("q") || params.get("query");
+      if (initialQuery) {
+        enterWorkspace();
+        setTimeout(() => sendQueryToBackend(initialQuery), 150);
+      }
+    });
+
+    // TEXT-TO-SPEECH (AUDIO VOICE OUTPUT)
+    function speakText(msgId) {
+      const text = window[msgId] || "No guidance text available";
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const cleanMsg = text.replace(/[*#_]/g, '');
+        const utterance = new SpeechSynthesisUtterance(cleanMsg);
+        utterance.rate = 0.95;
+        window.speechSynthesis.speak(utterance);
+      } else {
+        alert("Text-to-Speech is not supported in this browser.");
+      }
+    }
+
+    // SPEECH-TO-TEXT VOICE INPUT (MICROPHONE)
+    function startVoiceInput() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert("Voice speech recognition is supported in Chrome & Edge.");
+        return;
+      }
+      const recognition = new SpeechRecognition();
+      const speechLanguages = { en: "en-IN", hi: "hi-IN", sa: "hi-IN", ta: "ta-IN", te: "te-IN", bn: "bn-IN", mr: "mr-IN", kn: "kn-IN", ml: "ml-IN" };
+      recognition.lang = speechLanguages[document.getElementById("langSelect").value] || "en-IN";
+      
+      const micBtn = document.getElementById("micBtn");
+      micBtn.classList.add("recording-pulse");
+
+      recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById("userQueryInput").value = transcript;
+        micBtn.classList.remove("recording-pulse");
+        sendQueryToBackend(transcript);
+      };
+
+      recognition.onerror = function() {
+        micBtn.classList.remove("recording-pulse");
+      };
+
+      recognition.onend = function() {
+        micBtn.classList.remove("recording-pulse");
+      };
+
+      recognition.start();
+    }
+  </script>
+</body>
+</html>

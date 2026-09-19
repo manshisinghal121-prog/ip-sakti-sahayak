@@ -8,6 +8,11 @@ import json
 import re
 from typing import List, Dict
 
+try:
+    from pypdf import PdfReader
+except ImportError:
+    PdfReader = None
+
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
 
@@ -15,7 +20,90 @@ RAW_DIR = os.path.join(PROJECT_ROOT, "data", "raw")
 PROCESSED_DIR = os.path.join(PROJECT_ROOT, "data", "processed")
 OUTPUT_FILE = os.path.join(PROCESSED_DIR, "chunks.json")
 
+def load_source_content(filepath: str) -> str:
+    """Reads normal text or extracts text from PDF bytes stored with a .txt extension."""
+    with open(filepath, "rb") as source_file:
+        raw_bytes = source_file.read()
+    if raw_bytes.startswith(b"%PDF") and PdfReader is not None:
+        return "\f".join(page.extract_text() or "" for page in PdfReader(filepath).pages)
+    try:
+        return raw_bytes.decode("utf-8")
+    except UnicodeDecodeError:
+        return raw_bytes.decode("latin-1", errors="ignore")
+
 def parse_sections(filename: str, content: str) -> List[Dict]:
+    """
+    Parses document into distinct legal sections using regex pattern matching.
+    Attaches metadata: document_title, section, jurisdiction, authority, topic, knowledge_source.
+    """
+    def detect_knowledge_source(text: str) -> str:
+        """Simple heuristic to detect knowledge source based on keywords."""
+        lowered = text.lower()
+        if "world health organization" in lowered or "who" in lowered:
+            return "WHO"
+        if "world intellectual property organization" in lowered or "wipo" in lowered:
+            return "WIPO"
+        if "traditional knowledge" in lowered or "traditional" in lowered:
+            return "Traditional"
+        return "Other"
+
+    chunks = []
+    # Simple regex to split by legal clause numbers like (a), (b), (p), Rule 158B, etc.
+    # Split content by line blocks
+    lines = content.split("\n")
+    current_doc_title = filename
+    current_section = "General Provision"
+    current_text_buffer = []
+    current_page = 1
+    chunk_start_page = 1
+
+    for line in lines:
+        page_breaks = line.count("\f")
+        if page_breaks:
+            current_page += page_breaks
+        line_str = line.strip()
+        if not line_str:
+            continue
+        # Check if line indicates document header or section header
+        if line_str.startswith("# SECTION") or line_str.startswith("# DRUGS"):
+            current_doc_title = line_str.replace("#", "").strip()
+            continue
+        # Match legal clauses like (a), (b), (p), Rule 158B, etc.
+        clause_match = re.match(r'^(\([a-z0-9]+\)|Rule\s+[0-9]+[A-Z]*|3\.)\s*(.*)', line_str)
+        if clause_match:
+            # Flush previous chunk
+            if current_text_buffer:
+                chunk_text = "\n".join(current_text_buffer).strip()
+                chunks.append({
+                    "chunk_id": f"{filename}_chunk_{len(chunks)+1}",
+                    "document_title": current_doc_title,
+                    "section": current_section,
+                    "page": chunk_start_page,
+                    "jurisdiction": "India",
+                    "authority": "Indian Patent Office / Ministry of AYUSH",
+                    "content": chunk_text,
+                    "knowledge_source": detect_knowledge_source(chunk_text)
+                })
+                current_text_buffer = []
+            current_section = clause_match.group(1)
+            chunk_start_page = current_page
+            current_text_buffer.append(line_str)
+        else:
+            current_text_buffer.append(line_str)
+    # Flush final chunk
+    if current_text_buffer:
+        chunk_text = "\n".join(current_text_buffer).strip()
+        chunks.append({
+            "chunk_id": f"{filename}_chunk_{len(chunks)+1}",
+            "document_title": current_doc_title,
+            "section": current_section,
+            "page": chunk_start_page,
+            "jurisdiction": "India",
+            "authority": "Indian Patent Office / Ministry of AYUSH",
+            "content": chunk_text,
+            "knowledge_source": detect_knowledge_source(chunk_text)
+        })
+    return chunks
     """
     Parses document into distinct legal sections using regex pattern matching.
     Attaches metadata: document_title, section, jurisdiction, authority, topic.
@@ -83,12 +171,7 @@ def run_chunking_pipeline():
     for fname in os.listdir(RAW_DIR):
         if fname.endswith(".txt") or fname.endswith(".md"):
             fpath = os.path.join(RAW_DIR, fname)
-            try:
-                with open(fpath, "r", encoding="utf-8") as f:
-                    raw_content = f.read()
-            except UnicodeDecodeError:
-                with open(fpath, "r", encoding="latin-1", errors="ignore") as f:
-                    raw_content = f.read()
+            raw_content = load_source_content(fpath)
             
             chunks = parse_sections(fname, raw_content)
             all_chunks.extend(chunks)

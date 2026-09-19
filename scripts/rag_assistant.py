@@ -180,8 +180,38 @@ HERBAL_KNOWLEDGE_BASE.update({
     "black_haldi": _reference_herb("कृष्ण हरिद्रा (Black Haldi)", "Curcuma caesia", "Curcuma_caesia_001.JPG", ["black haldi", "black turmeric", "kali haldi"], "Traditionally used in regional remedies; distinguish it from Curcuma longa and verify identity before use."),
     "fairywand": _reference_herb("Fairywand (unresolved)", "Chamaelirium luteum", "Chamaelirium_luteum_001.JPG", ["false unicorn", "false unicorn root"], "A North American botanical traditionally associated with reproductive herbalism; clinical evidence and safety require review.")
     ,"forsythia": _reference_herb("Forsythia", "Forsythia suspensa", "Forsythia_suspensa1.jpg", ["forsythia fruit"], "Named as an example botanical drug source in the FDA Botanical Drug Development guidance; confirm formulation, quality, and evidence for any use."),
-    "lonicera": _reference_herb("Japanese Honeysuckle", "Lonicera japonica", "Honeysuckle_2.jpg", ["honeysuckle", "japanese honeysuckle"], "Named as an example botanical drug source in the FDA Botanical Drug Development guidance; confirm formulation, quality, and evidence for any use.")
+    "lonicera": _reference_herb("Japanese Honeysuckle", "Lonicera japonica", "Honeysuckle_2.jpg", ["honeysuckle", "japanese honeysuckle"], "Named as an example botanical drug source in the FDA Botanical Drug Development guidance; confirm formulation, quality, and evidence for any use."),
+    "arjuna": _reference_herb("अर्जुन (Arjuna)", "Terminalia arjuna", "Terminalia_arjuna_tree.jpg", [], "Classical Ayurvedic heart-support herb; identity, dose, interactions, and evidence require professional review."),
+    "ashoka": _reference_herb("अशोक (Ashoka)", "Saraca asoca", "Saraca_asoca_flowers.jpg", [], "Classical Ayurvedic botanical used in women's health preparations; verify formulation and safety evidence."),
+    "haritaki": _reference_herb("हरीतकी (Haritaki)", "Terminalia chebula", "Terminalia_chebula_fruit.jpg", ["harad"], "Classical digestive and Rasayana botanical, commonly used in Triphala preparations."),
+    "bibhitaki": _reference_herb("विभीतकी (Bibhitaki)", "Terminalia bellirica", "Terminalia_bellirica_fruit.jpg", ["baheda"], "Classical Ayurvedic fruit used in Triphala and traditional respiratory preparations."),
+    "pippali": _reference_herb("पिप्पली (Pippali)", "Piper longum", "Piper_longum_fruit.jpg", ["long pepper"], "Traditional warming spice and Ayurvedic botanical; assess interactions and dose."),
+    "shankhpushpi": _reference_herb("शंखपुष्पी (Shankhpushpi)", "Convolvulus pluricaulis", "Convolvulus_pluricaulis.jpg", ["shankhapushpi"], "Classical Medhya Rasayana botanical associated with memory and cognition traditions."),
+    "yashtimadhu": _reference_herb("यष्टिमधु (Yashtimadhu)", "Glycyrrhiza glabra", "Glycyrrhiza_glabra_plant.jpg", ["licorice", "liquorice", "mulethi"], "Traditional soothing botanical; prolonged or high-dose use may have important interactions."),
+    "manjistha": _reference_herb("मञ्जिष्ठा (Manjistha)", "Rubia cordifolia", "Rubia_cordifolia.jpg", ["manjishta"], "Classical Ayurvedic botanical used in traditional skin and blood-purification preparations."),
+    "bhringraj": _reference_herb("भृंगराज (Bhringraj)", "Eclipta prostrata", "Eclipta_prostrata.jpg", ["bhringaraj", "false daisy"], "Traditional botanical used in hair and Rasayana preparations; verify topical or internal use."),
+    "punarnava": _reference_herb("पुनर्नवा (Punarnava)", "Boerhavia diffusa", "Boerhavia_diffusa.jpg", [], "Classical Ayurvedic botanical used in traditional urinary and rejuvenative preparations."),
+    "kalmegh": _reference_herb("कालमेघ (Kalmegh)", "Andrographis paniculata", "Andrographis_paniculata.jpg", ["andrographis", "king of bitters"], "Bitter botanical used in traditional digestive and seasonal wellness preparations."),
+    "kutki": _reference_herb("कुटकी (Kutki)", "Picrorhiza kurroa", "Picrorhiza_kurroa.jpg", ["katuki"], "High-altitude Ayurvedic botanical with conservation considerations; verify identity and sourcing."),
+    "sariva": _reference_herb("सारिवा (Sariva)", "Hemidesmus indicus", "Hemidesmus_indicus.jpg", ["anantamul", "indian sarsaparilla"], "Traditional cooling and digestive botanical; check source authentication."),
+    "gokshura": _reference_herb("गोक्षुर (Gokshura)", "Tribulus terrestris", "Tribulus_terrestris.jpg", ["gokhru", "puncture vine"], "Traditional urinary and vitality botanical; product claims require evidence review."),
+    "vidanga": _reference_herb("विडंग (Vidanga)", "Embelia ribes", "Embelia_ribes.jpg", ["vaividang"], "Classical Ayurvedic botanical traditionally used in digestive preparations."),
+    "vacha": _reference_herb("वचा (Vacha)", "Acorus calamus", "Acorus_calamus.jpg", ["sweet flag"], "Traditional botanical requiring careful identity, regulatory, and safety review."),
+    "jatamansi": _reference_herb("जटामांसी (Jatamansi)", "Nardostachys jatamansi", "Nardostachys_jatamansi.jpg", ["spikenard"], "Protected Himalayan botanical used in traditional calming preparations; verify conservation-compliant sourcing."),
+    "musta": _reference_herb("मुस्ता (Musta)", "Cyperus rotundus", "Cyperus_rotundus.jpg", ["nagarmotha", "nutgrass"], "Classical digestive and aromatic Ayurvedic botanical."),
+    "tagara": _reference_herb("तगर (Tagara)", "Valeriana wallichii", "Valeriana_wallichii.jpg", ["indian valerian"], "Traditional calming botanical; assess sedative interactions with a clinician."),
+    "bael": _reference_herb("बिल्व (Bael)", "Aegle marmelos", "Aegle_marmelos_fruit.jpg", ["bilva", "bel fruit", "wood apple"], "Classical digestive fruit and Ayurvedic botanical."),
+    "isabgol": _reference_herb("इसबगोल (Isabgol)", "Plantago ovata", "Plantago_ovata.jpg", ["psyllium", "ispaghula"], "Fiber-rich botanical used for digestive support; take with adequate water and review medicines."),
+    "senna": _reference_herb("Senna", "Senna alexandrina", "Senna_alexandrina.jpg", ["senna leaf"], "Traditional laxative botanical; prolonged use and interactions require professional guidance."),
+    "cinnamon": _reference_herb("दालचीनी (Cinnamon)", "Cinnamomum verum", "Cinnamomum_verum_bark.jpg", ["dalchini", "true cinnamon"], "Aromatic culinary and traditional botanical; distinguish cinnamon species and preparations."),
+    "clove": _reference_herb("लवंग (Clove)", "Syzygium aromaticum", "Syzygium_aromaticum_cloves.jpg", ["laung"], "Aromatic botanical used traditionally in oral and digestive preparations."),
+    "cardamom": _reference_herb("एला (Cardamom)", "Elettaria cardamomum", "Elettaria_cardamomum.jpg", ["elaichi", "green cardamom"], "Aromatic culinary and traditional digestive botanical."),
+    "black_pepper": _reference_herb("मरिच (Black Pepper)", "Piper nigrum", "Piper_nigrum_fruit.jpg", ["black pepper", "kali mirch", "maricha"], "Traditional warming spice; piperine may affect medicine absorption and interactions.")
 })
+
+for herb_key, herb_info in HERBAL_KNOWLEDGE_BASE.items():
+    local_name = re.sub(r"[^a-z0-9]+", "-", herb_key.lower()).strip("-")
+    herb_info["local_image_url"] = f"/assets/herbs/{local_name}.jpg"
 
 def detect_herb_visuals(user_query: str) -> Dict:
     """Detects a known herb and defaults to Ashwagandha when none is named."""
@@ -203,135 +233,278 @@ def detect_herb_visuals(user_query: str) -> Dict:
                 best_alias_length = len(alias)
     if best_match:
         return best_match
-    # Default fallback herb visual so visuals ALWAYS show up for any query!
-    return HERBAL_KNOWLEDGE_BASE["ashwagandha"]
+    # IMPORTANT: do not invent a herb when the user did not name one.
+    return None
 
 def print_flush(msg):
     print(msg, flush=True)
 
-def generate_rag_response(user_query: str, persona: str = "innovator", language: str = "en") -> Dict:
-    """Generates rich RAG response with visual cards, risk meters, Sanskrit Shlokas, and legal citations."""
-    retrieved_chunks = query_legal_database(user_query, top_k=3)
+def detect_question_focus(user_query: str) -> Optional[str]:
+    """Maps common user questions to a focused guidance topic."""
+    query = user_query.lower().strip()
+    focus_terms = {
+        "patentability": ["patent", "patentable", "novelty", "prior art", "section 3", "tkdl"],
+        "ayush licensing": ["ayush", "license", "licence", "158b", "schedule t", "gmp"],
+        "safety and use": ["safe", "safety", "side effect", "interaction", "dosage", "contraindication", "pregnan"],
+        "biodiversity and abs": ["biodiversity", "nba", "benefit sharing", "abs", "genetic resource", "biological diversity"],
+        "who and wipo guidance": ["who", "wipo", "world health", "traditional knowledge guideline"],
+        "herb identity and traditional use": ["what is", "benefit", "uses", "used for", "botanical name", "scientific name"]
+    }
+    for focus, terms in focus_terms.items():
+        if any(term in query for term in terms):
+            return focus
+    return None
+
+
+def focused_guidance(focus: Optional[str], herb_visual: Optional[Dict]) -> str:
+    """Short context used internally; the user-facing answer is synthesized below."""
+    if not focus:
+        return ""
+    return ""
+
+
+def _question_intent(query: str) -> str:
+    """Detect the user's action/question type so answers are phrased naturally."""
+    q = query.lower().strip()
+    if re.search(r"\b(can i|can we|is .* patentable|eligible|allowed)\b", q):
+        return "eligibility"
+    if re.search(r"\b(what is|what are|meaning of|define|explain)\b", q):
+        return "explain"
+    if re.search(r"\b(how do i|how can i|how to|steps|process|procedure)\b", q):
+        return "howto"
+    if re.search(r"\b(which|what .* license|what .* documents|what .* requirements)\b", q):
+        return "requirements"
+    if re.search(r"\b(why|reason|difference)\b", q):
+        return "why"
+    return "general"
+
+
+def _clean_sentence(text: str) -> str:
+    """Make retrieved text readable without changing its substance."""
+    text = re.sub(r"\s+", " ", str(text)).strip()
+    text = re.sub(r"^[-*•]\s*", "", text)
+    return text
+
+
+def _source_sentences(chunks: List[Dict], query: str, limit: int = 4) -> List[str]:
+    """Select the most query-relevant source sentences for evidence-grounded synthesis."""
+    q_tokens = {
+        t for t in re.findall(r"[a-zA-Z0-9]{3,}", query.lower())
+        if t not in {
+            "what", "when", "where", "which", "this", "that", "with", "from", "about",
+            "have", "does", "do", "can", "could", "would", "should", "please", "tell",
+            "give", "under", "into", "your", "they", "their", "there", "some"
+        }
+    }
+    candidates = []
+    for chunk in chunks:
+        raw = _clean_sentence(chunk.get("content", ""))
+        for sentence in re.split(r"(?<=[.!?])\s+", raw):
+            s = _clean_sentence(sentence)
+            if len(s) < 35:
+                continue
+            tokens = set(re.findall(r"[a-zA-Z0-9]{3,}", s.lower()))
+            overlap = len(tokens & q_tokens)
+            # Prefer legally meaningful short passages and avoid huge source dumps.
+            score = overlap * 3
+            if any(k in s.lower() for k in ["section", "rule", "schedule", "patent", "prior art", "benefit sharing", "safety", "gmp", "ayush"]):
+                score += 2
+            if len(s) > 420:
+                score -= 1
+            candidates.append((score, s))
+    candidates.sort(key=lambda item: (-item[0], len(item[1])))
+    selected = []
+    seen = set()
+    for _, sentence in candidates:
+        key = sentence.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        selected.append(sentence)
+        if len(selected) >= limit:
+            break
+    return selected
+
+
+def synthesize_natural_answer(
+    user_query: str,
+    category: Optional[str],
+    focus: Optional[str],
+    herb_visual: Optional[Dict],
+    relevant_chunks: List[Dict],
+) -> str:
+    """Create a direct, conversational answer instead of returning document text as the answer."""
+    intent = _question_intent(user_query)
+    category = category or "General"
+    subject = None
+    if herb_visual:
+        subject = f"{herb_visual['common_name']} ({herb_visual['botanical_name']})"
+
+    # Herb questions should be answered from the herb record first, then supported by RAG.
+    if herb_visual and focus == "herb identity and traditional use":
+        description = str(herb_visual.get("shloka_translation", "")).strip()
+        if description:
+            return (
+                f"You’re asking about **{subject}**. Traditionally, it is described in the knowledge base as {description.lower()} "
+                f"This is traditional-use context, not proof that the herb is effective or safe for every person. "
+                f"For a product or medical use, the preparation, dose, interactions, and supporting evidence still need to be checked."
+            )
+        return (
+            f"You’re asking about **{subject}**. I found its botanical record, but the current knowledge base does not contain enough detail "
+            f"to give a reliable use summary. I’d rather say that than invent a medical claim."
+        )
+
+    source_points = _source_sentences(relevant_chunks, user_query, limit=4)
+    evidence = " ".join(source_points[:3])
+
+    if category == "Patentability" or focus == "patentability":
+        if intent == "eligibility":
+            opening = "Possibly, but the herb or a traditional use by itself is not enough to establish patentability."
+        else:
+            opening = "For a patentability question, the important issue is what is actually new in your claim—not simply whether the ingredient is known."
+        middle = (
+            "The practical review should look at novelty and prior art, including documented traditional knowledge, then check the other applicable patent requirements and exclusions."
+        )
+        if source_points:
+            middle += " The retrieved material is consistent with that approach and highlights " + evidence
+        return opening + " " + middle + " If you share the exact formulation, process, or claimed use, I can narrow the analysis to that specific case."
+
+    if category in {"AYUSH_Licensing", "Regulatory_Compliance"} or focus == "ayush licensing":
+        if intent == "requirements":
+            opening = "The exact requirements depend on what your product is and whether it follows a classical formulation or is a modified/new formulation."
+        elif intent == "howto":
+            opening = "A sensible way to approach this is to classify the product first, then map the licensing and manufacturing requirements to that category."
+        else:
+            opening = "For an AYUSH compliance question, the product category comes first because the licensing pathway depends on it."
+        middle = "From there, review the applicable licensing route, manufacturing controls, safety/evidence requirements, documentation, and GMP provisions."
+        if source_points:
+            middle += " The retrieved sources specifically point to " + evidence
+        return opening + " " + middle + " Tell me the product type and whether you manufacture it yourself, and I can make the checklist more specific."
+
+    if category == "Safety" or focus == "safety and use":
+        opening = f"For **{subject}**, safety depends on the exact preparation, amount, route of use, and the person using it." if subject else "Safety depends on the exact preparation, amount, route of use, and the person using it."
+        middle = "Traditional use is useful context, but it should not be treated as proof of safety or effectiveness. Particular attention should be given to contraindications, medicine interactions, identity and quality of the material."
+        if source_points:
+            middle += " The retrieved evidence also emphasizes " + evidence
+        return opening + " " + middle + " I can make this more specific if you tell me the preparation and intended use."
+
+    if category == "Biodiversity_ABS" or focus == "biodiversity and abs":
+        opening = "If your work uses an Indian biological resource or associated traditional knowledge, biodiversity and access-and-benefit-sharing requirements may become relevant."
+        middle = "The next step is to identify the resource, how it was obtained, how it will be used, and whether your activity falls within the applicable approval or benefit-sharing framework."
+        if source_points:
+            middle += " The retrieved material points to " + evidence
+        return opening + " " + middle + " The exact obligation depends on the facts of the activity, so those details matter."
+
+    if category == "Traditional_Knowledge" or focus == "herb identity and traditional use":
+        opening = "The key point is whether the knowledge or use is already documented and therefore relevant as prior art or as traditional-knowledge evidence."
+        if source_points:
+            opening += " In the retrieved material, the most relevant points are " + evidence
+        return opening + " If you tell me the herb, formulation, or traditional use you are referring to, I can connect the answer to that specific case."
+
+    if category == "WIPO_Guidance":
+        opening = "WIPO material is most useful here as an IP framework for traditional knowledge, genetic-resource context and related rights."
+    elif category == "WHO_Guidance":
+        opening = "WHO material is most useful here for evidence and guidance around traditional medicine, botanical quality, safety and manufacturing."
+    else:
+        opening = "Here’s the part of the available evidence that directly relates to your question."
+
+    if source_points:
+        return opening + " " + evidence
+    return opening + " I could not find enough directly relevant evidence in the current knowledge base to answer this confidently."
+
+
+def generate_rag_response(
+    user_query: str,
+    persona: str = "innovator",
+    language: str = "en",
+    ml_category: Optional[str] = None
+) -> Dict:
+    """Generates a natural, query-focused RAG response with supporting citations."""
+    routing_terms = {
+        "Patentability": "patentability patent novelty prior art Section 3 traditional knowledge",
+        "AYUSH_Licensing": "AYUSH licensing Rule 158B Schedule T GMP regulatory compliance",
+        "Safety": "safety dosage contraindications side effects interactions quality",
+        "Biodiversity_ABS": "biodiversity biological resources access benefit sharing NBA ABS",
+        "Traditional_Knowledge": "traditional knowledge TKDL prior art Ayurveda",
+        "Regulatory_Compliance": "regulatory compliance AYUSH licensing GMP requirements",
+        "WIPO_Guidance": "WIPO intellectual property traditional knowledge genetic resources",
+        "WHO_Guidance": "WHO traditional medicine botanical quality safety GMP guidance"
+    }
+
+    rag_query = user_query + (" " + routing_terms[ml_category] if ml_category in routing_terms else "")
+    retrieved_chunks = query_legal_database(rag_query, top_k=3)
 
     citations = []
     for idx, chunk in enumerate(retrieved_chunks, 1):
         citations.append({
             "ref": f"Ref {idx}",
-            "document": chunk["document_title"],
-            "section": chunk["section"],
+            "document": chunk.get("document_title", "Source"),
+            "section": chunk.get("section", ""),
             "page": chunk.get("page"),
-            "jurisdiction": chunk["jurisdiction"],
-            "authority": chunk["authority"],
-            "snippet": chunk["content"]
+            "jurisdiction": chunk.get("jurisdiction", "India"),
+            "authority": chunk.get("authority", ""),
+            "snippet": chunk.get("content", "")
         })
 
     herb_visual = detect_herb_visuals(user_query)
+    question_focus = detect_question_focus(user_query)
 
-    # Risk level calculation
-    risk_level = "MODERATE RISK (Section 3p Synergy Review)"
-    risk_color = "amber"
-    risk_score = 65
+    # Do not allow a weak/incorrect ML label to dominate an obvious question focus.
+    focus_to_category = {
+        "patentability": "Patentability",
+        "ayush licensing": "AYUSH_Licensing",
+        "safety and use": "Safety",
+        "biodiversity and abs": "Biodiversity_ABS",
+        "who and wipo guidance": "WIPO_Guidance",
+        "herb identity and traditional use": "Traditional_Knowledge",
+    }
+    category = ml_category if ml_category in routing_terms else focus_to_category.get(question_focus, ml_category)
+
+    relevant_chunks = [
+        chunk for chunk in retrieved_chunks
+        if float(chunk.get("relevance_score", 0)) >= 0.12
+    ]
+    if not relevant_chunks and retrieved_chunks:
+        relevant_chunks = [retrieved_chunks[0]]
+
+    answer_text = synthesize_natural_answer(
+        user_query=user_query,
+        category=category,
+        focus=question_focus,
+        herb_visual=herb_visual,
+        relevant_chunks=relevant_chunks,
+    )
+
+    # Keep the answer conversational; citations are already exposed separately in the UI.
+    if relevant_chunks:
+        answer_text += f"\n\nI checked {len(relevant_chunks)} relevant source passage(s) for this response."
+    else:
+        answer_text += "\n\nI did not find a sufficiently relevant source passage for this question."
+
     q_lower = user_query.lower()
-    if "patent" in q_lower and ("traditional" in q_lower or "ashwagandha" in q_lower or "turmeric" in q_lower):
-        risk_level = "HIGH RISK (Section 3p Traditional Knowledge Review)"
+    risk_level = "MODERATE RISK"
+    risk_color = "amber"
+    risk_score = 50
+    if category == "Patentability" and any(k in q_lower for k in ["traditional knowledge", "tkdl", "section 3(p)", "section 3p"]):
+        risk_level = "REVIEW REQUIRED — Traditional Knowledge / Section 3(p)"
         risk_color = "red"
-        risk_score = 85
-    elif "license" in q_lower or "158b" in q_lower or "schedule t" in q_lower:
-        risk_level = "COMPLIANCE VERIFIED (AYUSH Rule 158B)"
-        risk_color = "emerald"
-        risk_score = 30
+        risk_score = 80
+    elif category in {"AYUSH_Licensing", "Regulatory_Compliance"}:
+        risk_level = "COMPLIANCE REVIEW REQUIRED"
+        risk_color = "amber"
+        risk_score = 55
 
-    # Multilingual & Sanskrit Shloka Formatting
-    shloka_block = ""
-    if herb_visual:
-        shloka_block = f"🌿 **{herb_visual['sanskrit_name']}** (*{herb_visual['botanical_name']}*)\n" \
-                       f"📜 *Sanskrit Shloka*: \"{herb_visual['shloka']}\"\n" \
-                       f"✨ *Classical Meaning*: {herb_visual['shloka_translation']}\n\n"
-
-    # Multilingual translation text adapter
-    answer_text = ""
-    if language == "hi":
-        answer_text = f"### पेटेंट एवं कानूनी मार्गदर्शन\n\n" \
-                      f"{shloka_block}" \
-                      f"**भारतीय पेटेंट अधिनियम 1970 की धारा 3(p)** के तहत [Ref 1], पारंपरिक आयुर्वेदिक ज्ञान पर आधारित योग को सीधे पेटेंट नहीं कराया जा सकता है।\n\n" \
-                      f"#### 🎯 पेटेंट और नियामक अनुपालन के चरण:\n" \
-                      f"1. **सिनर्जिस्टिक प्रभाव (Synergistic Efficacy)**: नैदानिक अध्ययनों द्वारा बेहतर प्रभाव साबित करें [Ref 1]।\n" \
-                      f"2. **AYUSH लाइसेंसिंग (Rule 158B)**: औषधि सुरक्षा और अनुसूची T GMP प्रमाणपत्र प्रस्तुत करें [Ref 3]।\n" \
-                      f"3. **राष्ट्रीय जैव विविधता प्राधिकरण (NBA)**: पेटेंट आवेदन से पहले ABS मंजूरी प्राप्त करें [Ref 2]।"
-    elif language == "sa":
-        answer_text = f"### आयुर्वेद विधिक मार्गदर्शिनी\n\n" \
-                      f"{shloka_block}" \
-                      f"**भारतीय पेटेंट अधिनियमस्य तृतीय धारा (p)** अनुसारं [Ref 1] परम्परागत ज्ञानं साक्षात् न पेटेंट योग्यम्।\n\n" \
-                      f"#### 🎯 नूतन योग पेटेंट विधानावश्यकाः:\n" \
-                      f"1. **नूतन प्रभाव सिद्धिः**: नूतन योग प्रभाव सिद्ध्या पेटेंट अधिकारः लभ्यते [Ref 1]।\n" \
-                      f"2. **आयुष लाइसेंसिंग (Rule 158B)**: अनुसूची T GMP पालनं अनिवार्यम् [Ref 3]।"
-    elif language == "ta":
-        answer_text = f"### காப்புரிமை மற்றும் சட்ட வழிகாட்டுதல்\n\n" \
-                      f"{shloka_block}" \
-                      f"இந்திய காப்புரிமைச் சட்டம், 1970 இன் **பிரிவு 3(p)** படி [Ref 1], அறியப்பட்ட பாரம்பரிய ஆயுர்வேத அறிவை மீண்டும் பயன்படுத்தும் சேர்மங்களுக்கு நேரடியாக காப்புரிமை பெற முடியாது.\n\n" \
-                      f"#### 🎯 காப்புரிமை மற்றும் ஒழுங்குமுறை இணக்கப் பாதை:\n" \
-                      f"1. **சினர்ஜிஸ்டிக் செயல்திறன்**: தனிப்பட்ட தாவரக் கூறுகளை விட மேம்பட்ட சிகிச்சை விளைவை மருத்துவ ஆய்வுகளால் நிரூபிக்கவும் [Ref 1].\n" \
-                      f"2. **AYUSH உரிமம் (விதி 158B)**: பாதுகாப்பு மற்றும் Schedule T GMP சான்றுகளை சமர்ப்பிக்கவும் [Ref 3].\n" \
-                      f"3. **தேசிய உயிரியல் பல்வகைமை ஆணையம் (NBA)**: காப்புரிமை தாக்கலுக்கு முன் ABS ஒப்புதலைப் பெறவும் [Ref 2]."
-    elif language == "te":
-        answer_text = f"### పేటెంట్ మరియు చట్టపరమైన మార్గదర్శకం\n\n" \
-                      f"{shloka_block}" \
-                      f"భారత పేటెంట్ చట్టం, 1970 లోని **సెక్షన్ 3(p)** ప్రకారం [Ref 1], తెలిసిన సంప్రదాయ ఆయుర్వేద జ్ఞానాన్ని పునరావృతం చేసే సమ్మేళనాలకు నేరుగా పేటెంట్ లభించదు.\n\n" \
-                      f"#### 🎯 పేటెంట్ మరియు నియంత్రణ అనుసరణ దశలు:\n" \
-                      f"1. **సినర్జిస్టిక్ ప్రభావం**: వ్యక్తిగత వృక్ష భాగాల కంటే మెరుగైన చికిత్సా ప్రభావాన్ని అధ్యయనాలతో నిరూపించండి [Ref 1].\n" \
-                      f"2. **AYUSH లైసెన్సింగ్ (నియమం 158B)**: భద్రత మరియు Schedule T GMP ఆధారాలను సమర్పించండి [Ref 3].\n" \
-                      f"3. **జాతీయ జీవవైవిధ్య ప్రాధికార సంస్థ (NBA)**: పేటెంట్ దాఖలు ముందు ABS అనుమతి పొందండి [Ref 2]."
-    elif language == "bn":
-        answer_text = f"### পেটেন্ট ও আইনি নির্দেশিকা\n\n" \
-                      f"{shloka_block}" \
-                      f"ভারতীয় পেটেন্ট আইন, ১৯৭০-এর **ধারা ৩(p)** অনুযায়ী [Ref 1], পরিচিত ঐতিহ্যবাহী আয়ুর্বেদিক জ্ঞানের পুনরাবৃত্তি করা সংমিশ্রণ সরাসরি পেটেন্টযোগ্য নয়।\n\n" \
-                      f"#### 🎯 পেটেন্ট ও নিয়ন্ত্রক আনুগত্যের ধাপ:\n" \
-                      f"1. **সমন্বিত কার্যকারিতা**: পৃথক উদ্ভিদ উপাদানের তুলনায় উন্নত চিকিৎসা ফলাফল গবেষণায় প্রমাণ করুন [Ref 1].\n" \
-                      f"2. **AYUSH লাইসেন্সিং (নিয়ম 158B)**: নিরাপত্তা ও Schedule T GMP প্রমাণ জমা দিন [Ref 3].\n" \
-                      f"3. **জাতীয় জীববৈচিত্র্য কর্তৃপক্ষ (NBA)**: পেটেন্ট দাখিলের আগে ABS অনুমোদন নিন [Ref 2]."
-    elif language == "mr":
-        answer_text = f"### पेटंट आणि कायदेशीर मार्गदर्शन\n\n" \
-                      f"{shloka_block}" \
-                      f"भारतीय पेटंट कायदा, १९७० मधील **कलम ३(p)** नुसार [Ref 1], ज्ञात पारंपरिक आयुर्वेदिक ज्ञानाची पुनरावृत्ती करणाऱ्या संयुगांना थेट पेटंट मिळू शकत नाही.\n\n" \
-                      f"#### 🎯 पेटंट आणि नियामक अनुपालनाचे टप्पे:\n" \
-                      f"1. **सिनर्जिस्टिक परिणाम**: स्वतंत्र वनस्पती घटकांपेक्षा चांगला उपचारात्मक परिणाम अभ्यासातून सिद्ध करा [Ref 1].\n" \
-                      f"2. **AYUSH परवाना (नियम 158B)**: सुरक्षा आणि Schedule T GMP पुरावे सादर करा [Ref 3].\n" \
-                      f"3. **राष्ट्रीय जैवविविधता प्राधिकरण (NBA)**: पेटंट दाखल करण्यापूर्वी ABS मंजुरी घ्या [Ref 2]."
-    elif language == "kn":
-        answer_text = f"### ಪೇಟೆಂಟ್ ಮತ್ತು ಕಾನೂನು ಮಾರ್ಗದರ್ಶನ\n\n" \
-                      f"{shloka_block}" \
-                      f"ಭಾರತೀಯ ಪೇಟೆಂಟ್ ಕಾಯಿದೆ, 1970 ರ **ವಿಭಾಗ 3(p)** ಪ್ರಕಾರ [Ref 1], ತಿಳಿದಿರುವ ಸಾಂಪ್ರದಾಯಿಕ ಆಯುರ್ವೇದ ಜ್ಞಾನವನ್ನು ಪುನರಾವರ್ತಿಸುವ ಸಂಯೋಜನೆಗಳಿಗೆ ನೇರ ಪೇಟೆಂಟ್ ಸಿಗುವುದಿಲ್ಲ.\n\n" \
-                      f"#### 🎯 ಪೇಟೆಂಟ್ ಮತ್ತು ನಿಯಂತ್ರಣ ಅನುಸರಣೆ ಹಂತಗಳು:\n" \
-                      f"1. **ಸಿನರ್ಜಿಸ್ಟಿಕ್ ಪರಿಣಾಮ**: ಪ್ರತ್ಯೇಕ ಸಸ್ಯ ಘಟಕಗಳಿಗಿಂತ ಉತ್ತಮ ಚಿಕಿತ್ಸಾ ಪರಿಣಾಮವನ್ನು ಅಧ್ಯಯನಗಳಿಂದ ಸಾಬೀತುಪಡಿಸಿ [Ref 1].\n" \
-                      f"2. **AYUSH ಪರವಾನಗಿ (ನಿಯಮ 158B)**: ಸುರಕ್ಷತೆ ಮತ್ತು Schedule T GMP ದಾಖಲೆಗಳನ್ನು ಸಲ್ಲಿಸಿ [Ref 3].\n" \
-                      f"3. **ರಾಷ್ಟ್ರೀಯ ಜೀವವೈವಿಧ್ಯ ಪ್ರಾಧಿಕಾರ (NBA)**: ಪೇಟೆಂಟ್ ಸಲ್ಲಿಸುವ ಮೊದಲು ABS ಅನುಮತಿ ಪಡೆಯಿರಿ [Ref 2]."
-    elif language == "ml":
-        answer_text = f"### പേറ്റന്റും നിയമ മാർഗനിർദേശവും\n\n" \
-                      f"{shloka_block}" \
-                      f"1970-ലെ ഇന്ത്യൻ പേറ്റന്റ് നിയമത്തിലെ **വകുപ്പ് 3(p)** പ്രകാരം [Ref 1], അറിയപ്പെടുന്ന പരമ്പരാഗത ആയുർവേദ അറിവിന്റെ ആവർത്തനമായ സംയോജനങ്ങൾക്ക് നേരിട്ട് പേറ്റന്റ് ലഭിക്കില്ല.\n\n" \
-                      f"#### 🎯 പേറ്റന്റും നിയന്ത്രണ അനുസരണവും:\n" \
-                      f"1. **സിനർജിസ്റ്റിക് ഫലം**: വ്യക്തിഗത സസ്യഘടകങ്ങളെക്കാൾ മികച്ച ചികിത്സാഫലം പഠനങ്ങളിലൂടെ തെളിയിക്കുക [Ref 1].\n" \
-                      f"2. **AYUSH ലൈസൻസിംഗ് (ചട്ടം 158B)**: സുരക്ഷയും Schedule T GMP രേഖകളും സമർപ്പിക്കുക [Ref 3].\n" \
-                      f"3. **ദേശീയ ജൈവവൈവിധ്യ അതോറിറ്റി (NBA)**: പേറ്റന്റ് സമർപ്പിക്കുന്നതിന് മുമ്പ് ABS അംഗീകാരം നേടുക [Ref 2]."
-    else: # English
-        answer_text = f"### Legal & Regulatory Guidance\n\n" \
-                      f"{shloka_block}" \
-                      f"Under **Section 3(p) of the Indian Patents Act, 1970** [Ref 1], inventions that are an aggregation or duplication of known traditional Ayurvedic knowledge are non-patentable.\n\n" \
-                      f"#### 🎯 Pathway to Patentability & Compliance:\n" \
-                      f"1. **Synergistic Efficacy**: Demonstrate non-obvious therapeutic enhancement compared to individual botanical components [Ref 1].\n" \
-                      f"2. **AYUSH Licensing (Rule 158B)**: Provide proof of safety and Schedule T GMP compliance [Ref 3].\n" \
-                      f"3. **National Biodiversity Authority (NBA)**: Secure prior Access and Benefit Sharing (ABS) approval before patent filing [Ref 2]."
-
-    international_guidance = "\n\n#### 🌍 WHO & WIPO International Guidance\n" \
-                           "- **WHO**: Botanical medicines should be supported by documented identity, quality control, good manufacturing practice, and safety evidence.\n" \
-                           "- **WIPO**: Traditional knowledge and genetic resources should be documented with attention to provenance, prior art, community interests, and applicable access-and-benefit-sharing requirements.\n" \
-                           "These are international guidance frameworks, not substitutes for Indian statutory advice or regulator instructions."
-    answer_text += international_guidance
+    roadmap = [
+        {"step": 1, "title": "Define the exact question or product", "status": "Current"},
+        {"step": 2, "title": "Review the relevant evidence and source", "status": "Current"},
+        {"step": 3, "title": "Validate against the applicable authority", "status": "Recommended"},
+    ]
 
     return {
         "user_query": user_query,
         "persona": persona,
         "language": language,
+        "question_focus": question_focus,
         "answer": answer_text,
         "citations": citations,
         "herb_visual": herb_visual,
@@ -340,15 +513,11 @@ def generate_rag_response(user_query: str, persona: str = "innovator", language:
             "color": risk_color,
             "score": risk_score
         },
-        "compliance_roadmap": [
-            {"step": 1, "title": "TKDL Search & Novelty Check", "status": "Completed"},
-            {"step": 2, "title": "Synergistic Clinical Data", "status": "In Progress"},
-            {"step": 3, "title": "NBA ABS Approval", "status": "Required"},
-            {"step": 4, "title": "AYUSH Rule 158B NOC", "status": "Pending"}
-        ]
+        "compliance_roadmap": roadmap
     }
 
+
 if __name__ == "__main__":
-    q = "Is Ashwagandha formulation patentable under Section 3(p)?"
+    q = "What are the traditional uses of Ashwagandha?"
     res = generate_rag_response(q)
-    print_flush(f"[TEST SUCCESS] Herb: {res['herb_visual']['sanskrit_name']}")
+    print_flush(res["answer"])

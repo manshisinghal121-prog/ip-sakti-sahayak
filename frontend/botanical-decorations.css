@@ -1,0 +1,67 @@
+/* IP-SAKTI — subtle botanical atmosphere */
+:root{
+  --botanical-green:#4A6B5D;
+  --botanical-green-dark:#2D4A3E;
+  --botanical-gold:#C58529;
+}
+
+body{position:relative;}
+body > *{position:relative;z-index:2;}
+
+body::before,body::after{
+  content:"";
+  position:fixed;
+  pointer-events:none;
+  z-index:1;
+  background-repeat:no-repeat;
+  background-size:contain;
+}
+
+/* quiet leafy branch — lower left */
+body::before{
+  left:-45px;
+  bottom:-55px;
+  width:250px;
+  height:365px;
+  opacity:.075;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 280 430'%3E%3Cg fill='none' stroke='%232D4A3E' stroke-width='4' stroke-linecap='round'%3E%3Cpath d='M70 425 C78 345 95 290 119 227 C138 176 153 119 151 42'/%3E%3Cpath d='M101 315 C70 282 47 245 28 207'/%3E%3Cpath d='M116 275 C151 245 181 214 201 182'/%3E%3Cpath d='M129 214 C100 184 78 151 63 118'/%3E%3Cpath d='M145 158 C176 136 198 109 210 77'/%3E%3C/g%3E%3Cg fill='%232D4A3E'%3E%3Cellipse cx='26' cy='201' rx='19' ry='9' transform='rotate(40 26 201)'/%3E%3Cellipse cx='52' cy='246' rx='22' ry='10' transform='rotate(42 52 246)'/%3E%3Cellipse cx='84' cy='174' rx='22' ry='10' transform='rotate(48 84 174)'/%3E%3Cellipse cx='72' cy='124' rx='21' ry='9' transform='rotate(55 72 124)'/%3E%3Cellipse cx='174' cy='231' rx='22' ry='10' transform='rotate(-38 174 231)'/%3E%3Cellipse cx='203' cy='180' rx='23' ry='10' transform='rotate(-40 203 180)'/%3E%3Cellipse cx='194' cy='121' rx='22' ry='9' transform='rotate(-40 194 121)'/%3E%3Cellipse cx='211' cy='73' rx='18' ry='8' transform='rotate(-52 211 73)'/%3E%3Cellipse cx='151' cy='43' rx='18' ry='8' transform='rotate(-8 151 43)'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* quiet warm branch — upper right */
+body::after{
+  right:-38px;
+  top:90px;
+  width:205px;
+  height:300px;
+  opacity:.055;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 230 330'%3E%3Cg fill='none' stroke='%23C58529' stroke-width='4' stroke-linecap='round'%3E%3Cpath d='M164 324 C158 261 142 220 116 176 C97 145 75 105 64 36'/%3E%3Cpath d='M137 243 C168 215 191 187 207 153'/%3E%3Cpath d='M119 196 C93 178 73 153 60 126'/%3E%3Cpath d='M101 157 C127 136 145 114 154 87'/%3E%3C/g%3E%3Cg fill='%23C58529'%3E%3Cellipse cx='205' cy='151' rx='17' ry='8' transform='rotate(-38 205 151)'/%3E%3Cellipse cx='61' cy='126' rx='18' ry='8' transform='rotate(42 61 126)'/%3E%3Cellipse cx='153' cy='87' rx='17' ry='8' transform='rotate(-46 153 87)'/%3E%3Cellipse cx='67' cy='39' rx='16' ry='7' transform='rotate(55 67 39)'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Small botanical watermark inside standard hero cards */
+.hero{position:relative;overflow:hidden;}
+.hero::after{
+  content:"❧";
+  position:absolute;
+  right:22px;
+  bottom:12px;
+  font-family:Georgia,serif;
+  font-size:105px;
+  line-height:1;
+  color:#4A6B5D;
+  opacity:.065;
+  pointer-events:none;
+}
+
+.module-card,.process-card,.capability-card,.tool{position:relative;overflow:hidden;}
+.module-card::after,.process-card::after,.capability-card::after,.tool::after{
+  content:"❧";
+  position:absolute;
+  right:12px;
+  bottom:8px;
+  color:#2D4A3E;
+  opacity:.07;
+  font-size:30px;
+  pointer-events:none;
+}
+
+.nav,nav{z-index:100!important;}
