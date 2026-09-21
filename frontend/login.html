@@ -15,11 +15,83 @@ border:1px solid rgba(197,133,41,.4);border-radius:10px;background:#F5F2EC}.btn{
 padding:12px;background:#9E4624;color:white;font-weight:700;cursor:pointer}.btn:disabled{opacity:.6}.message{display:none;margin:12px 0;
 padding:10px;border-radius:9px;font-size:12px}.links{text-align:center;margin-top:17px;font-size:12px}.links a{color:#9E4624;font-weight:700;text-decoration:none}.langbar{display:flex;justify-content:flex-end;margin-bottom:12px}.langbar select{padding:6px;border:1px solid #C58529;border-radius:8px;background:#FFFDF8}
 </style><script src="/frontend/auth.js"></script><script src="/frontend/i18n.js"></script></head>
-<body><main class="shell"><div class="langbar"><select id="loginLanguage"></select></div><div class="brand">𑁍 IP-SAKTI Sahayak</div><div class="sub">Secure access to AI Sahayak</div><div id="message" class="message"></div><form id="loginForm"><div class="field"><label>Username</label><input id="username" autocomplete="username" required></div><div class="field"><label>Password</label><input id="password" type="password" autocomplete="current-password" required></div><button id="loginBtn" class="btn">Sign in</button></form>
+<body><main class="shell">
+    <div class="langbar"><select id="loginLanguage">
+
+    </select></div><div class="brand">𑁍 IP-SAKTI Sahayak</div>
+    <div class="sub">Secure access to AI Sahayak</div>
+    <div id="message" class="message"></div><form id="loginForm"><div class="field"><label>Username</label><input id="username" autocomplete="username" required></div><div class="field"><label>Password</label><input id="password" type="password" autocomplete="current-password" required></div><button id="loginBtn" class="btn">Sign in</button></form>
     <div class="links">
     Don't have an account?
     <a href="/register">Create Account</a>
 </div>
+<script>
+const lang = document.getElementById('loginLanguage');
+
+(window.IPSAKTI_I18N?.LANGS || []).forEach(([v,n]) => {
+    const o = document.createElement('option');
+    o.value = v;
+    o.textContent = n;
+    lang.appendChild(o);
+});
+
+lang.value = localStorage.getItem('ipSaktiLanguage') || 'en';
+
+lang.onchange = () => {
+    localStorage.setItem('ipSaktiLanguage', lang.value);
+    location.reload();
+};
+
+document.getElementById('loginForm').addEventListener('submit', async e => {
+    e.preventDefault();
+
+    const btn = document.getElementById('loginBtn');
+    const msg = document.getElementById('message');
+
+    btn.disabled = true;
+    btn.textContent = 'Signing in...';
+    msg.style.display = 'none';
+
+    try {
+        const r = await fetch('/api/v1/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: document.getElementById('username').value.trim(),
+                password: document.getElementById('password').value
+            })
+        });
+
+        const d = await r.json().catch(() => ({}));
+
+        if (!r.ok) {
+            throw new Error(d.detail || 'Login failed.');
+        }
+
+        localStorage.setItem('ipSaktiAccessToken', d.access_token);
+        localStorage.setItem(
+            'ipSaktiUsername',
+            document.getElementById('username').value.trim()
+        );
+
+        const next =
+            new URLSearchParams(location.search).get('next') || '/assistant';
+
+        location.href = next;
+
+    } catch (err) {
+        msg.textContent = err.message;
+        msg.style.display = 'block';
+        msg.style.background = '#9E4624';
+        msg.style.color = '#fff';
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Sign in';
+    }
+});
+</script>
 const lang=document.getElementById('loginLanguage');
  (window.IPSAKTI_I18N?.LANGS||[]).forEach(([v,n])=>{const o=document.createElement('option');
  o.value=v;o.textContent=n;lang.appendChild(o)}); lang.value=localStorage.getItem('ipSaktiLanguage')||'en'; 
