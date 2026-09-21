@@ -2,8 +2,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IP-SAKTI Sahayak · Rich Ayurvedic Visual Prototype</title>
+  <title>IP-SAKTI Sahayak — Rich Ayurvedic Visual Prototype</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Serif+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
@@ -13,7 +14,9 @@
     .font-serif-header { font-family: 'Cinzel', serif; }
     .font-devanagari { font-family: 'Noto Serif Devanagari', serif; }
     .bg-mandala {
-      background-image:none;
+      background-image: radial-gradient(#9E4624 0.75px, transparent 0.75px), radial-gradient(#9E4624 0.75px, #F5F2EC 0.75px);
+      background-size: 30px 30px;
+      background-position: 0 0, 15px 15px;
       opacity: 0.96;
     }
     .manuscript-card {
@@ -31,14 +34,14 @@
     }
     .recording-pulse { animation: pulse-red 1s infinite; }
     .welcome-screen {
-      background:#2D4A3E var(--welcome-hero-image) center/cover;
-      background-blend-mode:multiply;
+      background: linear-gradient(135deg, rgba(43, 37, 35, 0.97), rgba(74, 107, 93, 0.9)), var(--welcome-hero-image) center/cover;
     }
     .welcome-screen::before {
       content: "";
       position: absolute;
       inset: 0;
-      background-image:none;
+      background-image: radial-gradient(rgba(213, 154, 55, 0.22) 0.8px, transparent 0.8px);
+      background-size: 24px 24px;
       pointer-events: none;
     }
     .welcome-content { animation: welcome-rise 700ms ease-out both; }
@@ -114,112 +117,11 @@
       #inspectorPassageBox { min-height: 0 !important; }
     }
   </style>
-
-<style id="ip-sakti-final-polish">
-/* Final product polish: editorial, grounded, non-vibecoded. */
-html, body { background-image:none !important; }
-.hero { background: #2D4A3E !important; }
-.hero::before, .hero::after { background-image:none !important; }
-* { transition: none !important; animation-duration: 0s !important; animation-delay: 0s !important; }
-.card, .manuscript-card, .module-card, .tool, .capability-card, .process-card, .herb-card { box-shadow:none !important; }
-.rounded-full { border-radius:6px !important; }
-.rounded-2xl { border-radius:8px !important; }
-.rounded-xl { border-radius:8px !important; }
-.rounded-lg { border-radius:6px !important; }
-[class*="hover:-translate"], [class*="hover:scale"] { transform:none !important; }
-</style>
-
-<style id="ipsakti-shared-final-update">
-:root{
-  --ip-cream:#F5F2EC;
-  --ip-paper:#FFFDF8;
-  --ip-panel:#EFEAE1;
-  --ip-ink:#2B2523;
-  --ip-green:#2D4A3E;
-  --ip-green-soft:#4A6B5D;
-  --ip-rust:#9E4624;
-  --ip-gold:#C58529;
-  --ip-gold-bright:#D49A37;
-}
-html,body{background:#F5F2EC!important;color:#2B2523!important;}
-/* Shared IP-SAKTI navigation */
-.ipsakti-top-nav{
-  position:fixed!important;top:0!important;left:0!important;right:0!important;
-  z-index:1000!important;min-height:48px;box-sizing:border-box;
-  padding:7px 22px;display:flex;align-items:center;gap:22px;
-  background:#2B2523!important;border-bottom:2px solid #C58529!important;
-  font-family:'Plus Jakarta Sans',Arial,sans-serif;
-}
-.ipsakti-brand{
-  display:flex;align-items:center;gap:9px;margin-right:auto;
-  color:#FFFDF8!important;text-decoration:none!important;
-}
-.ipsakti-brand-mark{width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:#D49A37;font-size:22px;}
-.ipsakti-brand strong{display:block;font-family:Georgia,'Times New Roman',serif;font-size:15px;line-height:1.05;letter-spacing:.02em;}
-.ipsakti-brand small{display:block;color:#D49A37;font-size:8px;line-height:1.2;margin-top:2px;}
-.ipsakti-nav-links{display:flex;align-items:center;gap:24px;}
-.ipsakti-nav-links a{color:#F5F2EC!important;text-decoration:none!important;font-size:11px;font-weight:600;padding:8px 0;border-bottom:2px solid transparent;}
-.ipsakti-nav-links a:hover,.ipsakti-nav-links a.active{color:#D49A37!important;border-bottom-color:#D49A37;}
-/* Botanical side ornament */
-.ipsakti-botanical-side{
-  position:fixed;left:0;top:48px;width:235px;height:calc(100vh - 48px);
-  pointer-events:none;z-index:1;opacity:.45;
-  background:
-    radial-gradient(circle at 48px 165px,transparent 0 30px,rgba(197,133,41,.20) 31px 32px,transparent 33px),
-    radial-gradient(circle at 48px 165px,transparent 0 58px,rgba(197,133,41,.14) 59px 60px,transparent 61px),
-    radial-gradient(circle at 48px 165px,transparent 0 88px,rgba(197,133,41,.10) 89px 90px,transparent 91px),
-    linear-gradient(120deg,transparent 46%,rgba(74,107,93,.09) 47%,transparent 48%);
-}
-.ipsakti-page-content{position:relative;z-index:2;}
-/* Consistent checker/library editorial hero */
-.ipsakti-editorial-hero{
-  background:#FFFDF8!important;color:#2B2523!important;
-  border:1px solid rgba(197,133,41,.38)!important;
-  border-radius:18px!important;
-  box-shadow:0 5px 18px rgba(43,37,35,.07)!important;
-}
-.ipsakti-editorial-hero h1,
-.ipsakti-editorial-hero h2{color:#2D4A3E!important;}
-.ipsakti-editorial-hero p{color:rgba(43,37,35,.68)!important;}
-@media(max-width:760px){
-  .ipsakti-top-nav{padding:7px 12px;gap:10px;}
-  .ipsakti-nav-links{gap:10px;}
-  .ipsakti-nav-links a{font-size:9px;}
-  .ipsakti-brand strong{font-size:12px;}
-  .ipsakti-brand small{display:none;}
-}
-</style>
-
-<style id="ipsakti-home-final-update">
-  #welcomeScreen{position:relative!important;min-height:calc(100vh - 48px)!important;}
-  #welcomeScreen>div{min-height:calc(100vh - 48px)!important;}
-  #welcomeScreen~section{position:relative;z-index:2;}
-  /* Keep the original rich welcome hero exactly as the home landing experience. */
-  #welcomeScreen .manuscript-card{background:#FFFDF8!important;border-color:#C58529!important;}
-  #welcomeScreen h2{color:#FFFDF8!important;}
-  #welcomeScreen p{color:rgba(245,242,236,.82)!important;}
-  /* Workspace cards below the welcome remain warm and editorial. */
-  #welcomeScreen~section .manuscript-card{background:#FFFDF8!important;border-color:rgba(197,133,41,.38)!important;}
-</style>
+  <link rel="stylesheet" href="/frontend/botanical-decorations.css">
 </head>
-<body class="min-h-screen bg-mandala" style="padding-top:48px">
+<body class="min-h-screen bg-mandala">
   <!-- WELCOME / START PAGE -->
-  <nav class="ipsakti-top-nav" aria-label="Primary navigation">
-  <a class="ipsakti-brand" href="/">
-    <span class="ipsakti-brand-mark">𑁍</span>
-    <span><strong>IP-SAKTI SAHAYAK</strong><small>Ayurvedic IP • Regulatory • AI Assistance</small></span>
-  </a>
-  <span class="ipsakti-nav-links">
-    <a class="active" href="/">Home</a>
-    <a href="/patentability">Patentability</a>
-    <a href="/compliance">Compliance</a>
-    <a href="/herbs">Herb Library</a>
-    <a href="/assistant">AI Sahayak</a>
-  </span>
-</nav>
-<div class="ipsakti-botanical-side" aria-hidden="true"></div>
-
-<section id="welcomeScreen" class="welcome-screen relative min-h-screen overflow-hidden text-[#F5F2EC]">
+  <section id="welcomeScreen" class="welcome-screen relative min-h-screen overflow-hidden text-[#F5F2EC]">
     <div class="relative max-w-6xl mx-auto min-h-screen px-6 py-8 md:px-12 md:py-10 flex flex-col justify-between">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
@@ -238,17 +140,21 @@ html,body{background:#F5F2EC!important;color:#2B2523!important;}
           <h2 id="heroHeadline" class="font-serif-header font-extrabold text-4xl md:text-6xl leading-tight text-[#FFFDF8] max-w-3xl">Make traditional knowledge ready for its next chapter.</h2>
           <p class="mt-5 max-w-xl text-base md:text-lg leading-relaxed text-[#EFEAE1]/80">A multilingual visual guide for patentability, TKDL review, AYUSH licensing, botanical drug evidence, and biodiversity approvals.</p>
           <div class="mt-8 flex flex-wrap items-center gap-3">
-            <a href="/assistant" class="inline-flex items-center gap-2 bg-[#D49A37] text-[#2B2523] font-bold px-5 py-3 rounded-lg no-underline">Open Sahayak</a>
-            <a href="/assistant?q=Can%20I%20patent%20Ashwagandha%20extract%20under%20Section%203(p)%3F" class="inline-flex items-center gap-2 border border-[#EFEAE1]/45 text-[#FFFDF8] font-semibold px-4 py-3 rounded-lg no-underline">Try a sample</a>
+          <a href="/assistant"
+   class="inline-flex items-center gap-2 bg-[#D49A37] hover:bg-[#E2B45A] text-[#2B2523] font-bold px-5 py-3 rounded-lg shadow-lg transition">
+    Open Sahayak
+    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+</a>
+<a href="/assistant?q=Can%20I%20patent%20Ashwagandha%20extract%20under%20Section%203(p)%3F"></a><i data-lucide="play-circle" class="w-4 h-4"></i> Try a sample</button>
           </div>
-          <div class="mt-6 flex items-center gap-3 text-[11px] text-[#EFEAE1]/60"><span>Herbal visuals · legal sources · multilingual answers</span></div>
+          <div class="mt-6 flex items-center gap-3 text-[11px] text-[#EFEAE1]/60"><span class="flex -space-x-2"><span class="w-7 h-7 rounded-full bg-[#9E4624] border border-[#F5F2EC]/50 flex items-center justify-center">🌿</span><span class="w-7 h-7 rounded-full bg-[#C58529] border border-[#F5F2EC]/50 flex items-center justify-center">⚖</span><span class="w-7 h-7 rounded-full bg-[#4A6B5D] border border-[#F5F2EC]/50 flex items-center justify-center">📜</span></span><span>Herbal visuals · legal sources · multilingual answers</span></div>
         </div>
 
         <div class="welcome-card manuscript-card rounded-2xl p-5 text-[#2B2523] relative overflow-hidden">
-          
+          <div class="absolute -right-8 -top-8 text-[8rem] opacity-[0.08]">🌿</div>
           <div class="relative flex items-center justify-between mb-5">
             <div><div class="font-serif-header text-xl">Your evidence map</div></div>
-            
+            <i data-lucide="sparkles" class="w-5 h-5 text-[#C58529]"></i>
           </div>
           <div class="relative space-y-3 text-sm">
             <div class="flex gap-3 items-start border-b border-[#C58529]/25 pb-3"><span class="text-[#9E4624] font-bold">01</span><div><strong>Patentability</strong><p class="text-xs text-[#2B2523]/60 mt-0.5">Section 3(c), 3(d), 3(j), 3(p) and TKDL review</p></div></div>
@@ -257,17 +163,17 @@ html,body{background:#F5F2EC!important;color:#2B2523!important;}
           </div>
           <div class="welcome-orbit relative mt-5 overflow-hidden rounded-xl border border-[#C58529]/35 h-28 bg-[#EFEAE1]">
             <img id="welcomeBotanicalImage" src="" alt="Botanical reference" class="w-full h-full object-cover opacity-80">
-            <div class="absolute inset-0 bg-[#2B2523]/45"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-[#2B2523]/80 via-[#2B2523]/25 to-transparent"></div>
             <div class="absolute left-3 bottom-3 text-[#FFFDF8]"><div class="text-[10px] uppercase tracking-[0.18em] text-[#D49A37]">Botanical reference</div><div id="welcomeBotanicalLabel" class="font-serif-header text-lg"></div></div>
           </div>
         </div>
       </div>
 
       <div class="grid grid-cols-2 md:grid-cols-4 gap-3 pb-3">
-        <button onclick="showEvidence('patent', this)" class="welcome-tile text-left bg-[#1E1A18]/70 border border-[#D49A37]/25 rounded-xl p-3 text-[#F5F2EC] transition hover:bg-[#D49A37]/15"><div class="text-xs font-bold">Section 3(p)</div><div class="text-[10px] text-[#EFEAE1]/60 mt-1">Traditional knowledge</div></button>
-        <button onclick="showEvidence('botanical', this)" class="welcome-tile text-left bg-[#1E1A18]/70 border border-[#D49A37]/25 rounded-xl p-3 text-[#F5F2EC] transition hover:bg-[#D49A37]/15"><div class="text-xs font-bold">Botanical drugs</div><div class="text-[10px] text-[#EFEAE1]/60 mt-1">Quality and efficacy</div></button>
-        <button onclick="showEvidence('ayush', this)" class="welcome-tile text-left bg-[#1E1A18]/70 border border-[#D49A37]/25 rounded-xl p-3 text-[#F5F2EC] transition hover:bg-[#D49A37]/15"><div class="text-xs font-bold">Rule 158B</div><div class="text-[10px] text-[#EFEAE1]/60 mt-1">AYUSH licensing</div></button>
-        <button onclick="showEvidence('biodiversity', this)" class="welcome-tile text-left bg-[#1E1A18]/70 border border-[#D49A37]/25 rounded-xl p-3 text-[#F5F2EC] transition hover:bg-[#D49A37]/15"><div class="text-xs font-bold">NBA / ABS</div><div class="text-[10px] text-[#EFEAE1]/60 mt-1">Biodiversity pathway</div></button>
+        <button onclick="showEvidence('patent', this)" class="welcome-tile text-left bg-[#1E1A18]/70 border border-[#D49A37]/25 rounded-xl p-3 text-[#F5F2EC] transition hover:bg-[#D49A37]/15"><i data-lucide="scale" class="w-4 h-4 text-[#D49A37] mb-2"></i><div class="text-xs font-bold">Section 3(p)</div><div class="text-[10px] text-[#EFEAE1]/60 mt-1">Traditional knowledge</div></button>
+        <button onclick="showEvidence('botanical', this)" class="welcome-tile text-left bg-[#1E1A18]/70 border border-[#D49A37]/25 rounded-xl p-3 text-[#F5F2EC] transition hover:bg-[#D49A37]/15"><i data-lucide="flask-conical" class="w-4 h-4 text-[#D49A37] mb-2"></i><div class="text-xs font-bold">Botanical drugs</div><div class="text-[10px] text-[#EFEAE1]/60 mt-1">Quality and efficacy</div></button>
+        <button onclick="showEvidence('ayush', this)" class="welcome-tile text-left bg-[#1E1A18]/70 border border-[#D49A37]/25 rounded-xl p-3 text-[#F5F2EC] transition hover:bg-[#D49A37]/15"><i data-lucide="shield-check" class="w-4 h-4 text-[#D49A37] mb-2"></i><div class="text-xs font-bold">Rule 158B</div><div class="text-[10px] text-[#EFEAE1]/60 mt-1">AYUSH licensing</div></button>
+        <button onclick="showEvidence('biodiversity', this)" class="welcome-tile text-left bg-[#1E1A18]/70 border border-[#D49A37]/25 rounded-xl p-3 text-[#F5F2EC] transition hover:bg-[#D49A37]/15"><i data-lucide="sprout" class="w-4 h-4 text-[#D49A37] mb-2"></i><div class="text-xs font-bold">NBA / ABS</div><div class="text-[10px] text-[#EFEAE1]/60 mt-1">Biodiversity pathway</div></button>
       </div>
       <div id="evidenceDetail" class="evidence-detail min-h-[58px] mb-4 border-l-2 border-[#D49A37] bg-[#1E1A18]/55 rounded-r-lg px-4 py-3 text-xs leading-relaxed text-[#EFEAE1]/80" aria-live="polite">Select an evidence tile to see how it guides your next step.</div>
       <div class="border-t border-[#D49A37]/25 pt-3 text-[10px] text-[#EFEAE1]/55 flex flex-wrap gap-x-4 gap-y-1">
@@ -280,19 +186,19 @@ html,body{background:#F5F2EC!important;color:#2B2523!important;}
 <section class="bg-mandala text-[#2B2523] px-6 md:px-12 py-14"><div class="max-w-6xl mx-auto">
 <div class="mb-8"><div class="text-xs uppercase tracking-[0.28em] text-[#9E4624] font-semibold">Explore the workspace</div><h2 class="font-serif-header text-3xl md:text-4xl font-bold mt-2">Everything in One Place</h2><p class="mt-3 max-w-3xl text-sm md:text-base text-[#2B2523]/65 leading-relaxed">Move from an initial question to patentability review, regulatory guidance, herb knowledge and source-backed AI assistance without leaving IP-SAKTI.</p></div>
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
-<a href="/patentability" class="manuscript-card rounded-2xl p-6 no-underline text-[#2B2523] hover:-translate-y-1 transition block"><div class="text-3xl mb-4"></div><h3 class="font-serif-header text-xl font-bold">Patentability Checker</h3><p class="text-sm text-[#2B2523]/65 leading-relaxed mt-3">Review novelty, prior art, inventive step and traditional-knowledge considerations.</p><div class="mt-5 text-sm font-bold text-[#9E4624]">Check Patentability →</div></a>
-<a href="/compliance" class="manuscript-card rounded-2xl p-6 no-underline text-[#2B2523] hover:-translate-y-1 transition block"><div class="text-3xl mb-4"></div><h3 class="font-serif-header text-xl font-bold">Compliance Checker</h3><p class="text-sm text-[#2B2523]/65 leading-relaxed mt-3">Explore product classification, licensing, GMP, documentation and biodiversity considerations.</p><div class="mt-5 text-sm font-bold text-[#9E4624]">Check Compliance →</div></a>
-<a href="/herbs" class="manuscript-card rounded-2xl p-6 no-underline text-[#2B2523] hover:-translate-y-1 transition block"><div class="text-3xl mb-4"></div><h3 class="font-serif-header text-xl font-bold">Herb Library</h3><p class="text-sm text-[#2B2523]/65 leading-relaxed mt-3">Explore botanical identity, traditional context, active compounds and TKDL information.</p><div class="mt-5 text-sm font-bold text-[#9E4624]">Explore Herbs →</div></a>
-<a href="/assistant" class="manuscript-card rounded-2xl p-6 no-underline text-[#2B2523] hover:-translate-y-1 transition block"><div class="text-3xl mb-4"></div><h3 class="font-serif-header text-xl font-bold">AI Sahayak</h3><p class="text-sm text-[#2B2523]/65 leading-relaxed mt-3">Ask questions and receive ML classification, RAG retrieval, citations and rich visual guidance.</p><div class="mt-5 text-sm font-bold text-[#9E4624]">Open AI Sahayak →</div></a>
+<a href="/patentability" class="manuscript-card rounded-2xl p-6 no-underline text-[#2B2523] hover:-translate-y-1 transition block"><div class="text-3xl mb-4">⚖️</div><h3 class="font-serif-header text-xl font-bold">Patentability Checker</h3><p class="text-sm text-[#2B2523]/65 leading-relaxed mt-3">Review novelty, prior art, inventive step and traditional-knowledge considerations.</p><div class="mt-5 text-sm font-bold text-[#9E4624]">Check Patentability →</div></a>
+<a href="/compliance" class="manuscript-card rounded-2xl p-6 no-underline text-[#2B2523] hover:-translate-y-1 transition block"><div class="text-3xl mb-4">📋</div><h3 class="font-serif-header text-xl font-bold">Compliance Checker</h3><p class="text-sm text-[#2B2523]/65 leading-relaxed mt-3">Explore product classification, licensing, GMP, documentation and biodiversity considerations.</p><div class="mt-5 text-sm font-bold text-[#9E4624]">Check Compliance →</div></a>
+<a href="/herbs" class="manuscript-card rounded-2xl p-6 no-underline text-[#2B2523] hover:-translate-y-1 transition block"><div class="text-3xl mb-4">🌿</div><h3 class="font-serif-header text-xl font-bold">Herb Library</h3><p class="text-sm text-[#2B2523]/65 leading-relaxed mt-3">Explore botanical identity, traditional context, active compounds and TKDL information.</p><div class="mt-5 text-sm font-bold text-[#9E4624]">Explore Herbs →</div></a>
+<a href="/assistant" class="manuscript-card rounded-2xl p-6 no-underline text-[#2B2523] hover:-translate-y-1 transition block"><div class="text-3xl mb-4">🤖</div><h3 class="font-serif-header text-xl font-bold">AI Sahayak</h3><p class="text-sm text-[#2B2523]/65 leading-relaxed mt-3">Ask questions and receive ML classification, RAG retrieval, citations and rich visual guidance.</p><div class="mt-5 text-sm font-bold text-[#9E4624]">Open AI Sahayak →</div></a>
 </div>
 <div class="mt-14"><div class="text-xs uppercase tracking-[0.28em] text-[#9E4624] font-semibold">How it works</div><h2 class="font-serif-header text-3xl font-bold mt-2">From Question to Evidence</h2><div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-6">
 <div class="bg-[#EFEAE1] border border-[#C58529]/35 rounded-2xl p-6"><div class="w-10 h-10 rounded-full bg-[#9E4624] text-white flex items-center justify-center font-bold">1</div><h3 class="font-serif-header text-xl font-bold mt-4">Ask</h3><p class="text-sm text-[#2B2523]/65 leading-relaxed mt-2">Ask about patents, AYUSH licensing, traditional knowledge, safety or compliance.</p></div>
 <div class="bg-[#EFEAE1] border border-[#C58529]/35 rounded-2xl p-6"><div class="w-10 h-10 rounded-full bg-[#9E4624] text-white flex items-center justify-center font-bold">2</div><h3 class="font-serif-header text-xl font-bold mt-4">Classify & Retrieve</h3><p class="text-sm text-[#2B2523]/65 leading-relaxed mt-2">The ML classifier identifies the question category and RAG retrieves relevant evidence.</p></div>
 <div class="bg-[#EFEAE1] border border-[#C58529]/35 rounded-2xl p-6"><div class="w-10 h-10 rounded-full bg-[#9E4624] text-white flex items-center justify-center font-bold">3</div><h3 class="font-serif-header text-xl font-bold mt-4">Understand</h3><p class="text-sm text-[#2B2523]/65 leading-relaxed mt-2">The result combines an understandable answer with confidence, citations and relevant context.</p></div></div></div>
 <div class="mt-14 grid grid-cols-1 lg:grid-cols-2 gap-6">
-<div class="manuscript-card rounded-2xl p-6"><div class="text-xs uppercase tracking-[0.22em] text-[#9E4624] font-bold">Evidence & knowledge</div><h2 class="font-serif-header text-2xl font-bold mt-2">Indian IP & Regulatory Context</h2><div class="space-y-3 mt-5"><div class="bg-[#EFEAE1] border-l-4 border-[#C58529] rounded-r-lg p-3 text-sm"> Patentability and prior-art considerations</div><div class="bg-[#EFEAE1] border-l-4 border-[#C58529] rounded-r-lg p-3 text-sm"> Traditional Knowledge and Section 3(p)</div><div class="bg-[#EFEAE1] border-l-4 border-[#C58529] rounded-r-lg p-3 text-sm">AYUSH licensing and GMP considerations</div><div class="bg-[#EFEAE1] border-l-4 border-[#C58529] rounded-r-lg p-3 text-sm">Biodiversity and Access & Benefit Sharing</div></div></div>
-<div class="manuscript-card rounded-2xl p-6"><div class="text-xs uppercase tracking-[0.22em] text-[#9E4624] font-bold">Intelligent assistance</div><h2 class="font-serif-header text-2xl font-bold mt-2">Built Around Your Question</h2><div class="space-y-3 mt-5"><div class="bg-[#EFEAE1] border-l-4 border-[#4A6B5D] rounded-r-lg p-3 text-sm"> ML question classification</div><div class="bg-[#EFEAE1] border-l-4 border-[#4A6B5D] rounded-r-lg p-3 text-sm">Retrieval-Augmented Generation</div><div class="bg-[#EFEAE1] border-l-4 border-[#4A6B5D] rounded-r-lg p-3 text-sm">Confidence indication</div><div class="bg-[#EFEAE1] border-l-4 border-[#4A6B5D] rounded-r-lg p-3 text-sm">Source and citation display</div></div></div></div>
-<div class="mt-14"><div class="text-xs uppercase tracking-[0.28em] text-[#9E4624] font-semibold">Designed for</div><h2 class="font-serif-header text-3xl font-bold mt-2">Who Can Use IP-SAKTI?</h2><div class="grid grid-cols-2 md:grid-cols-5 gap-4 mt-6"><div class="manuscript-card rounded-xl p-5 text-center">01<div class="font-bold mt-2 text-sm">Startups</div></div><div class="manuscript-card rounded-xl p-5 text-center">02<div class="font-bold mt-2 text-sm">Researchers</div></div><div class="manuscript-card rounded-xl p-5 text-center">03<div class="font-bold mt-2 text-sm">Students</div></div><div class="manuscript-card rounded-xl p-5 text-center">04<div class="font-bold mt-2 text-sm">MSMEs</div></div><div class="manuscript-card rounded-xl p-5 text-center"><div class="font-bold mt-2 text-sm">Ayurveda Innovators</div></div></div></div>
+<div class="manuscript-card rounded-2xl p-6"><div class="text-xs uppercase tracking-[0.22em] text-[#9E4624] font-bold">Evidence & knowledge</div><h2 class="font-serif-header text-2xl font-bold mt-2">Indian IP & Regulatory Context</h2><div class="space-y-3 mt-5"><div class="bg-[#EFEAE1] border-l-4 border-[#C58529] rounded-r-lg p-3 text-sm">📜 Patentability and prior-art considerations</div><div class="bg-[#EFEAE1] border-l-4 border-[#C58529] rounded-r-lg p-3 text-sm">🌿 Traditional Knowledge and Section 3(p)</div><div class="bg-[#EFEAE1] border-l-4 border-[#C58529] rounded-r-lg p-3 text-sm">🏭 AYUSH licensing and GMP considerations</div><div class="bg-[#EFEAE1] border-l-4 border-[#C58529] rounded-r-lg p-3 text-sm">🌱 Biodiversity and Access & Benefit Sharing</div></div></div>
+<div class="manuscript-card rounded-2xl p-6"><div class="text-xs uppercase tracking-[0.22em] text-[#9E4624] font-bold">Intelligent assistance</div><h2 class="font-serif-header text-2xl font-bold mt-2">Built Around Your Question</h2><div class="space-y-3 mt-5"><div class="bg-[#EFEAE1] border-l-4 border-[#4A6B5D] rounded-r-lg p-3 text-sm">🧠 ML question classification</div><div class="bg-[#EFEAE1] border-l-4 border-[#4A6B5D] rounded-r-lg p-3 text-sm">🔎 Retrieval-Augmented Generation</div><div class="bg-[#EFEAE1] border-l-4 border-[#4A6B5D] rounded-r-lg p-3 text-sm">📊 Confidence indication</div><div class="bg-[#EFEAE1] border-l-4 border-[#4A6B5D] rounded-r-lg p-3 text-sm">🔗 Source and citation display</div></div></div></div>
+<div class="mt-14"><div class="text-xs uppercase tracking-[0.28em] text-[#9E4624] font-semibold">Designed for</div><h2 class="font-serif-header text-3xl font-bold mt-2">Who Can Use IP-SAKTI?</h2><div class="grid grid-cols-2 md:grid-cols-5 gap-4 mt-6"><div class="manuscript-card rounded-xl p-5 text-center">🚀<div class="font-bold mt-2 text-sm">Startups</div></div><div class="manuscript-card rounded-xl p-5 text-center">🔬<div class="font-bold mt-2 text-sm">Researchers</div></div><div class="manuscript-card rounded-xl p-5 text-center">🎓<div class="font-bold mt-2 text-sm">Students</div></div><div class="manuscript-card rounded-xl p-5 text-center">🏢<div class="font-bold mt-2 text-sm">MSMEs</div></div><div class="manuscript-card rounded-xl p-5 text-center">🌿<div class="font-bold mt-2 text-sm">Ayurveda Innovators</div></div></div></div>
 <div class="mt-14 bg-[#2B2523] border-2 border-[#C58529] rounded-2xl p-7 md:p-9 text-[#F5F2EC] flex flex-col md:flex-row items-start md:items-center justify-between gap-6"><div><h2 class="font-serif-header text-2xl font-bold text-[#FFFDF8]">Ready to explore your idea?</h2><p class="text-sm text-[#EFEAE1]/65 mt-2">Start with a question and move toward relevant evidence and sources.</p></div><a href="/assistant" class="inline-flex items-center bg-[#D49A37] text-[#2B2523] font-bold px-5 py-3 rounded-lg no-underline">Start with AI Sahayak →</a></div>
 <div class="text-center text-xs text-[#2B2523]/55 mt-8 pt-5 border-t border-[#C58529]/30">IP-SAKTI Sahayak • ML Classification + RAG • Ayurvedic IP & Regulatory Guidance<br><br>This platform provides informational guidance and should not be treated as a final legal opinion.</div>
 </div></section>
@@ -347,4 +253,3 @@ const evidenceCopy = {
 </script>
 </body>
 </html>
-

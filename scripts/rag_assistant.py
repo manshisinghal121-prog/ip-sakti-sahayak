@@ -214,7 +214,7 @@ for herb_key, herb_info in HERBAL_KNOWLEDGE_BASE.items():
     herb_info["local_image_url"] = f"/assets/herbs/{local_name}.jpg"
 
 def detect_herb_visuals(user_query: str) -> Dict:
-    """Detects a known herb and defaults to Ashwagandha when none is named."""
+    """Detect a known herb without inventing one when none is named."""
     q_lower = user_query.lower()
     best_match = None
     best_alias_length = 0
@@ -431,20 +431,35 @@ def generate_rag_response(
         "WHO_Guidance": "WHO traditional medicine botanical quality safety GMP guidance"
     }
 
+    # Use the user's original wording first so exact legal references such as
+    # Section 3(p) are preserved. Then use the ML-routed query as a second
+    # retrieval pass for broader contextual evidence.
     rag_query = user_query + (" " + routing_terms[ml_category] if ml_category in routing_terms else "")
-    retrieved_chunks = query_legal_database(rag_query, top_k=3)
 
-    citations = []
-    for idx, chunk in enumerate(retrieved_chunks, 1):
-        citations.append({
-            "ref": f"Ref {idx}",
-            "document": chunk.get("document_title", "Source"),
-            "section": chunk.get("section", ""),
-            "page": chunk.get("page"),
-            "jurisdiction": chunk.get("jurisdiction", "India"),
-            "authority": chunk.get("authority", ""),
-            "snippet": chunk.get("content", "")
-        })
+    primary_chunks = query_legal_database(user_query, top_k=5)
+    routed_chunks = query_legal_database(rag_query, top_k=5) if rag_query != user_query else []
+
+    # Merge by chunk_id while preserving the primary (exact-query) ranking first.
+    # This prevents routing terms from pushing an exact legal provision out of
+    # the evidence set.
+    retrieved_chunks = []
+    seen_chunk_ids = set()
+
+    for chunk in primary_chunks + routed_chunks:
+        chunk_id = chunk.get("chunk_id") or (
+            chunk.get("document_title", ""),
+            chunk.get("section", ""),
+            chunk.get("page"),
+            chunk.get("content", "")[:120],
+        )
+        if chunk_id in seen_chunk_ids:
+            continue
+        seen_chunk_ids.add(chunk_id)
+        retrieved_chunks.append(chunk)
+
+    # Keep the evidence set compact for answer synthesis/citations.
+    retrieved_chunks = retrieved_chunks[:6]
+
 
     herb_visual = detect_herb_visuals(user_query)
     question_focus = detect_question_focus(user_query)
@@ -467,6 +482,76 @@ def generate_rag_response(
     if not relevant_chunks and retrieved_chunks:
         relevant_chunks = [retrieved_chunks[0]]
 
+    # Build clean citations from the evidence actually used for the answer.
+    # Keep the strongest passage from each source document so repeated chunks
+    # from the same document do not clutter the UI.
+    citation_by_document = {}
+
+    for chunk in relevant_chunks:
+        document = str(chunk.get("document_title", "Source") or "Source").strip()
+        document_key = document.lower()
+
+        score = float(chunk.get("relevance_score", 0) or 0)
+        exact_ref = float(chunk.get("exact_reference_score", 0) or 0)
+
+        existing = citation_by_document.get(document_key)
+        if existing is None:
+            citation_by_document[document_key] = chunk
+        else:
+            existing_score = float(existing.get("relevance_score", 0) or 0)
+            existing_exact = float(existing.get("exact_reference_score", 0) or 0)
+
+            if (exact_ref, score) > (existing_exact, existing_score):
+                citation_by_document[document_key] = chunk
+
+    def _source_type(chunk: Dict) -> str:
+        """Classify evidence without altering source metadata."""
+        title = str(chunk.get("document_title", "")).lower()
+        source = str(chunk.get("knowledge_source", "")).lower()
+
+        if any(term in title for term in [
+            "patent_act", "biodiversity_act", "drugs and cosmetics act",
+            "rule 158b", "patents act"
+        ]):
+            return "Primary legal text"
+
+        if "legal/regulatory" in source:
+            return "Legal / regulatory source"
+
+        if "wipo" in title or "who" in title:
+            return "International guidance"
+
+        if "tkdl" in title:
+            return "Traditional-knowledge reference"
+
+        return "Reference / guidance"
+
+    # Put exact-reference matches first, then strongest relevance.
+    citation_chunks = sorted(
+        citation_by_document.values(),
+        key=lambda chunk: (
+            float(chunk.get("exact_reference_score", 0) or 0),
+            float(chunk.get("relevance_score", 0) or 0),
+        ),
+        reverse=True,
+    )[:6]
+
+    citations = []
+    for idx, chunk in enumerate(citation_chunks, 1):
+        citations.append({
+            "ref": f"Ref {idx}",
+            "document": chunk.get("document_title", "Source"),
+            "section": chunk.get("section", ""),
+            "page": chunk.get("page"),
+            "jurisdiction": chunk.get("jurisdiction", "India"),
+            "authority": chunk.get("authority", ""),
+            "source_type": _source_type(chunk),
+            "relevance_score": round(
+                float(chunk.get("relevance_score", 0) or 0), 4
+            ),
+            "snippet": chunk.get("content", "")
+        })
+
     answer_text = synthesize_natural_answer(
         user_query=user_query,
         category=category,
@@ -477,7 +562,7 @@ def generate_rag_response(
 
     # Keep the answer conversational; citations are already exposed separately in the UI.
     if relevant_chunks:
-        answer_text += f"\n\nI checked {len(relevant_chunks)} relevant source passage(s) for this response."
+        answer_text += f"\n\nI checked {len(citations)} relevant source passage(s) for this response."
     else:
         answer_text += "\n\nI did not find a sufficiently relevant source passage for this question."
 

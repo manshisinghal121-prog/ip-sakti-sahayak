@@ -11,3 +11,7 @@ cohere
 python-dotenv
 pypdf
 markdown
+SQLAlchemy
+psycopg2-binary
+python-jose[cryptography]
+bcrypt

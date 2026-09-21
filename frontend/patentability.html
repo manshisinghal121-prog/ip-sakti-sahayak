@@ -1,7 +1,7 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet"><title>Patentability Checker — IP-SAKTI</title>  
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet"><title>Patentability Checker · IP-SAKTI</title>  
 <style id="ip-sakti-inline-theme">
 /* =========================================================
-   IP-SAKTI SAHAYAK — ORIGINAL AYURVEDIC VISUAL THEME
+   IP-SAKTI SAHAYAK · ORIGINAL AYURVEDIC VISUAL THEME
    Based on the uploaded original prototype.
    Do not replace this palette with the newer cool/green theme.
    ========================================================= */
@@ -34,11 +34,7 @@ body{
   font-family:'Plus Jakarta Sans',Arial,sans-serif;
   color:var(--ink);
   background-color:var(--cream);
-  background-image:
-    radial-gradient(var(--rust) .75px,transparent .75px),
-    radial-gradient(var(--rust) .75px,var(--cream) .75px);
-  background-size:30px 30px;
-  background-position:0 0,15px 15px;
+  background-image:none;
 }
 
 /* ---------- NAVIGATION ---------- */
@@ -98,10 +94,7 @@ body{
 .hero{
   position:relative;
   overflow:hidden;
-  background:
-    linear-gradient(rgba(255,253,248,.90),rgba(255,253,248,.90)),
-    radial-gradient(var(--rust) .75px,transparent .75px);
-  background-size:auto,30px 30px;
+  background:#fffdf8;
   border:2px solid rgba(158,70,36,.20);
   border-radius:18px;
   padding:42px;
@@ -324,9 +317,7 @@ textarea{
   display:flex;
   align-items:center;
   justify-content:center;
-  background:
-    linear-gradient(rgba(74,107,93,.16),rgba(43,37,35,.08)),
-    var(--warm-panel);
+  background:var(--warm-panel);
   font-size:64px;
   border-bottom:1px solid rgba(197,133,41,.30);
 }
@@ -408,7 +399,7 @@ textarea{
 
 
 /* Botanical decorations */
-/* IP-SAKTI — visible subtle botanical ornaments
+/* IP-SAKTI · visible subtle botanical ornaments
    Decorative only. Does not change cards, spacing, or layouts. */
 
 :root{
@@ -423,7 +414,7 @@ body{position:relative;}
 
 body > *{position:relative; z-index:2;}
 
-/* Large botanical silhouette — lower left */
+/* Large botanical silhouette · lower left */
 body::before{
   content:"";
   position:fixed;
@@ -440,7 +431,7 @@ body::before{
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 280 430'%3E%3Cg fill='none' stroke='%234A6B5D' stroke-width='4' stroke-linecap='round'%3E%3Cpath d='M70 425 C78 345 95 290 119 227 C138 176 153 119 151 42'/%3E%3Cpath d='M101 315 C70 282 47 245 28 207'/%3E%3Cpath d='M116 275 C151 245 181 214 201 182'/%3E%3Cpath d='M129 214 C100 184 78 151 63 118'/%3E%3Cpath d='M145 158 C176 136 198 109 210 77'/%3E%3C/g%3E%3Cg fill='%234A6B5D'%3E%3Cellipse cx='26' cy='201' rx='19' ry='9' transform='rotate(40 26 201)'/%3E%3Cellipse cx='52' cy='246' rx='22' ry='10' transform='rotate(42 52 246)'/%3E%3Cellipse cx='84' cy='174' rx='22' ry='10' transform='rotate(48 84 174)'/%3E%3Cellipse cx='72' cy='124' rx='21' ry='9' transform='rotate(55 72 124)'/%3E%3Cellipse cx='174' cy='231' rx='22' ry='10' transform='rotate(-38 174 231)'/%3E%3Cellipse cx='203' cy='180' rx='23' ry='10' transform='rotate(-40 203 180)'/%3E%3Cellipse cx='194' cy='121' rx='22' ry='9' transform='rotate(-40 194 121)'/%3E%3Cellipse cx='211' cy='73' rx='18' ry='8' transform='rotate(-52 211 73)'/%3E%3Cellipse cx='151' cy='43' rx='18' ry='8' transform='rotate(-8 151 43)'/%3E%3C/g%3E%3C/svg%3E");
 }
 
-/* Smaller leafy branch — upper right */
+/* Smaller leafy branch · upper right */
 body::after{
   content:"";
   position:fixed;
@@ -474,7 +465,7 @@ body::after{
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 120'%3E%3Cpath d='M18 111 C43 86 60 62 74 29' fill='none' stroke='%234A6B5D' stroke-width='3' stroke-linecap='round'/%3E%3Cg fill='%234A6B5D'%3E%3Cellipse cx='49' cy='73' rx='17' ry='7' transform='rotate(28 49 73)'/%3E%3Cellipse cx='65' cy='52' rx='16' ry='7' transform='rotate(-38 65 52)'/%3E%3Cellipse cx='77' cy='28' rx='15' ry='6' transform='rotate(30 77 28)'/%3E%3C/g%3E%3C/svg%3E");
 }
 
-/* Decorative leaf mark on cards — subtle */
+/* Decorative leaf mark on cards · subtle */
 .module-card,
 .tool,
 .capability-card,
@@ -502,4 +493,184 @@ nav{z-index:100 !important;}
 /* The botanical layer is intentionally decorative only. */
 
 </style>
-</head><body><nav class="nav"><div class="brand">IP-SAKTI SAHAYAK</div><a href="/">🏠 Home</a><a class="active" href="/patentability">⚖️ Patentability</a><a class="" href="/compliance">📋 Compliance</a><a class="" href="/herbs">🌿 Herb Library</a><a href="/assistant">🤖 AI Sahayak</a></nav><main class="page"><section class="hero"><div style="color:#D49A37;font-size:12px;font-weight:700;letter-spacing:.18em">PATENTABILITY WORKSPACE</div><h1>Patentability Checker</h1><p>Enter a specific formulation or invention question. The existing ML classifier will route the question to the patentability RAG pathway and return relevant sources.</p></section><section class="card"><div class="form-grid"><div class="field full"><label>Your invention / formulation question</label><textarea id="q" rows="4" placeholder="Example: Can I patent an Indian Ginseng formulation?"></textarea></div><div class="field"><label>Persona</label><select id="persona"><option value="innovator">Startup / Innovator</option><option value="practitioner">Practitioner / Vaidya</option><option value="exporter">Exporter / Regulatory Specialist</option></select></div><div class="field"><label>Language</label><select id="lang"><option value="en">English</option><option value="hi">Hindi</option></select></div></div><div style="margin-top:16px"><button class="btn" onclick="runCheck()">Run Patentability Analysis</button> <a class="btn secondary" href="/assistant">Ask AI Sahayak</a></div></section><section id="result" class="result"></section></main><script>async function runCheck(){const q=document.getElementById('q').value.trim();if(!q)return alert('Enter a question first.');const box=document.getElementById('result');box.innerHTML='<div class="card">⏳ Classifying and retrieving sources...</div>';try{const r=await fetch('/api/v1/query',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:q,persona:document.getElementById('persona').value,language:document.getElementById('lang').value})});const d=await r.json();const citations=(d.citations||[]).map(c=>`<li><b>${c.document}</b> — Section ${c.section}</li>`).join('');box.innerHTML=`<div class="card"><span class="pill">${d.ml_category}</span><div class="metric">${Number(d.ml_confidence||0).toFixed(2)}%</div><div class="muted">ML confidence · ${d.ml_confidence_level}</div><hr style="border:0;border-top:1px solid #C5852933;margin:18px 0"><h2>Assessment</h2><p>${escapeHtml(d.answer||'')}</p><h3>Relevant sources</h3><ul class="list">${citations||'<li>No citations returned.</li>'}</ul><div class="status">This is preliminary guidance, not a legal opinion or guarantee of patent grant.</div></div>`}catch(e){box.innerHTML=`<div class="card">Could not connect to backend: ${escapeHtml(e.message)}</div>`}}function escapeHtml(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}</script></body></html>
+
+<style id="ip-sakti-final-polish">
+/* Final product polish: editorial, grounded, non-vibecoded. */
+html, body { background-image:none !important; }
+.hero { background: #2D4A3E !important; }
+.hero::before, .hero::after { background-image:none !important; }
+* { transition: none !important; animation-duration: 0s !important; animation-delay: 0s !important; }
+.card, .manuscript-card, .module-card, .tool, .capability-card, .process-card, .herb-card { box-shadow:none !important; }
+.rounded-full { border-radius:6px !important; }
+.rounded-2xl { border-radius:8px !important; }
+.rounded-xl { border-radius:8px !important; }
+.rounded-lg { border-radius:6px !important; }
+[class*="hover:-translate"], [class*="hover:scale"] { transform:none !important; }
+</style>
+
+<style id="ip-sakti-final-visual-theme">
+/* FINAL VISUAL PASS — shared across the four product pages */
+:root{
+  --ip-cream:#F5F2EC;
+  --ip-paper:#FFFDF8;
+  --ip-panel:#EFEAE1;
+  --ip-ink:#2B2523;
+  --ip-green:#2D4A3E;
+  --ip-green-soft:#4A6B5D;
+  --ip-rust:#9E4624;
+  --ip-gold:#C58529;
+  --ip-line:rgba(197,133,41,.32);
+}
+html,body{background-color:var(--ip-cream)!important;}
+/* Remove the dotted/mandala-style page texture. Keep the botanical sprigs only. */
+html,body{background-image:none!important;}
+body{color:var(--ip-ink);}
+/* Shared navigation */
+.nav{background:#2B2523!important;color:#F5F2EC!important;border-bottom:2px solid #C58529!important;}
+.nav a,.nav .brand{color:#F5F2EC!important;}
+.nav a:hover,.nav a.active{color:#D49A37!important;}
+/* Light editorial hero used by the checker/library pages */
+.hero{background:#FFFDF8!important;color:var(--ip-ink)!important;border:1px solid rgba(158,70,36,.20)!important;box-shadow:0 4px 18px rgba(43,37,35,.06)!important;}
+.hero h1,.hero h2{color:var(--ip-green)!important;}
+.hero p{color:rgba(43,37,35,.68)!important;}
+.hero .pill,.hero .eyebrow,.hero-label,.hero-kicker{color:var(--ip-rust)!important;}
+/* Do not use dark green/brown hero blocks or dark hero text on the light pages. */
+.section-title,.section-heading{color:var(--ip-green);}
+/* Clean, restrained cards */
+.card,.form,.search-card,.herb-card,.module-card,.tool,.capability-card,.process-card{background:#FFFDF8!important;}
+</style>
+
+<style id="ip-sakti-patentability-final">
+.page{background:transparent!important;}
+.hero{padding:42px!important;border-radius:18px!important;}
+.hero h1{font-family:Georgia,'Times New Roman',serif!important;font-size:42px!important;line-height:1.15!important;}
+</style>
+
+
+<style id="ipsakti-shared-final-update">
+:root{
+  --ip-cream:#F5F2EC;
+  --ip-paper:#FFFDF8;
+  --ip-panel:#EFEAE1;
+  --ip-ink:#2B2523;
+  --ip-green:#2D4A3E;
+  --ip-green-soft:#4A6B5D;
+  --ip-rust:#9E4624;
+  --ip-gold:#C58529;
+  --ip-gold-bright:#D49A37;
+}
+html,body{background:#F5F2EC!important;color:#2B2523!important;}
+/* Shared IP-SAKTI navigation */
+.ipsakti-top-nav{
+  position:fixed!important;top:0!important;left:0!important;right:0!important;
+  z-index:1000!important;min-height:48px;box-sizing:border-box;
+  padding:7px 22px;display:flex;align-items:center;gap:22px;
+  background:#2B2523!important;border-bottom:2px solid #C58529!important;
+  font-family:'Plus Jakarta Sans',Arial,sans-serif;
+}
+.ipsakti-brand{
+  display:flex;align-items:center;gap:9px;margin-right:auto;
+  color:#FFFDF8!important;text-decoration:none!important;
+}
+.ipsakti-brand-mark{width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:#D49A37;font-size:22px;}
+.ipsakti-brand strong{display:block;font-family:Georgia,'Times New Roman',serif;font-size:15px;line-height:1.05;letter-spacing:.02em;}
+.ipsakti-brand small{display:block;color:#D49A37;font-size:8px;line-height:1.2;margin-top:2px;}
+.ipsakti-nav-links{display:flex;align-items:center;gap:24px;}
+.ipsakti-nav-links a{color:#F5F2EC!important;text-decoration:none!important;font-size:11px;font-weight:600;padding:8px 0;border-bottom:2px solid transparent;}
+.ipsakti-nav-links a:hover,.ipsakti-nav-links a.active{color:#D49A37!important;border-bottom-color:#D49A37;}
+/* Botanical side ornament */
+.ipsakti-botanical-side{
+  position:fixed;left:0;top:48px;width:235px;height:calc(100vh - 48px);
+  pointer-events:none;z-index:1;opacity:.45;
+  background:
+    radial-gradient(circle at 48px 165px,transparent 0 30px,rgba(197,133,41,.20) 31px 32px,transparent 33px),
+    radial-gradient(circle at 48px 165px,transparent 0 58px,rgba(197,133,41,.14) 59px 60px,transparent 61px),
+    radial-gradient(circle at 48px 165px,transparent 0 88px,rgba(197,133,41,.10) 89px 90px,transparent 91px),
+    linear-gradient(120deg,transparent 46%,rgba(74,107,93,.09) 47%,transparent 48%);
+}
+.ipsakti-page-content{position:relative;z-index:2;}
+.ipsakti-editorial-hero{
+  background:#FFFDF8!important;color:#2B2523!important;
+  border:1px solid rgba(197,133,41,.38)!important;
+  border-radius:18px!important;
+  box-shadow:0 5px 18px rgba(43,37,35,.07)!important;
+}
+.ipsakti-editorial-hero h1,
+.ipsakti-editorial-hero h2{color:#2D4A3E!important;}
+.ipsakti-editorial-hero p{color:rgba(43,37,35,.68)!important;}
+@media(max-width:760px){
+  .ipsakti-top-nav{padding:7px 12px;gap:10px;}
+  .ipsakti-nav-links{gap:10px;}
+  .ipsakti-nav-links a{font-size:9px;}
+  .ipsakti-brand strong{font-size:12px;}
+  .ipsakti-brand small{display:none;}
+}
+</style>
+<style id="ipsakti-patentability-final-update">
+body{padding-top:48px!important;}
+.page{padding-top:32px!important;}
+.hero{
+  background:#FFFDF8!important;
+  border:1px solid rgba(197,133,41,.38)!important;
+  border-radius:18px!important;
+  box-shadow:0 5px 18px rgba(43,37,35,.07)!important;
+}
+.hero h1{color:#2D4A3E!important;}
+.form,.card{background:#FFFDF8!important;}
+</style>
+</head><body><nav class="ipsakti-top-nav" aria-label="Primary navigation">
+  <a class="ipsakti-brand" href="/">
+    <span class="ipsakti-brand-mark">𑁍</span>
+    <span><strong>IP-SAKTI SAHAYAK</strong><small>Ayurvedic IP • Regulatory • AI Assistance</small></span>
+  </a>
+  <span class="ipsakti-nav-links">
+    <a href="/">Home</a>
+    <a class="active" href="/patentability">Patentability</a>
+    <a href="/compliance">Compliance</a>
+    <a href="/herbs">Herb Library</a>
+    <a href="/assistant">AI Sahayak</a>
+  </span>
+</nav>
+<div class="ipsakti-botanical-side" aria-hidden="true"></div>
+<div class="ipsakti-page-content"><main class="page"><section class="hero ipsakti-editorial-hero"><div style="color:#D49A37;font-size:12px;font-weight:700;letter-spacing:.18em">PATENTABILITY WORKSPACE</div><h1>Patentability Checker</h1><p>Enter a specific formulation or invention question. The existing ML classifier will route the question to the patentability RAG pathway and return relevant sources.</p></section><section class="card"><div class="form-grid"><div class="field full"><label>Your invention / formulation question</label><textarea id="q" rows="4" placeholder="Example: Can I patent an Indian Ginseng formulation?"></textarea></div><div class="field"><label>Persona</label><select id="persona"><option value="innovator">Startup / Innovator</option><option value="practitioner">Practitioner / Vaidya</option><option value="exporter">Exporter / Regulatory Specialist</option></select></div><div class="field"><label>Language</label><select id="lang"><option value="en">English</option><option value="hi">Hindi</option></select></div></div><div style="margin-top:16px"><button class="btn" onclick="runCheck()">Run Patentability Analysis</button> <a class="btn secondary" href="/assistant">Ask AI Sahayak</a></div></section><section id="result" class="result"></section></main></div><script>async function runCheck(){const q=document.getElementById('q').value.trim();if(!q)return alert('Enter a question first.');const box=document.getElementById('result');box.innerHTML='<div class="card">⏳ Classifying and retrieving sources...</div>';try{const r=await fetch('/api/v1/query',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:q,persona:document.getElementById('persona').value,language:document.getElementById('lang').value})});const d=await r.json();const citations=(d.citations||[]).map(c=>`<li><b>${c.document}</b> · Section ${c.section}</li>`).join('');box.innerHTML=`<div class="card"><span class="pill">${d.ml_category}</span><div class="metric">${Number(d.ml_confidence||0).toFixed(2)}%</div><div class="muted">ML confidence · ${d.ml_confidence_level}</div><hr style="border:0;border-top:1px solid #C5852933;margin:18px 0"><h2>Assessment</h2><p>${escapeHtml(d.answer||'')}</p><h3>Relevant sources</h3><ul class="list">${citations||'<li>No citations returned.</li>'}</ul><div class="status">This is preliminary guidance, not a legal opinion or guarantee of patent grant.</div></div>`}catch(e){box.innerHTML=`<div class="card">Could not connect to backend: ${escapeHtml(e.message)}</div>`}}function escapeHtml(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}</script></body></html>
+
+<style id="ip-sakti-direct-mandala-fix">
+/* DIRECT FINAL VISUAL FIX — actual page code, no mockup */
+html,body{background:#F5F2EC!important;background-image:none!important;}
+body{position:relative!important;}
+body::before{
+  content:"";
+  position:fixed;
+  left:0;
+  top:48px;
+  width:285px;
+  height:calc(100vh - 48px);
+  background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzNjAgOTAwIj48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNDNTg1MjkiIHN0cm9rZS13aWR0aD0iMi4xIiBvcGFjaXR5PSIwLjMwIj48Y2lyY2xlIGN4PSIxMTgiIGN5PSIyMzUiIHI9IjExMiIvPjxjaXJjbGUgY3g9IjExOCIgY3k9IjIzNSIgcj0iOTIiLz48Y2lyY2xlIGN4PSIxMTgiIGN5PSIyMzUiIHI9IjcyIi8+PGNpcmNsZSBjeD0iMTE4IiBjeT0iMjM1IiByPSI1MiIvPjxjaXJjbGUgY3g9IjExOCIgY3k9IjIzNSIgcj0iMzAiLz48ZWxsaXBzZSBjeD0iMTE4IiBjeT0iMjM1IiByeD0iMjgiIHJ5PSIxMTIiIHRyYW5zZm9ybT0icm90YXRlKDAuMCAxMTggMjM1KSIvPjxlbGxpcHNlIGN4PSIxMTgiIGN5PSIyMzUiIHJ4PSIyOCIgcnk9IjExMiIgdHJhbnNmb3JtPSJyb3RhdGUoMjIuNSAxMTggMjM1KSIvPjxlbGxpcHNlIGN4PSIxMTgiIGN5PSIyMzUiIHJ4PSIyOCIgcnk9IjExMiIgdHJhbnNmb3JtPSJyb3RhdGUoNDUuMCAxMTggMjM1KSIvPjxlbGxpcHNlIGN4PSIxMTgiIGN5PSIyMzUiIHJ4PSIyOCIgcnk9IjExMiIgdHJhbnNmb3JtPSJyb3RhdGUoNjcuNSAxMTggMjM1KSIvPjxlbGxpcHNlIGN4PSIxMTgiIGN5PSIyMzUiIHJ4PSIyOCIgcnk9IjExMiIgdHJhbnNmb3JtPSJyb3RhdGUoOTAuMCAxMTggMjM1KSIvPjxlbGxpcHNlIGN4PSIxMTgiIGN5PSIyMzUiIHJ4PSIyOCIgcnk9IjExMiIgdHJhbnNmb3JtPSJyb3RhdGUoMTEyLjUgMTE4IDIzNSkiLz48ZWxsaXBzZSBjeD0iMTE4IiBjeT0iMjM1IiByeD0iMjgiIHJ5PSIxMTIiIHRyYW5zZm9ybT0icm90YXRlKDEzNS4wIDExOCAyMzUpIi8+PGVsbGlwc2UgY3g9IjExOCIgY3k9IjIzNSIgcng9IjI4IiByeT0iMTEyIiB0cmFuc2Zvcm09InJvdGF0ZSgxNTcuNSAxMTggMjM1KSIvPjxlbGxpcHNlIGN4PSIxMTgiIGN5PSIyMzUiIHJ4PSIyOCIgcnk9IjExMiIgdHJhbnNmb3JtPSJyb3RhdGUoMTgwLjAgMTE4IDIzNSkiLz48ZWxsaXBzZSBjeD0iMTE4IiBjeT0iMjM1IiByeD0iMjgiIHJ5PSIxMTIiIHRyYW5zZm9ybT0icm90YXRlKDIwMi41IDExOCAyMzUpIi8+PGVsbGlwc2UgY3g9IjExOCIgY3k9IjIzNSIgcng9IjI4IiByeT0iMTEyIiB0cmFuc2Zvcm09InJvdGF0ZSgyMjUuMCAxMTggMjM1KSIvPjxlbGxpcHNlIGN4PSIxMTgiIGN5PSIyMzUiIHJ4PSIyOCIgcnk9IjExMiIgdHJhbnNmb3JtPSJyb3RhdGUoMjQ3LjUgMTE4IDIzNSkiLz48ZWxsaXBzZSBjeD0iMTE4IiBjeT0iMjM1IiByeD0iMjgiIHJ5PSIxMTIiIHRyYW5zZm9ybT0icm90YXRlKDI3MC4wIDExOCAyMzUpIi8+PGVsbGlwc2UgY3g9IjExOCIgY3k9IjIzNSIgcng9IjI4IiByeT0iMTEyIiB0cmFuc2Zvcm09InJvdGF0ZSgyOTIuNSAxMTggMjM1KSIvPjxlbGxpcHNlIGN4PSIxMTgiIGN5PSIyMzUiIHJ4PSIyOCIgcnk9IjExMiIgdHJhbnNmb3JtPSJyb3RhdGUoMzE1LjAgMTE4IDIzNSkiLz48ZWxsaXBzZSBjeD0iMTE4IiBjeT0iMjM1IiByeD0iMjgiIHJ5PSIxMTIiIHRyYW5zZm9ybT0icm90YXRlKDMzNy41IDExOCAyMzUpIi8+PGVsbGlwc2UgY3g9IjExOCIgY3k9IjIzNSIgcng9IjE4IiByeT0iNzAiIHRyYW5zZm9ybT0icm90YXRlKDAgMTE4IDIzNSkiLz48ZWxsaXBzZSBjeD0iMTE4IiBjeT0iMjM1IiByeD0iMTgiIHJ5PSI3MCIgdHJhbnNmb3JtPSJyb3RhdGUoMzAgMTE4IDIzNSkiLz48ZWxsaXBzZSBjeD0iMTE4IiBjeT0iMjM1IiByeD0iMTgiIHJ5PSI3MCIgdHJhbnNmb3JtPSJyb3RhdGUoNjAgMTE4IDIzNSkiLz48ZWxsaXBzZSBjeD0iMTE4IiBjeT0iMjM1IiByeD0iMTgiIHJ5PSI3MCIgdHJhbnNmb3JtPSJyb3RhdGUoOTAgMTE4IDIzNSkiLz48ZWxsaXBzZSBjeD0iMTE4IiBjeT0iMjM1IiByeD0iMTgiIHJ5PSI3MCIgdHJhbnNmb3JtPSJyb3RhdGUoMTIwIDExOCAyMzUpIi8+PGVsbGlwc2UgY3g9IjExOCIgY3k9IjIzNSIgcng9IjE4IiByeT0iNzAiIHRyYW5zZm9ybT0icm90YXRlKDE1MCAxMTggMjM1KSIvPjxlbGxpcHNlIGN4PSIxMTgiIGN5PSIyMzUiIHJ4PSIxOCIgcnk9IjcwIiB0cmFuc2Zvcm09InJvdGF0ZSgxODAgMTE4IDIzNSkiLz48ZWxsaXBzZSBjeD0iMTE4IiBjeT0iMjM1IiByeD0iMTgiIHJ5PSI3MCIgdHJhbnNmb3JtPSJyb3RhdGUoMjEwIDExOCAyMzUpIi8+PGVsbGlwc2UgY3g9IjExOCIgY3k9IjIzNSIgcng9IjE4IiByeT0iNzAiIHRyYW5zZm9ybT0icm90YXRlKDI0MCAxMTggMjM1KSIvPjxlbGxpcHNlIGN4PSIxMTgiIGN5PSIyMzUiIHJ4PSIxOCIgcnk9IjcwIiB0cmFuc2Zvcm09InJvdGF0ZSgyNzAgMTE4IDIzNSkiLz48ZWxsaXBzZSBjeD0iMTE4IiBjeT0iMjM1IiByeD0iMTgiIHJ5PSI3MCIgdHJhbnNmb3JtPSJyb3RhdGUoMzAwIDExOCAyMzUpIi8+PGVsbGlwc2UgY3g9IjExOCIgY3k9IjIzNSIgcng9IjE4IiByeT0iNzAiIHRyYW5zZm9ybT0icm90YXRlKDMzMCAxMTggMjM1KSIvPjxwYXRoIGQ9Ik0xNDguMCAyMzUuMCBMMjMwLjAgMjM1LjAiLz48cGF0aCBkPSJNMTM5LjIgMjU2LjIgTDE5Ny4yIDMxNC4yIi8+PHBhdGggZD0iTTExOC4wIDI2NS4wIEwxMTguMCAzNDcuMCIvPjxwYXRoIGQ9Ik05Ni44IDI1Ni4yIEwzOC44IDMxNC4yIi8+PHBhdGggZD0iTTg4LjAgMjM1LjAgTDYuMCAyMzUuMCIvPjxwYXRoIGQ9Ik05Ni44IDIxMy44IEwzOC44IDE1NS44Ii8+PHBhdGggZD0iTTExOC4wIDIwNS4wIEwxMTguMCAxMjMuMCIvPjxwYXRoIGQ9Ik0xMzkuMiAyMTMuOCBMMTk3LjIgMTU1LjgiLz48L2c+PGcgZmlsbD0iIzRBNkI1RCIgb3BhY2l0eT0iMC4xNiI+PGVsbGlwc2UgY3g9IjcyIiBjeT0iNDU1IiByeD0iNDUiIHJ5PSIxNiIgdHJhbnNmb3JtPSJyb3RhdGUoLTI4IDcyIDQ1NSkiLz48ZWxsaXBzZSBjeD0iOTYiIGN5PSI1MDAiIHJ4PSI0NiIgcnk9IjE2IiB0cmFuc2Zvcm09InJvdGF0ZSgyMiA5NiA1MDApIi8+PGVsbGlwc2UgY3g9IjY4IiBjeT0iNTU1IiByeD0iNDgiIHJ5PSIxNiIgdHJhbnNmb3JtPSJyb3RhdGUoLTI4IDY4IDU1NSkiLz48ZWxsaXBzZSBjeD0iMTAyIiBjeT0iNjE1IiByeD0iNTAiIHJ5PSIxNiIgdHJhbnNmb3JtPSJyb3RhdGUoMjIgMTAyIDYxNSkiLz48ZWxsaXBzZSBjeD0iNzAiIGN5PSI2ODAiIHJ4PSI0OCIgcnk9IjE2IiB0cmFuc2Zvcm09InJvdGF0ZSgtMjUgNzAgNjgwKSIvPjxlbGxpcHNlIGN4PSIxMDUiIGN5PSI3NDAiIHJ4PSI0OCIgcnk9IjE2IiB0cmFuc2Zvcm09InJvdGF0ZSgyMiAxMDUgNzQwKSIvPjxlbGxpcHNlIGN4PSI3MiIgY3k9IjgwNSIgcng9IjQ0IiByeT0iMTYiIHRyYW5zZm9ybT0icm90YXRlKC0yNSA3MiA4MDUpIi8+PHBhdGggZD0iTTkyIDQyMCBDODIgNTIwIDg4IDY1MCA5MiA4MzUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzRBNkI1RCIgc3Ryb2tlLXdpZHRoPSI1IiBvcGFjaXR5PSIwLjM1Ii8+PC9nPjwvc3ZnPg==");
+  background-repeat:no-repeat;
+  background-position:left 0 top 0;
+  background-size:285px 760px;
+  pointer-events:none;
+  z-index:0!important;
+}
+/* Keep the artwork visible beside the content without covering controls. */
+.nav,#workspaceHeader,#workspaceMain,#welcomeScreen,.page,main,.hero,.card,.library-toolbar,.herb-grid,.footer{position:relative;z-index:1;}
+/* Stronger, clean mandala on the three editorial pages. */
+.page{margin-left:190px!important;max-width:calc(100% - 220px)!important;}
+/* Never show an accidental search overlay/text in the AI workspace. */
+#workspaceMain [aria-label="Search"],#workspaceMain [title="Search"],#workspaceMain .search-overlay,body > .search-overlay{display:none!important;}
+/* AI right inspector: clean, compact, no overflow into the left pane. */
+#workspaceMain{position:relative!important;display:flex!important;gap:16px!important;padding:20px 24px!important;overflow:hidden!important;}
+#workspaceMain>section:first-child{flex:1 1 auto!important;min-width:0!important;}
+#workspaceMain>section:nth-child(2){flex:0 0 360px!important;width:360px!important;min-width:320px!important;max-width:360px!important;box-sizing:border-box!important;overflow-y:auto!important;overflow-x:hidden!important;}
+@media(max-width:900px){
+  body::before{width:190px;background-size:190px 620px;opacity:.75;}
+  .page{margin-left:145px!important;max-width:calc(100% - 165px)!important;}
+  #workspaceMain>section:nth-child(2){flex-basis:300px!important;width:300px!important;min-width:280px!important;}
+}
+@media(max-width:720px){
+  body::before{width:130px;background-size:130px 500px;opacity:.65;}
+  .page{margin-left:92px!important;max-width:calc(100% - 105px)!important;}
+  #workspaceMain{display:block!important;overflow-y:auto!important;}
+  #workspaceMain>section:nth-child(2){width:100%!important;max-width:none!important;margin-top:14px!important;}
+}
+</style>
