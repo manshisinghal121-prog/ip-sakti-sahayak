@@ -288,9 +288,22 @@ def herbs_page():
         os.path.join(FRONTEND_DIR, "herbs.html")
     )
 
+@app.get("/login")
+async def login_page():
+    return FileResponse(
+        os.path.join(FRONTEND_DIR, "login.html")
+    )
+
+
+@app.get("/register")
+async def register_page():
+    return FileResponse(
+        os.path.join(FRONTEND_DIR, "register.html")
+    )
+
 
 @app.get("/assistant")
-def assistant_page():
+async def assistant_page():
     return FileResponse(
         os.path.join(FRONTEND_DIR, "ai_assistant.html")
     )
