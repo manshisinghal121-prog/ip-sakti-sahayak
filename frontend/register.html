@@ -1,107 +1,487 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>IP-SAKTI Sahayak — Register</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>body{margin:0;min-height:100vh;font-family:'Plus Jakarta Sans',sans-serif;background:#F5F2EC;color:#2B2523;display:grid;place-items:center}.shell{width:min(440px,92vw);background:#FFFDF8;border:1px solid rgba(197,133,41,.45);border-radius:20px;box-shadow:0 12px 35px rgba(43,37,35,.12);padding:30px}.brand{text-align:center;color:#2D4A3E;font-family:Cinzel,Georgia,serif;font-weight:700;font-size:24px}.sub{text-align:center;color:#9E4624;font-size:12px;margin:7px 0 25px}.field{margin:14px 0}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:6px}.field input{box-sizing:border-box;width:100%;padding:12px;border:1px solid rgba(197,133,41,.4);border-radius:10px;background:#F5F2EC}.btn{width:100%;border:0;border-radius:10px;padding:12px;background:#9E4624;color:white;font-weight:700;cursor:pointer}.btn:disabled{opacity:.6}.message{display:none;margin:12px 0;padding:10px;border-radius:9px;font-size:12px}.links{text-align:center;margin-top:17px;font-size:12px}.links a{color:#9E4624;font-weight:700;text-decoration:none}.langbar{display:flex;justify-content:flex-end;margin-bottom:12px}.langbar select{padding:6px;border:1px solid #C58529;border-radius:8px;background:#FFFDF8}</style><script src="/frontend/auth.js"></script><script src="/frontend/i18n.js"></script>
-</head>
-<body><main class="shell"><div class="langbar"><select id="registerLanguage"></select></div><div class="brand">𑁍 IP-SAKTI Sahayak</div><div class="sub">Create your IP-SAKTI account</div><div id="message" class="message"></div><form id="registerForm"><div class="field"><label>Username</label><input id="username" autocomplete="username" minlength="3" required></div><div class="field"><label>Email</label><input id="email" type="email" autocomplete="email" required></div><div class="field"><label>Password</label><input id="password" type="password" autocomplete="new-password" minlength="8" required></div><button id="registerBtn" class="btn">Create account</button></form><div class="links">Already registered? <a href="/login">Sign in</a></div>
-</main>
-<script>
-const lang = document.getElementById('registerLanguage');
+<html lang="en">
 
-(window.IPSAKTI_I18N?.LANGS || []).forEach(([v, n]) => {
-    const o = document.createElement('option');
-    o.value = v;
-    o.textContent = n;
-    lang.appendChild(o);
-});
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-lang.value = localStorage.getItem('ipSaktiLanguage') || 'en';
+    <title>IP-SAKTI Sahayak — Register</title>
 
-lang.onchange = () => {
-    localStorage.setItem('ipSaktiLanguage', lang.value);
-    location.reload();
-};
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
 
-
-/* =========================
-   REGISTRATION
-========================= */
-
-document.getElementById('registerForm').addEventListener('submit', async function(e) {
-
-    e.preventDefault();
-
-    const btn = document.getElementById('registerBtn');
-    const message = document.getElementById('message');
-
-    const username = document.getElementById('username').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-
-    message.style.display = 'none';
-
-    if (!username || !email || !password) {
-        message.textContent = 'Please fill all fields.';
-        message.style.display = 'block';
-        return;
-    }
-
-    btn.disabled = true;
-    btn.textContent = 'Creating account...';
-
-    try {
-
-        const response = await fetch('/api/v1/auth/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                username: username,
-                email: email,
-                password: password
-            })
-        });
-
-        const data = await response.json().catch(() => ({}));
-
-        if (!response.ok) {
-            throw new Error(
-                data.detail ||
-                data.message ||
-                'Registration failed.'
-            );
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #F5F2EC;
+            color: #2B2523;
+            display: grid;
+            place-items: center;
         }
-        console.log("REGISTER SUCCESS", data);
 
-setTimeout(() => {
-    console.log("REDIRECTING TO LOGIN");
-    window.location.href = '/login';
-}, 800);
+        .shell {
+            width: min(440px, 92vw);
+            background: #FFFDF8;
+            border: 1px solid rgba(197, 133, 41, .45);
+            border-radius: 20px;
+            box-shadow: 0 12px 35px rgba(43, 37, 35, .12);
+            padding: 30px;
+        }
 
-        message.textContent = 'Account created successfully. Redirecting to login...';
-        message.style.display = 'block';
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
 
-        /*
-         * Wait briefly so user can see success message
-         * then go to login page.
-         */
-        setTimeout(() => {
-            window.location.href = '/login';
-        }, 800);
+        .langbar select {
+            padding: 6px;
+            border: 1px solid #C58529;
+            border-radius: 8px;
+            background: #FFFDF8;
+        }
 
-    } catch (error) {
+        .logout-btn {
+            border: 1px solid #9E4624;
+            background: transparent;
+            color: #9E4624;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
 
-        console.error('Registration error:', error);
+        .logout-btn:hover {
+            background: #9E4624;
+            color: white;
+        }
 
-        message.textContent = error.message || 'Registration failed.';
-        message.style.display = 'block';
+        .brand {
+            text-align: center;
+            color: #2D4A3E;
+            font-family: Cinzel, Georgia, serif;
+            font-weight: 700;
+            font-size: 24px;
+        }
 
-        btn.disabled = false;
-        btn.textContent = 'Create account';
-    }
+        .sub {
+            text-align: center;
+            color: #9E4624;
+            font-size: 12px;
+            margin: 7px 0 25px;
+        }
 
-});
-</script>
+        .field {
+            margin: 14px 0;
+        }
+
+        .field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .field input {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(197, 133, 41, .4);
+            border-radius: 10px;
+            background: #F5F2EC;
+        }
+
+        .btn {
+            width: 100%;
+            border: 0;
+            border-radius: 10px;
+            padding: 12px;
+            background: #9E4624;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        .message {
+            display: none;
+            margin: 12px 0;
+            padding: 10px;
+            border-radius: 9px;
+            font-size: 12px;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 17px;
+            font-size: 12px;
+        }
+
+        .links a {
+            color: #9E4624;
+            font-weight: 700;
+            text-decoration: none;
+        }
+    </style>
+
+    <script src="/frontend/auth.js"></script>
+    <script src="/frontend/i18n.js"></script>
+
+</head>
+
+<body>
+
+    <main class="shell">
+
+        <!-- TOP BAR -->
+        <div class="topbar">
+
+            <div class="langbar">
+                <select id="registerLanguage"></select>
+            </div>
+
+            <button
+                type="button"
+                id="logoutBtn"
+                class="logout-btn"
+            >
+                Logout
+            </button>
+
+        </div>
+
+
+        <!-- BRAND -->
+        <div class="brand">
+            𑁍 IP-SAKTI Sahayak
+        </div>
+
+        <div class="sub">
+            Create your IP-SAKTI account
+        </div>
+
+
+        <!-- MESSAGE -->
+        <div id="message" class="message"></div>
+
+
+        <!-- REGISTER FORM -->
+        <form id="registerForm">
+
+            <div class="field">
+                <label for="username">
+                    Username
+                </label>
+
+                <input
+                    id="username"
+                    autocomplete="username"
+                    minlength="3"
+                    required
+                >
+            </div>
+
+
+            <div class="field">
+                <label for="email">
+                    Email
+                </label>
+
+                <input
+                    id="email"
+                    type="email"
+                    autocomplete="email"
+                    required
+                >
+            </div>
+
+
+            <div class="field">
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    id="password"
+                    type="password"
+                    autocomplete="new-password"
+                    minlength="8"
+                    required
+                >
+            </div>
+
+
+            <button
+                id="registerBtn"
+                class="btn"
+                type="submit"
+            >
+                Create account
+            </button>
+
+        </form>
+
+
+        <div class="links">
+            Already registered?
+            <a href="/login">
+                Sign in
+            </a>
+        </div>
+
+    </main>
+
+
+    <script>
+
+        /* =========================
+           LANGUAGE
+        ========================= */
+
+        const lang =
+            document.getElementById('registerLanguage');
+
+        (window.IPSAKTI_I18N?.LANGS || []).forEach(
+            ([value, name]) => {
+
+                const option =
+                    document.createElement('option');
+
+                option.value = value;
+                option.textContent = name;
+
+                lang.appendChild(option);
+            }
+        );
+
+        lang.value =
+            localStorage.getItem('ipSaktiLanguage') || 'en';
+
+        lang.onchange = () => {
+
+            localStorage.setItem(
+                'ipSaktiLanguage',
+                lang.value
+            );
+
+            location.reload();
+        };
+
+
+        /* =========================
+           LOGOUT
+        ========================= */
+
+        document
+            .getElementById('logoutBtn')
+            .addEventListener('click', () => {
+
+                localStorage.removeItem(
+                    'ipSaktiAccessToken'
+                );
+
+                localStorage.removeItem(
+                    'ipSaktiUsername'
+                );
+
+                window.location.href = '/login';
+            });
+
+
+        /* =========================
+           REGISTRATION
+        ========================= */
+
+        document
+            .getElementById('registerForm')
+            .addEventListener(
+                'submit',
+                async function (e) {
+
+                    e.preventDefault();
+
+                    const btn =
+                        document.getElementById(
+                            'registerBtn'
+                        );
+
+                    const message =
+                        document.getElementById(
+                            'message'
+                        );
+
+
+                    const username =
+                        document
+                            .getElementById('username')
+                            .value
+                            .trim();
+
+                    const email =
+                        document
+                            .getElementById('email')
+                            .value
+                            .trim();
+
+                    const password =
+                        document
+                            .getElementById('password')
+                            .value;
+
+
+                    message.style.display = 'none';
+
+
+                    /* CHECK FIELDS */
+
+                    if (
+                        !username ||
+                        !email ||
+                        !password
+                    ) {
+
+                        message.textContent =
+                            'Please fill all fields.';
+
+                        message.style.display =
+                            'block';
+
+                        return;
+                    }
+
+
+                    /* DISABLE BUTTON */
+
+                    btn.disabled = true;
+
+                    btn.textContent =
+                        'Creating account...';
+
+
+                    try {
+
+                        /* SEND REGISTRATION REQUEST */
+
+                        const response =
+                            await fetch(
+                                '/api/v1/auth/register',
+                                {
+                                    method: 'POST',
+
+                                    headers: {
+                                        'Content-Type':
+                                            'application/json'
+                                    },
+
+                                    body: JSON.stringify({
+                                        username:
+                                            username,
+
+                                        email:
+                                            email,
+
+                                        password:
+                                            password
+                                    })
+                                }
+                            );
+
+
+                        const data =
+                            await response
+                                .json()
+                                .catch(() => ({}));
+
+
+                        /* CHECK RESPONSE */
+
+                        if (!response.ok) {
+
+                            throw new Error(
+                                data.detail ||
+                                data.message ||
+                                'Registration failed.'
+                            );
+                        }
+
+
+                        /* SUCCESS */
+
+                        console.log(
+                            'REGISTER SUCCESS:',
+                            data
+                        );
+
+
+                        message.textContent =
+                            'Account created successfully. Redirecting to login...';
+
+                        message.style.display =
+                            'block';
+
+                        message.style.background =
+                            '#2D4A3E';
+
+                        message.style.color =
+                            '#FFFFFF';
+
+
+                        /*
+                         * REDIRECT TO LOGIN
+                         * ONLY ONE REDIRECT
+                         */
+
+                        setTimeout(() => {
+
+                            window.location.href =
+                                '/login';
+
+                        }, 800);
+
+
+                    } catch (error) {
+
+                        console.error(
+                            'Registration error:',
+                            error
+                        );
+
+
+                        message.textContent =
+                            error.message ||
+                            'Registration failed.';
+
+                        message.style.display =
+                            'block';
+
+                        message.style.background =
+                            '#9E4624';
+
+                        message.style.color =
+                            '#FFFFFF';
+
+
+                        btn.disabled = false;
+
+                        btn.textContent =
+                            'Create account';
+                    }
+
+                }
+            );
+
+    </script>
+
 </body>
+
 </html>
