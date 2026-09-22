@@ -1,110 +1,522 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>IP-SAKTI Sahayak — Login</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-body{margin:0;
-    min-height:100vh;
-    font-family:'Plus Jakarta Sans',sans-serif;
-background:#F5F2EC;color:#2B2523;display:grid;
-place-items:center}.shell{width:min(440px,92vw);
-background:#FFFDF8;border:1px solid rgba(197,133,41,.45);border-radius:20px;box-shadow:0 12px 35px rgba(43,37,35,.12);padding:30px}.brand{text-align:center;color:#2D4A3E;
-font-family:Cinzel,Georgia,serif;font-weight:700;font-size:24px}.sub{text-align:center;color:#9E4624;
-font-size:12px;margin:7px 0 25px}.field{margin:14px 0}.field label{display:block;font-size:12px;
-font-weight:700;margin-bottom:6px}.field input{box-sizing:border-box;width:100%;padding:12px;
-border:1px solid rgba(197,133,41,.4);border-radius:10px;background:#F5F2EC}.btn{width:100%;border:0;border-radius:10px;
-padding:12px;background:#9E4624;color:white;font-weight:700;cursor:pointer}.btn:disabled{opacity:.6}.message{display:none;margin:12px 0;
-padding:10px;border-radius:9px;font-size:12px}.links{text-align:center;margin-top:17px;font-size:12px}.links a{color:#9E4624;font-weight:700;text-decoration:none}.langbar{display:flex;justify-content:flex-end;margin-bottom:12px}.langbar select{padding:6px;border:1px solid #C58529;border-radius:8px;background:#FFFDF8}
-</style><script src="/frontend/auth.js"></script><script src="/frontend/i18n.js"></script></head>
-<body><main class="shell">
-    <div class="langbar"><select id="loginLanguage">
+<html lang="en">
 
-    </select></div><div class="brand">𑁍 IP-SAKTI Sahayak</div>
-    <div class="sub">Secure access to AI Sahayak</div>
-    <div id="message" class="message"></div><form id="loginForm"><div class="field"><label>Username</label><input id="username" autocomplete="username" required></div><div class="field"><label>Password</label><input id="password" type="password" autocomplete="current-password" required></div><button id="loginBtn" class="btn">Sign in</button></form>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>IP-SAKTI Sahayak — Login</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    font-family: 'Plus Jakarta Sans', sans-serif;
+
+    background: #F5F2EC;
+    color: #2B2523;
+
+    display: grid;
+    place-items: center;
+}
+
+.shell {
+    width: min(440px, 92vw);
+
+    background: #FFFDF8;
+
+    border: 1px solid rgba(197,133,41,.45);
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 12px 35px rgba(43,37,35,.12);
+
+    padding: 30px;
+}
+
+/* LANGUAGE */
+
+.langbar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.langbar select {
+    padding: 8px 12px;
+
+    border: 1px solid #C58529;
+
+    border-radius: 8px;
+
+    background: #FFFDF8;
+
+    color: #2B2523;
+
+    font-family: inherit;
+
+    cursor: pointer;
+}
+
+/* BRAND */
+
+.brand {
+    text-align: center;
+
+    color: #2D4A3E;
+
+    font-family: Cinzel, Georgia, serif;
+
+    font-weight: 700;
+
+    font-size: 24px;
+}
+
+.sub {
+    text-align: center;
+
+    color: #9E4624;
+
+    font-size: 12px;
+
+    margin: 7px 0 25px;
+}
+
+/* MESSAGE */
+
+.message {
+    display: none;
+
+    margin: 12px 0;
+
+    padding: 10px;
+
+    border-radius: 9px;
+
+    font-size: 12px;
+}
+
+/* FORM */
+
+.field {
+    margin: 14px 0;
+}
+
+.field label {
+    display: block;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    margin-bottom: 6px;
+}
+
+.field input {
+    width: 100%;
+
+    padding: 12px;
+
+    border: 1px solid rgba(197,133,41,.4);
+
+    border-radius: 10px;
+
+    background: #F5F2EC;
+
+    font-family: inherit;
+
+    outline: none;
+}
+
+.field input:focus {
+    border-color: #9E4624;
+}
+
+/* LOGIN BUTTON */
+
+.btn {
+    width: 100%;
+
+    border: 0;
+
+    border-radius: 10px;
+
+    padding: 12px;
+
+    background: #9E4624;
+
+    color: white;
+
+    font-weight: 700;
+
+    font-family: inherit;
+
+    cursor: pointer;
+}
+
+.btn:hover {
+    opacity: .92;
+}
+
+.btn:disabled {
+    opacity: .6;
+
+    cursor: not-allowed;
+}
+
+/* CREATE ACCOUNT */
+
+.links {
+    text-align: center;
+
+    margin-top: 17px;
+
+    font-size: 12px;
+}
+
+.links a {
+    color: #9E4624;
+
+    font-weight: 700;
+
+    text-decoration: none;
+}
+
+</style>
+
+<script src="/frontend/auth.js"></script>
+<script src="/frontend/i18n.js"></script>
+
+</head>
+
+
+<body>
+
+<main class="shell">
+
+    <!-- LANGUAGE BUTTON -->
+    <div class="langbar">
+        <select id="loginLanguage">
+            <option value="en">English</option>
+        </select>
+    </div>
+
+
+    <!-- BRAND -->
+    <div class="brand">
+        𑁍 IP-SAKTI Sahayak
+    </div>
+
+    <div class="sub">
+        Secure access to AI Sahayak
+    </div>
+
+
+    <!-- MESSAGE -->
+    <div id="message" class="message"></div>
+
+
+    <!-- LOGIN FORM -->
+    <form id="loginForm">
+
+        <div class="field">
+
+            <label for="username">
+                Username
+            </label>
+
+            <input
+                id="username"
+                type="text"
+                autocomplete="username"
+                required
+            >
+
+        </div>
+
+
+        <div class="field">
+
+            <label for="password">
+                Password
+            </label>
+
+            <input
+                id="password"
+                type="password"
+                autocomplete="current-password"
+                required
+            >
+
+        </div>
+
+
+        <button
+            id="loginBtn"
+            class="btn"
+            type="submit"
+        >
+            Sign in
+        </button>
+
+    </form>
+
+
+    <!-- CREATE ACCOUNT LINK -->
     <div class="links">
-    Don't have an account?
-    <a href="/register">Create Account</a>
-</div>
+
+        Don't have an account?
+        <a href="/register">
+            Create Account
+        </a>
+
+    </div>
+
+</main>
+
+
 <script>
+
+/* =========================
+   LANGUAGE
+========================= */
+
 const lang = document.getElementById('loginLanguage');
 
-(window.IPSAKTI_I18N?.LANGS || []).forEach(([v,n]) => {
-    const o = document.createElement('option');
-    o.value = v;
-    o.textContent = n;
-    lang.appendChild(o);
+try {
+
+    const languages = window.IPSAKTI_I18N?.LANGS || [];
+
+    languages.forEach(([value, name]) => {
+
+        const option = document.createElement('option');
+
+        option.value = value;
+        option.textContent = name;
+
+        lang.appendChild(option);
+
+    });
+
+} catch (error) {
+
+    console.log("Language list unavailable");
+
+}
+
+
+lang.value =
+    localStorage.getItem('ipSaktiLanguage') || 'en';
+
+
+lang.addEventListener('change', function() {
+
+    localStorage.setItem(
+        'ipSaktiLanguage',
+        lang.value
+    );
+
+    location.reload();
+
 });
 
-lang.value = localStorage.getItem('ipSaktiLanguage') || 'en';
 
-lang.onchange = () => {
-    localStorage.setItem('ipSaktiLanguage', lang.value);
-    location.reload();
-};
+/* =========================
+   LOGIN
+========================= */
 
-document.getElementById('loginForm').addEventListener('submit', async e => {
+document
+.getElementById('loginForm')
+.addEventListener('submit', async function(e) {
+
     e.preventDefault();
 
-    const btn = document.getElementById('loginBtn');
-    const msg = document.getElementById('message');
+    const btn =
+        document.getElementById('loginBtn');
+
+    const message =
+        document.getElementById('message');
+
+    const username =
+        document
+        .getElementById('username')
+        .value
+        .trim();
+
+    const password =
+        document
+        .getElementById('password')
+        .value;
+
+
+    message.style.display = 'none';
+
+
+    if (!username || !password) {
+
+        message.textContent =
+            'Please enter username and password.';
+
+        message.style.display = 'block';
+
+        return;
+    }
+
 
     btn.disabled = true;
+
     btn.textContent = 'Signing in...';
-    msg.style.display = 'none';
+
 
     try {
-        const r = await fetch('/api/v1/auth/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                username: document.getElementById('username').value.trim(),
-                password: document.getElementById('password').value
-            })
-        });
 
-        const d = await r.json().catch(() => ({}));
+        const response = await fetch(
+            '/api/v1/auth/login',
+            {
+                method: 'POST',
 
-        if (!r.ok) {
-            throw new Error(d.detail || 'Login failed.');
-        }
+                headers: {
+                    'Content-Type':
+                        'application/json'
+                },
 
-        localStorage.setItem('ipSaktiAccessToken', d.access_token);
-        localStorage.setItem(
-            'ipSaktiUsername',
-            document.getElementById('username').value.trim()
+                body: JSON.stringify({
+
+                    username: username,
+
+                    password: password
+
+                })
+            }
         );
 
-        const next =
-            new URLSearchParams(location.search).get('next') || '/assistant';
 
-        location.href = next;
+        const data =
+            await response.json()
+            .catch(() => ({}));
 
-    } catch (err) {
-        msg.textContent = err.message;
-        msg.style.display = 'block';
-        msg.style.background = '#9E4624';
-        msg.style.color = '#fff';
-    } finally {
+
+        console.log(
+            'LOGIN STATUS:',
+            response.status
+        );
+
+        console.log(
+            'LOGIN RESPONSE:',
+            data
+        );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.detail ||
+                data.message ||
+                'Login failed.'
+            );
+
+        }
+
+
+        /* =========================
+           SAVE LOGIN INFORMATION
+        ========================= */
+
+        if (!data.access_token) {
+
+            throw new Error(
+                'Login successful but no access token was returned by the server.'
+            );
+
+        }
+
+
+        localStorage.setItem(
+            'ipSaktiAccessToken',
+            data.access_token
+        );
+
+
+        localStorage.setItem(
+            'ipSaktiUsername',
+            username
+        );
+
+
+        /* =========================
+           SUCCESS
+        ========================= */
+
+        message.textContent =
+            'Login successful. Opening AI Sahayak...';
+
+        message.style.display = 'block';
+
+        message.style.background =
+            '#2D4A3E';
+
+        message.style.color =
+            '#FFFFFF';
+
+
+        btn.textContent =
+            'Opening AI Sahayak...';
+
+
+        /*
+         * IMPORTANT:
+         * Always go directly to assistant.
+         */
+
+        setTimeout(function() {
+
+            window.location.href =
+                '/assistant';
+
+        }, 500);
+
+
+    } catch (error) {
+
+        console.error(
+            'LOGIN ERROR:',
+            error
+        );
+
+
+        message.textContent =
+            error.message ||
+            'Login failed.';
+
+        message.style.display =
+            'block';
+
+        message.style.background =
+            '#9E4624';
+
+        message.style.color =
+            '#FFFFFF';
+
+
         btn.disabled = false;
-        btn.textContent = 'Sign in';
+
+        btn.textContent =
+            'Sign in';
+
     }
+
 });
-const lang=document.getElementById('loginLanguage');
- (window.IPSAKTI_I18N?.LANGS||[]).forEach(([v,n])=>{const o=document.createElement('option');
- o.value=v;o.textContent=n;lang.appendChild(o)}); lang.value=localStorage.getItem('ipSaktiLanguage')||'en'; 
- lang.onchange=()=>{localStorage.setItem('ipSaktiLanguage',lang.value);location.reload()};
-document.getElementById('loginForm').addEventListener('submit',async e=>{e.preventDefault();
-    const btn=document.getElementById('loginBtn'),msg=document.getElementById('message');btn.disabled=true;
-    btn.textContent='Signing in...';msg.style.display='none';
-    try{const r=await fetch('/api/v1/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:document.getElementById('username').value.trim(),password:document.getElementById('password').value})});
-    const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.detail||'Login failed.');
-localStorage.setItem('ipSaktiAccessToken', d.access_token);
-localStorage.setItem('ipSaktiUsername', document.getElementById('username').value.trim());
-const next=new URLSearchParams(location.search).get('next')||'/assistant';location.href=next;
-}
-catch(err){msg.textContent=err.message;msg.style.display='block';
-msg.style.background='#9E4624';msg.style.color='#fff'}finally{btn.disabled=false;btn.textContent='Sign in'}});
+
 </script>
-</body></html>
+
+</body>
+</html>
