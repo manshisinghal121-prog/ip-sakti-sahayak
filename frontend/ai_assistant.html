@@ -1125,7 +1125,7 @@ body::before{
               <div class="pt-2 border-t border-[#C58529]/20 flex flex-wrap gap-2 items-center">
                 <span class="text-xs text-[#8B3A1B] font-semibold">Sources:</span>
                 ${citationButtonsHTML}
-                <button onclick="speakText('${msgId}')" class="ml-auto text-xs bg-[#9E4624] hover:bg-[#8B3A1B] text-white px-2.5 py-1 rounded font-medium flex items-center gap-1 shadow-xs">
+                <button onclick="speakText('${msgId}', this)" class="ml-auto text-xs bg-[#9E4624] hover:bg-[#8B3A1B] text-white px-2.5 py-1 rounded font-medium flex items-center gap-1 shadow-xs">
                   🔊 Listen
                 </button>
               </div>
@@ -1254,18 +1254,67 @@ body::before{
     });
 
     // TEXT-TO-SPEECH (AUDIO VOICE OUTPUT)
-    function speakText(msgId) {
-      const text = window[msgId] || "No guidance text available";
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const cleanMsg = text.replace(/[*#_]/g, '');
-        const utterance = new SpeechSynthesisUtterance(cleanMsg);
-        utterance.rate = 0.95;
-        window.speechSynthesis.speak(utterance);
-      } else {
-        alert("Text-to-Speech is not supported in this browser.");
-      }
+    let activeSpeechMsgId = null;
+let activeSpeechButton = null;
+
+function speakText(msgId, button) {
+  if (!('speechSynthesis' in window)) {
+    alert("Text-to-Speech is not supported in this browser.");
+    return;
+  }
+
+  // If this message is already speaking → STOP
+  if (
+    window.speechSynthesis.speaking &&
+    activeSpeechMsgId === msgId
+  ) {
+    window.speechSynthesis.cancel();
+
+    if (activeSpeechButton) {
+      activeSpeechButton.innerHTML = "🔊 Listen";
     }
+
+    activeSpeechMsgId = null;
+    activeSpeechButton = null;
+    return;
+  }
+
+  // Stop any previous speech
+  window.speechSynthesis.cancel();
+
+  if (activeSpeechButton) {
+    activeSpeechButton.innerHTML = "🔊 Listen";
+  }
+
+  const text = window[msgId] || "No guidance text available";
+  const cleanMsg = text.replace(/[*#_]/g, '');
+
+  const utterance = new SpeechSynthesisUtterance(cleanMsg);
+  utterance.rate = 0.95;
+
+  activeSpeechMsgId = msgId;
+  activeSpeechButton = button;
+
+  button.innerHTML = "⏹ Stop";
+
+  utterance.onend = function () {
+    if (activeSpeechButton === button) {
+      button.innerHTML = "🔊 Listen";
+      activeSpeechMsgId = null;
+      activeSpeechButton = null;
+    }
+  };
+
+  utterance.onerror = function () {
+    if (activeSpeechButton === button) {
+      button.innerHTML = "🔊 Listen";
+      activeSpeechMsgId = null;
+      activeSpeechButton = null;
+    }
+  };
+
+  window.speechSynthesis.speak(utterance);
+}
 
     // SPEECH-TO-TEXT VOICE INPUT (MICROPHONE)
     function startVoiceInput() {

@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Herb Library — IP-SAKTI</title>
+<link href="/frontend/style.css" rel="stylesheet"/>
+<style>
+
+:root{
+  --cream:#f5f2ec;
+  --paper:#fffdf8;
+  --ink:#2b2523;
+  --rust:#9e4624;
+  --gold:#c58529;
+  --green:#4a6b5d;
+  --green-dark:#2d4a3e;
+}
+body{
+  background:
+    radial-gradient(var(--rust) .7px, transparent .7px),
+    radial-gradient(var(--rust) .7px, var(--cream) .7px);
+  background-size:30px 30px;
+  background-position:0 0,15px 15px;
+  background-color:var(--cream);
+  color:var(--ink);
+}
+.nav{
+  background:#2B2523!important;
+  color:#F5F2EC!important;
+  border-bottom:2px solid #C58529!important;
+}
+.nav a,.brand{color:#F5F2EC!important}
+.nav a:hover,.nav a.active{color:#D49A37!important}
+
+.page{max-width:1180px}
+.hero h1{font-family:Georgia,serif;color:var(--ink)}
+.hero p{color:rgba(43,37,35,.68)}
+.pill{
+  color:var(--rust)!important;
+  border-color:rgba(197,133,41,.45)!important;
+  background:#efeae1!important;
+}
+.library-toolbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:end;
+  gap:20px;
+  margin:25px 0;
+}
+.search-card{
+  background:var(--paper);
+  border:1px solid rgba(197,133,41,.4);
+  border-radius:14px;
+  padding:14px;
+  box-shadow:0 4px 18px rgba(43,37,35,.06);
+}
+.search-card label{display:block;font-weight:700;margin-bottom:8px}
+.search-card input{
+  width:100%;
+  box-sizing:border-box;
+  padding:13px 15px;
+  border:1px solid rgba(197,133,41,.55);
+  border-radius:9px;
+  background:#fffdf8;
+  color:var(--ink);
+  font:inherit;
+  outline:none;
+}
+.search-card input:focus{box-shadow:0 0 0 3px rgba(197,133,41,.12)}
+.herb-count-total{color:rgba(43,37,35,.62);font-weight:700;font-size:13px;white-space:nowrap}
+.herb-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.herb-card{
+  background:var(--paper)!important;
+  border:1px solid rgba(197,133,41,.4)!important;
+  border-radius:14px;
+  padding:14px;
+  box-shadow:0 4px 18px rgba(43,37,35,.06);
+}
+.herb-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(43,37,35,.10)}
+.herb-photo{
+  width:100%;
+  height:135px;
+  object-fit:cover;
+  display:block;
+  border-radius:10px;
+  margin-bottom:11px;
+  background:#efeae1;
+}
+.herb-photo-fallback{display:flex;align-items:center;justify-content:center;font-size:58px;color:var(--green)}
+.herb-count{font-size:9px;letter-spacing:.14em;color:var(--gold);font-weight:800;margin-bottom:5px}
+.herb-card h2{font-family:Georgia,serif;color:var(--ink);margin:0 0 4px;font-size:18px;line-height:1.2}
+.botanical{color:var(--green-dark)!important;margin-bottom:1px;font-size:13px}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin:9px 0}
+.herb-description{font-size:12px;line-height:1.5;color:rgba(43,37,35,.68);margin:0 0 8px;min-height:36px}
+.tag{
+  background:#efeae1;
+  border:1px solid rgba(197,133,41,.25);
+  color:var(--rust);
+  border-radius:999px;
+  padding:4px 8px;
+  font-size:10px;
+  font-weight:700;
+}
+.muted-tag{color:rgba(43,37,35,.62)}
+.btn.secondary{background:#efeae1!important;color:var(--ink)!important;border:1px solid var(--gold)!important}
+.footer{color:rgba(43,37,35,.58)}
+.empty{
+  display:none;
+  grid-column:1/-1;
+  background:var(--paper);
+  border:1px solid rgba(197,133,41,.4);
+  border-radius:16px;
+  padding:35px;
+  text-align:center;
+}
+@media(max-width:1100px){.herb-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){.herb-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){
+  .herb-grid{grid-template-columns:1fr}
+  .library-toolbar{display:block}
+  .herb-count-total{margin-top:10px}
+}
+/* ---------- FOREST GREEN-BROWN HEADINGS ---------- */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.hero h1,
+.hero h2,
+.section-title h1,
+.section-title h2,
+.section-heading h1,
+.section-heading h2,
+.card h2,
+.card h3,
+.module-card h2,
+.module-card h3,
+.capability-card h2,
+.capability-card h3,
+.process-card h2,
+.process-card h3 {
+    color: #3A4A35 !important;
+}
+
+/* Keep small category labels / eyebrows warm */
+.hero .pill,
+.hero .eyebrow,
+.hero-label,
+.hero-kicker,
+.section-heading .eyebrow {
+    color: #9E4624 !important;
+}
+
+</style>
+<link href="/frontend/botanical-decorations.css" rel="stylesheet"/>
+<style id="ipsakti-dashboard-herbs-ui">.hero{background:#FFFDF8!important;border:1px solid rgba(197,133,41,.35)!important;border-radius:14px!important;padding:18px 20px!important;box-shadow:0 4px 18px rgba(43,37,35,.05)!important}.hero h1{font-family:Georgia,serif!important;color:#2D4A3E!important;font-size:31px!important}.hero p{font-size:12px!important;line-height:1.55!important}.herb-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:10px!important}.herb-card{padding:10px!important;border-radius:10px!important}.herb-photo{height:92px!important;border-radius:8px!important;margin-bottom:8px!important}.herb-description{font-size:9px!important;line-height:1.35!important;min-height:30px!important}.herb-card h2{font-size:16px!important}.herb-card .btn{font-size:10px!important;padding:6px 9px!important}.tags{margin:7px 0!important}.tag{font-size:8px!important;padding:3px 6px!important}@media(max-width:1100px){.herb-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}}@media(max-width:760px){.herb-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}@media(max-width:560px){.herb-grid{grid-template-columns:1fr!important}}</style><script src="/frontend/auth.js"></script><script src="/frontend/i18n.js"></script></head>
+<body>
+<nav class="nav">
+<a class="brand" href="/">IP-SAKTI SAHAYAK<small>Ayurvedic IP • Regulatory • AI Assistance</small></a>
+<a href="/">Home</a>
+<a href="/patentability">Patentability</a>
+<a href="/compliance">Compliance</a>
+<a href="/herbs">Herb Library</a>
+<a href="/assistant">AI Sahayak</a>
+</nav>
+<main class="page">
+<section class="hero">
+<div class="pill">BOTANICAL KNOWLEDGE BASE</div>
+<h1>Herb Library</h1>
+<p>Explore the herbs available in the IP-SAKTI prototype knowledge base. Search by common, traditional or botanical name, then ask AI Sahayak for a focused question.</p>
+</section>
+<div class="library-toolbar">
+<div class="search-card" style="flex:1">
+<label for="search">Search herbs</label>
+<input id="search" oninput="filterHerbs()" placeholder="Search by common or botanical name..."/>
+</div>
+<div class="herb-count-total"><span id="visibleCount">166</span> of 166 herbs</div>
+</div>
+<section class="herb-grid" id="herbGrid">
+<article class="card herb-card" data-search="Ashwagandha Withania somnifera Indian Ginseng"><img alt="Ashwagandha" class="herb-photo" loading="lazy" src="/assets/herbs/ashwagandha.jpg"/><p class="herb-description">Botanical record for Ashwagandha (Withania somnifera) — Indian Ginseng.</p><div class="herb-count">HERB 01</div><h2>Ashwagandha</h2><p class="botanical"><i>Withania somnifera</i></p><p class="muted">Indian Ginseng</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Ashwagandha?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Haridra / Turmeric Curcuma longa Turmeric"><img alt="Haridra / Turmeric" class="herb-photo" loading="lazy" src="/assets/herbs/haridra.jpg"/><p class="herb-description">Botanical record for Haridra / Turmeric (Curcuma longa) — Turmeric.</p><div class="herb-count">HERB 02</div><h2>Haridra / Turmeric</h2><p class="botanical"><i>Curcuma longa</i></p><p class="muted">Turmeric</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Haridra / Turmeric?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Guduchi / Giloy Tinospora cordifolia Amrita / Heart-leaved Moonseed"><img alt="Guduchi / Giloy" class="herb-photo" loading="lazy" src="/assets/herbs/guduchi.jpg"/><p class="herb-description">Botanical record for Guduchi / Giloy (Tinospora cordifolia) — Amrita / Heart-leaved Moonseed.</p><div class="herb-count">HERB 03</div><h2>Guduchi / Giloy</h2><p class="botanical"><i>Tinospora cordifolia</i></p><p class="muted">Amrita / Heart-leaved Moonseed</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Guduchi / Giloy?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Tulsi Ocimum tenuiflorum Holy Basil"><img alt="Tulsi" class="herb-photo" loading="lazy" src="/assets/herbs/tulsi.jpg"/><p class="herb-description">Botanical record for Tulsi (Ocimum tenuiflorum) — Holy Basil.</p><div class="herb-count">HERB 04</div><h2>Tulsi</h2><p class="botanical"><i>Ocimum tenuiflorum</i></p><p class="muted">Holy Basil</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Tulsi?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Neem Azadirachta indica Neem"><img alt="Neem" class="herb-photo" loading="lazy" src="/assets/herbs/neem.jpg"/><p class="herb-description">Botanical record for Neem (Azadirachta indica).</p><div class="herb-count">HERB 05</div><h2>Neem</h2><p class="botanical"><i>Azadirachta indica</i></p><p class="muted">Neem</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Neem?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Brahmi Bacopa monnieri Brahmi"><img alt="Brahmi" class="herb-photo" loading="lazy" src="/assets/herbs/brahmi.jpg"/><p class="herb-description">Botanical record for Brahmi (Bacopa monnieri).</p><div class="herb-count">HERB 06</div><h2>Brahmi</h2><p class="botanical"><i>Bacopa monnieri</i></p><p class="muted">Brahmi</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Brahmi?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Amla Phyllanthus emblica Indian Gooseberry"><img alt="Amla" class="herb-photo" loading="lazy" src="/assets/herbs/amla.jpg"/><p class="herb-description">Botanical record for Amla (Phyllanthus emblica) — Indian Gooseberry.</p><div class="herb-count">HERB 07</div><h2>Amla</h2><p class="botanical"><i>Phyllanthus emblica</i></p><p class="muted">Indian Gooseberry</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Amla?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Shatavari Asparagus racemosus Wild Asparagus"><img alt="Shatavari" class="herb-photo" loading="lazy" src="/assets/herbs/shatavari.jpg"/><p class="herb-description">Botanical record for Shatavari (Asparagus racemosus) — Wild Asparagus.</p><div class="herb-count">HERB 08</div><h2>Shatavari</h2><p class="botanical"><i>Asparagus racemosus</i></p><p class="muted">Wild Asparagus</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Shatavari?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Moringa Moringa oleifera Drumstick Tree"><img alt="Moringa" class="herb-photo" loading="lazy" src="/assets/herbs/moringa.jpg"/><p class="herb-description">Botanical record for Moringa (Moringa oleifera) — Drumstick Tree.</p><div class="herb-count">HERB 09</div><h2>Moringa</h2><p class="botanical"><i>Moringa oleifera</i></p><p class="muted">Drumstick Tree</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Moringa?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Aloe Vera Aloe vera Aloe Vera"><img alt="Aloe Vera" class="herb-photo" loading="lazy" src="/assets/herbs/aloe-vera.jpg"/><p class="herb-description">Botanical record for Aloe Vera (Aloe vera).</p><div class="herb-count">HERB 10</div><h2>Aloe Vera</h2><p class="botanical"><i>Aloe vera</i></p><p class="muted">Aloe Vera</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Aloe Vera?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Calendula Calendula officinalis Calendula"><img alt="Calendula" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:FilePath/Calendula-officinalis.jpg?width=960"/><p class="herb-description">Botanical record for Calendula (Calendula officinalis).</p><div class="herb-count">HERB 11</div><h2>Calendula</h2><p class="botanical"><i>Calendula officinalis</i></p><p class="muted">Calendula</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Calendula?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Chamomile Matricaria chamomilla Chamomile"><img alt="Chamomile" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://authenticwisconsin.com/images/chamomile_pd_3.jpg"/><p class="herb-description">Botanical record for Chamomile (Matricaria chamomilla).</p><div class="herb-count">HERB 12</div><h2>Chamomile</h2><p class="botanical"><i>Matricaria chamomilla</i></p><p class="muted">Chamomile</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Chamomile?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Comfrey Symphytum officinale Comfrey"><img alt="Comfrey" class="herb-photo" loading="lazy" src="/assets/herbs/comfrey.jpg"/><p class="herb-description">Botanical record for Comfrey (Symphytum officinale).</p><div class="herb-count">HERB 13</div><h2>Comfrey</h2><p class="botanical"><i>Symphytum officinale</i></p><p class="muted">Comfrey</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Comfrey?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Dandelion Taraxacum officinale Dandelion"><img alt="Dandelion" class="herb-photo" loading="lazy" src="/assets/herbs/dandelion.jpg"/><p class="herb-description">Botanical record for Dandelion (Taraxacum officinale).</p><div class="herb-count">HERB 14</div><h2>Dandelion</h2><p class="botanical"><i>Taraxacum officinale</i></p><p class="muted">Dandelion</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Dandelion?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Echinacea Echinacea purpurea Echinacea"><img alt="Echinacea" class="herb-photo" loading="lazy" src="/assets/herbs/echinacea.jpg"/><p class="herb-description">Botanical record for Echinacea (Echinacea purpurea).</p><div class="herb-count">HERB 15</div><h2>Echinacea</h2><p class="botanical"><i>Echinacea purpurea</i></p><p class="muted">Echinacea</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Echinacea?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Garlic Allium sativum Garlic"><img alt="Garlic" class="herb-photo" loading="lazy" src="/assets/herbs/garlic.jpg"/><p class="herb-description">Botanical record for Garlic (Allium sativum).</p><div class="herb-count">HERB 16</div><h2>Garlic</h2><p class="botanical"><i>Allium sativum</i></p><p class="muted">Garlic</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Garlic?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Ginger Root Zingiber officinale Ginger Root"><img alt="Ginger Root" class="herb-photo" loading="lazy" src="/assets/herbs/ginger.jpg"/><p class="herb-description">Botanical record for Ginger Root (Zingiber officinale).</p><div class="herb-count">HERB 17</div><h2>Ginger Root</h2><p class="botanical"><i>Zingiber officinale</i></p><p class="muted">Ginger Root</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Ginger Root?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Ginseng Panax ginseng Ginseng"><img alt="Ginseng" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://www.plattformj.ch/opengraph/gosimg00yC03840000801980000000120111e7.jpg"/><p class="herb-description">Botanical record for Ginseng (Panax ginseng).</p><div class="herb-count">HERB 18</div><h2>Ginseng</h2><p class="botanical"><i>Panax ginseng</i></p><p class="muted">Ginseng</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Ginseng?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Lavender Lavandula angustifolia Lavender"><img alt="Lavender" class="herb-photo" loading="lazy" src="/assets/herbs/lavender.jpg"/><p class="herb-description">Botanical record for Lavender (Lavandula angustifolia).</p><div class="herb-count">HERB 19</div><h2>Lavender</h2><p class="botanical"><i>Lavandula angustifolia</i></p><p class="muted">Lavender</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Lavender?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Lemon Balm Melissa officinalis Lemon Balm"><img alt="Lemon Balm" class="herb-photo" loading="lazy" src="/assets/herbs/lemon-balm.jpg"/><p class="herb-description">Botanical record for Lemon Balm (Melissa officinalis).</p><div class="herb-count">HERB 20</div><h2>Lemon Balm</h2><p class="botanical"><i>Melissa officinalis</i></p><p class="muted">Lemon Balm</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Lemon Balm?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Marshmallow Root Althaea officinalis Marshmallow Root"><img alt="Marshmallow Root" class="herb-photo" loading="lazy" src="/assets/herbs/marshmallow-root.jpg"/><p class="herb-description">Botanical record for Marshmallow Root (Althaea officinalis).</p><div class="herb-count">HERB 21</div><h2>Marshmallow Root</h2><p class="botanical"><i>Althaea officinalis</i></p><p class="muted">Marshmallow Root</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Marshmallow Root?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Mint / Peppermint Mentha x piperita Mint"><img alt="Mint / Peppermint" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Peppermint_Plant.jpg/960px-Peppermint_Plant.jpg"/><p class="herb-description">Botanical record for Mint / Peppermint (Mentha x piperita) — Mint.</p><div class="herb-count">HERB 22</div><h2>Mint / Peppermint</h2><p class="botanical"><i>Mentha x piperita</i></p><p class="muted">Mint</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Mint / Peppermint?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Nettle Urtica dioica Nettle"><img alt="Nettle" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Urtica_dioica_Plant.jpg/960px-Urtica_dioica_Plant.jpg"/><p class="herb-description">Botanical record for Nettle (Urtica dioica).</p><div class="herb-count">HERB 23</div><h2>Nettle</h2><p class="botanical"><i>Urtica dioica</i></p><p class="muted">Nettle</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Nettle?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Rosemary Salvia rosmarinus Rosemary"><img alt="Rosemary" class="herb-photo" loading="lazy" src="/assets/herbs/rosemary.jpg"/><p class="herb-description">Botanical record for Rosemary (Salvia rosmarinus).</p><div class="herb-count">HERB 24</div><h2>Rosemary</h2><p class="botanical"><i>Salvia rosmarinus</i></p><p class="muted">Rosemary</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Rosemary?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Mugwort Artemisia vulgaris Mugwort"><img alt="Mugwort" class="herb-photo" loading="lazy" src="/assets/herbs/mugwort.jpg"/><p class="herb-description">Botanical record for Mugwort (Artemisia vulgaris).</p><div class="herb-count">HERB 25</div><h2>Mugwort</h2><p class="botanical"><i>Artemisia vulgaris</i></p><p class="muted">Mugwort</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Mugwort?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Plantain Plantago major Plantain"><img alt="Plantain" class="herb-photo" loading="lazy" src="/assets/herbs/plantain.jpg"/><p class="herb-description">Botanical record for Plantain (Plantago major).</p><div class="herb-count">HERB 26</div><h2>Plantain</h2><p class="botanical"><i>Plantago major</i></p><p class="muted">Plantain</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Plantain?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Watercress / Lamb's Cress Nasturtium officinale Watercress"><img alt="Watercress / Lamb's Cress" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://static.roslin.pl/static/plant_photos/1200px/nasturtium/officinale/d2557be5a7d1a1c7a249631a3b9074df23ce3733.jpg"/><p class="herb-description">Botanical record for Watercress / Lamb's Cress (Nasturtium officinale) — Watercress.</p><div class="herb-count">HERB 27</div><h2>Watercress / Lamb's Cress</h2><p class="botanical"><i>Nasturtium officinale</i></p><p class="muted">Watercress</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Watercress / Lamb's Cress?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Crab Apple Malus sylvestris Crab Apple"><img alt="Crab Apple" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://www.treesandshrubsonline.org/site/assets/files/6302/malus-sylvestris.jpg"/><p class="herb-description">Botanical record for Crab Apple (Malus sylvestris).</p><div class="herb-count">HERB 28</div><h2>Crab Apple</h2><p class="botanical"><i>Malus sylvestris</i></p><p class="muted">Crab Apple</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Crab Apple?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Chervil Anthriscus cerefolium Chervil"><img alt="Chervil" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:FilePath/Chervil.JPG?width=960"/><p class="herb-description">Botanical record for Chervil (Anthriscus cerefolium).</p><div class="herb-count">HERB 29</div><h2>Chervil</h2><p class="botanical"><i>Anthriscus cerefolium</i></p><p class="muted">Chervil</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Chervil?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Fennel Foeniculum vulgare Saunf / Fennel"><img alt="Fennel" class="herb-photo" loading="lazy" src="/assets/herbs/fennel.jpg"/><p class="herb-description">Botanical record for Fennel (Foeniculum vulgare) — Saunf / Fennel.</p><div class="herb-count">HERB 30</div><h2>Fennel</h2><p class="botanical"><i>Foeniculum vulgare</i></p><p class="muted">Saunf / Fennel</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Fennel?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Attorlothe (unresolved) Historical identification uncertain Attorlothe"><img alt="Attorlothe historical botanical record — identification unresolved" class="herb-photo herb-photo-fallback" loading="lazy" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22960%22%20height%3D%22540%22%20viewBox%3D%220%200%20960%20540%22%3E%0A%3Crect%20width%3D%22960%22%20height%3D%22540%22%20rx%3D%2228%22%20fill%3D%22%23efeae1%22/%3E%0A%3Cg%20fill%3D%22none%22%20stroke%3D%22%234a6b5d%22%20stroke-width%3D%228%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20opacity%3D%220.72%22%3E%0A%3Cpath%20d%3D%22M480%20470%20C478%20405%20492%20345%20470%20270%20C450%20205%20470%20155%20505%2090%22/%3E%0A%3Cpath%20d%3D%22M470%20315%20C410%20280%20365%20240%20345%20190%22/%3E%0A%3Cpath%20d%3D%22M482%20365%20C545%20330%20594%20280%20617%20220%22/%3E%0A%3Cpath%20d%3D%22M466%20252%20C420%20225%20396%20188%20395%20150%22/%3E%0A%3Cpath%20d%3D%22M500%20215%20C540%20185%20570%20150%20575%20112%22/%3E%0A%3Cellipse%20cx%3D%22341%22%20cy%3D%22179%22%20rx%3D%2223%22%20ry%3D%2246%22%20transform%3D%22rotate%28-35%20341%20179%29%22/%3E%0A%3Cellipse%20cx%3D%22617%22%20cy%3D%22215%22%20rx%3D%2223%22%20ry%3D%2246%22%20transform%3D%22rotate%2835%20617%20215%29%22/%3E%0A%3Cellipse%20cx%3D%22395%22%20cy%3D%22142%22%20rx%3D%2221%22%20ry%3D%2242%22%20transform%3D%22rotate%28-18%20395%20142%29%22/%3E%0A%3Cellipse%20cx%3D%22575%22%20cy%3D%22105%22%20rx%3D%2221%22%20ry%3D%2242%22%20transform%3D%22rotate%2820%20575%20105%29%22/%3E%0A%3C/g%3E%0A%3Ctext%20x%3D%22480%22%20y%3D%22505%22%20text-anchor%3D%22middle%22%20font-family%3D%22Georgia%2Cserif%22%20font-size%3D%2228%22%20fill%3D%22%238b3a1b%22%3EHistorical%20botanical%20record%20%C2%B7%20identification%20unresolved%3C/text%3E%0A%3C/svg%3E"/><p class="herb-description">Historical botanical record for Attorlothe; current identification remains unresolved.</p><div class="herb-count">HERB 31</div><h2>Attorlothe (unresolved)</h2><p class="botanical"><i>Historical identification uncertain</i></p><p class="muted">Attorlothe</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Attorlothe (unresolved)?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Goldenseal Hydrastis canadensis Goldenseal"><img alt="Goldenseal" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://newfs.s3.amazonaws.com/taxon-images-1000s1000/Ranunculaceae/hydrastis-canadensis-le-ahaines-d.jpg"/><p class="herb-description">Botanical record for Goldenseal (Hydrastis canadensis).</p><div class="herb-count">HERB 32</div><h2>Goldenseal</h2><p class="botanical"><i>Hydrastis canadensis</i></p><p class="muted">Goldenseal</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Goldenseal?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Sarpagandha Rauvolfia serpentina Indian Snakeroot"><img alt="Sarpagandha" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Rauvolfia_serpentina_11.JPG"/><p class="herb-description">Botanical record for Sarpagandha (Rauvolfia serpentina) — Indian Snakeroot.</p><div class="herb-count">HERB 33</div><h2>Sarpagandha</h2><p class="botanical"><i>Rauvolfia serpentina</i></p><p class="muted">Indian Snakeroot</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Sarpagandha?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Black Haldi Curcuma caesia Black Turmeric"><img alt="Black Haldi" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://danviet.ex-cdn.com/files/f1/2017/8/images/a414ac47-cu-nghe-den-2jpg.jpg"/><p class="herb-description">Botanical record for Black Haldi (Curcuma caesia) — Black Turmeric.</p><div class="herb-count">HERB 34</div><h2>Black Haldi</h2><p class="botanical"><i>Curcuma caesia</i></p><p class="muted">Black Turmeric</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Black Haldi?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Fairywand (unresolved) Chamaelirium luteum False Unicorn Root"><img alt="Fairywand (unresolved)" class="herb-photo herb-photo-fallback" loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/Chamaelirium_luteum_BB-1913.jpg?width=960"/><p class="herb-description">Botanical record for Fairywand (unresolved) (Chamaelirium luteum) — False Unicorn Root.</p><div class="herb-count">HERB 35</div><h2>Fairywand (unresolved)</h2><p class="botanical"><i>Chamaelirium luteum</i></p><p class="muted">False Unicorn Root</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Fairywand (unresolved)?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Forsythia Forsythia suspensa Forsythia"><img alt="Forsythia" class="herb-photo" loading="lazy" src="/assets/herbs/forsythia.jpg"/><p class="herb-description">Botanical record for Forsythia (Forsythia suspensa).</p><div class="herb-count">HERB 36</div><h2>Forsythia</h2><p class="botanical"><i>Forsythia suspensa</i></p><p class="muted">Forsythia</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Forsythia?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Japanese Honeysuckle Lonicera japonica Honeysuckle"><img alt="Japanese Honeysuckle" class="herb-photo" loading="lazy" src="/assets/herbs/lonicera.jpg"/><p class="herb-description">Botanical record for Japanese Honeysuckle (Lonicera japonica) — Honeysuckle.</p><div class="herb-count">HERB 37</div><h2>Japanese Honeysuckle</h2><p class="botanical"><i>Lonicera japonica</i></p><p class="muted">Honeysuckle</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Japanese Honeysuckle?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Arjuna Terminalia arjuna Arjuna"><img alt="Arjuna" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:FilePath/Terminalia_Arjuna.jpg?width=960"/><p class="herb-description">Botanical record for Arjuna (Terminalia arjuna).</p><div class="herb-count">HERB 38</div><h2>Arjuna</h2><p class="botanical"><i>Terminalia arjuna</i></p><p class="muted">Arjuna</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Arjuna?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Ashoka Saraca asoca Ashoka"><img alt="Ashoka" class="herb-photo" loading="lazy" src="/assets/herbs/ashoka.jpg"/><p class="herb-description">Botanical record for Ashoka (Saraca asoca).</p><div class="herb-count">HERB 39</div><h2>Ashoka</h2><p class="botanical"><i>Saraca asoca</i></p><p class="muted">Ashoka</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Ashoka?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Haritaki Terminalia chebula Harad"><img alt="Haritaki" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://plantsguru.com/cdn/shop/files/pg-terminalia-chebula.jpg?v=1735616537&amp;width=1100"/><p class="herb-description">Botanical record for Haritaki (Terminalia chebula) — Harad.</p><div class="herb-count">HERB 40</div><h2>Haritaki</h2><p class="botanical"><i>Terminalia chebula</i></p><p class="muted">Harad</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Haritaki?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Bibhitaki Terminalia bellirica Baheda"><img alt="Bibhitaki" class="herb-photo herb-photo-fallback" loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/Terminalia_bellirica.jpg?width=960"/><p class="herb-description">Botanical record for Bibhitaki (Terminalia bellirica) — Baheda.</p><div class="herb-count">HERB 41</div><h2>Bibhitaki</h2><p class="botanical"><i>Terminalia bellirica</i></p><p class="muted">Baheda</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Bibhitaki?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Pippali Piper longum Long Pepper"><img alt="Pippali" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://www.uottawa.ca/research-innovation/sites/g/files/bhrskd326/files/styles/max_width_l_1470px/public/2023-06/pippali.jpg?itok=K5XEKaoT"/><p class="herb-description">Botanical record for Pippali (Piper longum) — Long Pepper.</p><div class="herb-count">HERB 42</div><h2>Pippali</h2><p class="botanical"><i>Piper longum</i></p><p class="muted">Long Pepper</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Pippali?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Shankhpushpi Convolvulus pluricaulis Shankhapushpi"><img alt="Shankhpushpi" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://cdn.shopify.com/s/files/1/0047/9730/0847/products/nurserylive-plants-shankhpushpi-sankaphuli-plant-16969321349260_400x400.jpg?v=1634228822"/><p class="herb-description">Botanical record for Shankhpushpi (Convolvulus pluricaulis) — Shankhapushpi.</p><div class="herb-count">HERB 43</div><h2>Shankhpushpi</h2><p class="botanical"><i>Convolvulus pluricaulis</i></p><p class="muted">Shankhapushpi</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Shankhpushpi?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Yashtimadhu Glycyrrhiza glabra Licorice / Mulethi"><img alt="Yashtimadhu" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://www.plantarium.ru/dat/plants/8/871/542871_9c232b2f.jpg"/><p class="herb-description">Botanical record for Yashtimadhu (Glycyrrhiza glabra) — Licorice / Mulethi.</p><div class="herb-count">HERB 44</div><h2>Yashtimadhu</h2><p class="botanical"><i>Glycyrrhiza glabra</i></p><p class="muted">Licorice / Mulethi</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Yashtimadhu?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Manjistha Rubia cordifolia Manjishta"><img alt="Manjistha" class="herb-photo" loading="lazy" src="/assets/herbs/manjistha.jpg"/><p class="herb-description">Botanical record for Manjistha (Rubia cordifolia) — Manjishta.</p><div class="herb-count">HERB 45</div><h2>Manjistha</h2><p class="botanical"><i>Rubia cordifolia</i></p><p class="muted">Manjishta</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Manjistha?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Bhringraj Eclipta prostrata False Daisy"><img alt="Bhringraj" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:FilePath/Eclipta_prostrata_or_False_daisy_or_Bhringraj.jpg?width=960"/><p class="herb-description">Botanical record for Bhringraj (Eclipta prostrata) — False Daisy.</p><div class="herb-count">HERB 46</div><h2>Bhringraj</h2><p class="botanical"><i>Eclipta prostrata</i></p><p class="muted">False Daisy</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Bhringraj?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Punarnava Boerhavia diffusa Punarnava"><img alt="Punarnava" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://1.bp.blogspot.com/-Qcdh4YePKY8/WXRXjy2VrxI/AAAAAAAAB6Q/1OPrplzAeQEs-0WO5JJ5CgrOYLbyg2FGACLcBGAs/s1600/Punarnava-.jpg"/><p class="herb-description">Botanical record for Punarnava (Boerhavia diffusa).</p><div class="herb-count">HERB 47</div><h2>Punarnava</h2><p class="botanical"><i>Boerhavia diffusa</i></p><p class="muted">Punarnava</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Punarnava?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Kalmegh Andrographis paniculata Andrographis"><img alt="Kalmegh" class="herb-photo herb-photo-fallback" loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/Andrographis_paniculata.jpg?width=960"/><p class="herb-description">Botanical record for Kalmegh (Andrographis paniculata) — Andrographis.</p><div class="herb-count">HERB 48</div><h2>Kalmegh</h2><p class="botanical"><i>Andrographis paniculata</i></p><p class="muted">Andrographis</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Kalmegh?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Kutki Picrorhiza kurroa Katuki"><img alt="Kutki" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://preservawellness.com/cdn/shop/articles/kutki.jpg?v=1667980427"/><p class="herb-description">Botanical record for Kutki (Picrorhiza kurroa) — Katuki.</p><div class="herb-count">HERB 49</div><h2>Kutki</h2><p class="botanical"><i>Picrorhiza kurroa</i></p><p class="muted">Katuki</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Kutki?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Sariva Hemidesmus indicus Anantamul / Indian Sarsaparilla"><img alt="Sariva" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:FilePath/Hemidesmus_indicus.jpg?width=960"/><p class="herb-description">Botanical record for Sariva (Hemidesmus indicus) — Anantamul / Indian Sarsaparilla.</p><div class="herb-count">HERB 50</div><h2>Sariva</h2><p class="botanical"><i>Hemidesmus indicus</i></p><p class="muted">Anantamul / Indian Sarsaparilla</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Sariva?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Gokshura Tribulus terrestris Gokhru"><img alt="Gokshura" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://i.pinimg.com/originals/df/f8/60/dff86098f2b24b6c70666c474a4175b4.png"/><p class="herb-description">Botanical record for Gokshura (Tribulus terrestris) — Gokhru.</p><div class="herb-count">HERB 51</div><h2>Gokshura</h2><p class="botanical"><i>Tribulus terrestris</i></p><p class="muted">Gokhru</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Gokshura?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Vidanga Embelia ribes Vaividang"><img alt="Vidanga" class="herb-photo" loading="lazy" src="/assets/herbs/vidanga.jpg"/><p class="herb-description">Botanical record for Vidanga (Embelia ribes) — Vaividang.</p><div class="herb-count">HERB 52</div><h2>Vidanga</h2><p class="botanical"><i>Embelia ribes</i></p><p class="muted">Vaividang</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Vidanga?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Vacha Acorus calamus Sweet Flag"><img alt="Vacha" class="herb-photo herb-photo-fallback" loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/Acorus_calamus1.jpg?width=960"/><p class="herb-description">Botanical record for Vacha (Acorus calamus) — Sweet Flag.</p><div class="herb-count">HERB 53</div><h2>Vacha</h2><p class="botanical"><i>Acorus calamus</i></p><p class="muted">Sweet Flag</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Vacha?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Jatamansi Nardostachys jatamansi Spikenard"><img alt="Jatamansi" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://inaturalist-open-data.s3.amazonaws.com/photos/414832126/original.jpeg"/><p class="herb-description">Botanical record for Jatamansi (Nardostachys jatamansi) — Spikenard.</p><div class="herb-count">HERB 54</div><h2>Jatamansi</h2><p class="botanical"><i>Nardostachys jatamansi</i></p><p class="muted">Spikenard</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Jatamansi?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Musta Cyperus rotundus Nagarmotha / Nutgrass"><img alt="Musta" class="herb-photo" loading="lazy" src="/assets/herbs/musta.jpg"/><p class="herb-description">Botanical record for Musta (Cyperus rotundus) — Nagarmotha / Nutgrass.</p><div class="herb-count">HERB 55</div><h2>Musta</h2><p class="botanical"><i>Cyperus rotundus</i></p><p class="muted">Nagarmotha / Nutgrass</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Musta?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Tagara Valeriana wallichii Indian Valerian"><img alt="Tagara" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://cdn.shopify.com/s/files/1/0631/1084/0571/files/Indian-Valerian-leaves_480x480.jpg?v=1654586438"/><p class="herb-description">Botanical record for Tagara (Valeriana wallichii) — Indian Valerian.</p><div class="herb-count">HERB 56</div><h2>Tagara</h2><p class="botanical"><i>Valeriana wallichii</i></p><p class="muted">Indian Valerian</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Tagara?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Bael Aegle marmelos Bilva / Bel Fruit"><img alt="Bael" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://3.bp.blogspot.com/-mBMHbJkpX0o/Vqz49yBJzXI/AAAAAAAAB-w/aKQ4LTtzEfw/s1600/Aegle%2BMarmelos%2BBael%2Bfruit.jpg"/><p class="herb-description">Botanical record for Bael (Aegle marmelos) — Bilva / Bel Fruit.</p><div class="herb-count">HERB 57</div><h2>Bael</h2><p class="botanical"><i>Aegle marmelos</i></p><p class="muted">Bilva / Bel Fruit</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Bael?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Isabgol Plantago ovata Psyllium / Ispaghula"><img alt="Isabgol" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://indiagardening.b-cdn.net/wp-content/uploads/2023/10/isabgol-plant-m.jpg"/><p class="herb-description">Botanical record for Isabgol (Plantago ovata) — Psyllium / Ispaghula.</p><div class="herb-count">HERB 58</div><h2>Isabgol</h2><p class="botanical"><i>Plantago ovata</i></p><p class="muted">Psyllium / Ispaghula</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Isabgol?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Senna Senna alexandrina Senna"><img alt="Senna" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://upload.wikimedia.org/wikipedia/commons/6/61/Senna_alexandrina_Mill.-Cassia_angustifolia_L._%28Senna_Plant%29.jpg"/><p class="herb-description">Botanical record for Senna (Senna alexandrina).</p><div class="herb-count">HERB 59</div><h2>Senna</h2><p class="botanical"><i>Senna alexandrina</i></p><p class="muted">Senna</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Senna?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Cinnamon Cinnamomum verum Dalchini / True Cinnamon"><img alt="Cinnamon" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://www.mshtly.com/uploads/products/%D8%B4%D8%AC%D8%B1%D8%A9-%D8%A7%D9%84%D9%82%D8%B1%D9%81%D8%A9.webp"/><p class="herb-description">Botanical record for Cinnamon (Cinnamomum verum) — Dalchini / True Cinnamon.</p><div class="herb-count">HERB 60</div><h2>Cinnamon</h2><p class="botanical"><i>Cinnamomum verum</i></p><p class="muted">Dalchini / True Cinnamon</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Cinnamon?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Clove Syzygium aromaticum Laung / Clove"><img alt="Clove" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://magyarmezogazdasag.hu/app/uploads/2026/03/szegfuszeg.jpg"/><p class="herb-description">Botanical record for Clove (Syzygium aromaticum) — Laung / Clove.</p><div class="herb-count">HERB 61</div><h2>Clove</h2><p class="botanical"><i>Syzygium aromaticum</i></p><p class="muted">Laung / Clove</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Clove?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Cardamom Elettaria cardamomum Elaichi / Green Cardamom"><img alt="Cardamom" class="herb-photo" loading="lazy" src="/assets/herbs/cardamom.jpg"/><p class="herb-description">Botanical record for Cardamom (Elettaria cardamomum) — Elaichi / Green Cardamom.</p><div class="herb-count">HERB 62</div><h2>Cardamom</h2><p class="botanical"><i>Elettaria cardamomum</i></p><p class="muted">Elaichi / Green Cardamom</p><div class="tags"><span class="tag">Prototype image</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Cardamom?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Black Pepper Piper nigrum Kali Mirch / Maricha"><img alt="Black Pepper" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://greenhouse.biology.indiana.edu/images/features/crops/piper-nigrum-drupes-adobestock-431173380.jpg"/><p class="herb-description">Botanical record for Black Pepper (Piper nigrum) — Kali Mirch / Maricha.</p><div class="herb-count">HERB 63</div><h2>Black Pepper</h2><p class="botanical"><i>Piper nigrum</i></p><p class="muted">Kali Mirch / Maricha</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Black Pepper?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Fenugreek / Methi Trigonella foenum-graecum Methi"><img alt="Fenugreek / Methi" class="herb-photo" loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/Trigonella_foenum-graecum.jpg?width=960"/><p class="herb-description">Traditional culinary and herbal seed used widely in Indian food and wellness traditions.</p><div class="herb-count">HERB 64</div><h2>Fenugreek / Methi</h2><p class="botanical"><i>Trigonella foenum-graecum</i></p><p class="muted">Methi</p><div class="tags"><span class="tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Fenugreek / Methi?" secondary="">Ask AI →</a></article><article class="card herb-card" data-search="Lemongrass Cymbopogon citratus Lemongrass"><img alt="Lemongrass" class="herb-photo" loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/Cymbopogon_citratus_lemongrass_plant_in_garden.jpg?width=960"/><p class="herb-description">Aromatic grass used in culinary preparations and traditional herbal beverages.</p><div class="herb-count">HERB 65</div><h2>Lemongrass</h2><p class="botanical"><i>Cymbopogon citratus</i></p><p class="muted">Lemongrass</p><div class="tags"><span class="tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Lemongrass?" secondary="">Ask AI →</a></article><article class="card herb-card" data-search="Curry Leaf Murraya koenigii Kadi Patta"><img alt="Curry Leaf" class="herb-photo" loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/Murraya_koenigii_leaves_-_curry_leaves.jpg?width=960"/><p class="herb-description">A common Indian culinary plant whose leaves are also used in traditional practices.</p><div class="herb-count">HERB 66</div><h2>Curry Leaf</h2><p class="botanical"><i>Murraya koenigii</i></p><p class="muted">Kadi Patta</p><div class="tags"><span class="tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Curry Leaf?" secondary="">Ask AI →</a></article><article class="card herb-card" data-search="Bhumyamalaki Phyllanthus amarus Bhumi Amla"><img alt="Bhumyamalaki" class="herb-photo" loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/Phyllanthus_amarus.jpg?width=960"/><p class="herb-description">Small medicinal herb represented in Indian traditional medicine; botanical identity should be confirmed before use.</p><div class="herb-count">HERB 67</div><h2>Bhumyamalaki</h2><p class="botanical"><i>Phyllanthus amarus</i></p><p class="muted">Bhumi Amla</p><div class="tags"><span class="tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Bhumyamalaki?" secondary="">Ask AI →</a></article><article class="card herb-card" data-search="Gudmar Gymnema sylvestre Gudmar"><img alt="Gudmar" class="herb-photo" loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/Gymnema_sylvestre.jpg?width=960"/><p class="herb-description">Climbing medicinal plant documented in traditional Indian herbal practice.</p><div class="herb-count">HERB 68</div><h2>Gudmar</h2><p class="botanical"><i>Gymnema sylvestre</i></p><p class="muted">Gudmar</p><div class="tags"><span class="tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Gudmar?" secondary="">Ask AI →</a></article>
+<article class="card herb-card" data-search="Saffron Crocus sativus Kesar"><img alt="Saffron" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:FilePath/Crocus%20sativus%2C%20saffron%20%2829%29.jpg"/><p class="herb-description">Saffron is a high-value spice traditionally used in Indian culinary and cultural preparations.</p><div class="herb-count">HERB 69</div><h2>Saffron</h2><p class="botanical"><i>Crocus sativus</i></p><p class="muted">Kesar</p><div class="tags"><span class="tag muted-tag">Botanical photo</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Saffron?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Hibiscus Hibiscus rosa-sinensis Gudhal"><img alt="Hibiscus" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://images.tcdn.com.br/img/img_prod/450860/muda_de_hibisco_hibiscus_rosa_sinensis_430_3_20160121122848.jpg"/><p class="herb-description">Hibiscus is a flowering plant commonly found in Indian gardens and traditional preparations.</p><div class="herb-count">HERB 70</div><h2>Hibiscus</h2><p class="botanical"><i>Hibiscus rosa-sinensis</i></p><p class="muted">Gudhal</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Hibiscus?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Rose Rosa damascena Gulab"><img alt="Rose" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://tshop.r10s.jp/baranoie/cabinet/02/imgrc0071306710.jpg?fitin=720%3A720"/><p class="herb-description">Rose is widely used in traditional preparations, perfumery and food across South Asia.</p><div class="herb-count">HERB 71</div><h2>Rose</h2><p class="botanical"><i>Rosa damascena</i></p><p class="muted">Gulab</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Rose?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Ajwain Trachyspermum ammi Carom Seeds"><img alt="Ajwain" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:FilePath/Ajwain%20%28Trachyspermum%20ammi%29.jpg"/><p class="herb-description">Ajwain is a common Indian culinary seed with a long history of traditional use.</p><div class="herb-count">HERB 72</div><h2>Ajwain</h2><p class="botanical"><i>Trachyspermum ammi</i></p><p class="muted">Carom Seeds</p><div class="tags"><span class="tag muted-tag">Botanical photo</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Ajwain?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Cumin Cuminum cyminum Jeera"><img alt="Cumin" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://storage.gra.cloud.ovh.net/v1/AUTH_ca60d77ddd5e42749d7c4c17f753540d/ugm-data/pictures/ninaseeds/4960157-50-graines-cumin-cuminum-cyminum-1.jpeg"/><p class="herb-description">Cumin is a familiar culinary spice also represented in traditional Indian herbal knowledge.</p><div class="herb-count">HERB 73</div><h2>Cumin</h2><p class="botanical"><i>Cuminum cyminum</i></p><p class="muted">Jeera</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Cumin?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Coriander Coriandrum sativum Dhania"><img alt="Coriander" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://www.skalnicky.eu/resize/e/800/800/files/no-wm/bylinky/koriander-1.jpg"/><p class="herb-description">Coriander is a widely used culinary herb and spice with traditional Indian applications.</p><div class="herb-count">HERB 74</div><h2>Coriander</h2><p class="botanical"><i>Coriandrum sativum</i></p><p class="muted">Dhania</p><div class="tags"><span class="tag muted-tag">Botanical photo</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Coriander?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Black Cumin Nigella sativa Kalonji"><img alt="Black Cumin" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://i5.walmartimages.com/asr/c998fef0-99c9-45e7-b44d-51f12b286ec3.789a0d9dbed8e71dccd0f536b11b6486.jpeg?odnBg=FFFFFF&amp;odnHeight=768&amp;odnWidth=768"/><p class="herb-description">Black cumin is an aromatic seed used in culinary traditions and documented herbal practices.</p><div class="herb-count">HERB 75</div><h2>Black Cumin</h2><p class="botanical"><i>Nigella sativa</i></p><p class="muted">Kalonji</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Black Cumin?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Kachnar Bauhinia variegata Orchid Tree"><img alt="Kachnar" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://mojimall.pk/cdn/shop/files/kachnar.jpg?v=1748966460"/><p class="herb-description">Kachnar is an Indian tree represented in traditional botanical and herbal literature.</p><div class="herb-count">HERB 76</div><h2>Kachnar</h2><p class="botanical"><i>Bauhinia variegata</i></p><p class="muted">Orchid Tree</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Kachnar?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Palash Butea monosperma Flame of the Forest"><img alt="Palash" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://4.bp.blogspot.com/-YJ4Vf8F0EHk/VJrFmfRaDWI/AAAAAAAAD5w/yYjLHenuWW0/s720/March%202%20Palash%20flowers2.JPG"/><p class="herb-description">Palash is a characteristic Indian flowering tree with a long-standing place in traditional knowledge.</p><div class="herb-count">HERB 77</div><h2>Palash</h2><p class="botanical"><i>Butea monosperma</i></p><p class="muted">Flame of the Forest</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Palash?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Vetiver Chrysopogon zizanioides Khus"><img alt="Vetiver" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://static.roslin.pl/static/plant_photos/1200px/chrysopogon/zizanioides/a15a3a9270a00669e6c363c149f2affb48ebaaa4.jpg"/><p class="herb-description">Vetiver is an aromatic grass valued for its roots in fragrance, cooling products and traditional practice.</p><div class="herb-count">HERB 78</div><h2>Vetiver</h2><p class="botanical"><i>Chrysopogon zizanioides</i></p><p class="muted">Khus</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Vetiver?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Kantakari Solanum xanthocarpum Yellow Berried Nightshade"><img alt="Kantakari" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://ask-ayurveda.com/media/uploads/wiki/Solanum_xanthocarpum.png"/><p class="herb-description">Kantakari is a traditional Ayurvedic botanical recorded in classical herbal contexts.</p><div class="herb-count">HERB 79</div><h2>Kantakari</h2><p class="botanical"><i>Solanum xanthocarpum</i></p><p class="muted">Yellow-Berried Nightshade</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Kantakari?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Lodhra Symplocos racemosa Lodh Tree"><img alt="Lodhra" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://ask-ayurveda.com/media/uploads/wiki/Symplocos_racemosa_roxb_-_Lodhra.png"/><p class="herb-description">Lodhra is a traditional botanical referenced in Ayurvedic herbal knowledge and formulations.</p><div class="herb-count">HERB 80</div><h2>Lodhra</h2><p class="botanical"><i>Symplocos racemosa</i></p><p class="muted">Lodh Tree</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Lodhra?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Kutaja Holarrhena antidysenterica Kurchi"><img alt="Kutaja" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://paudhshala.com/media/catalog/product/h/o/holarrhena-antidysenterica-seeds.jpg"/><p class="herb-description">Kutaja is an Ayurvedic tree used in traditional herbal practice and classical formulations.</p><div class="herb-count">HERB 81</div><h2>Kutaja</h2><p class="botanical"><i>Holarrhena antidysenterica</i></p><p class="muted">Kurchi</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Kutaja?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Daruharidra Berberis aristata Indian Barberry"><img alt="Daruharidra" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://www.healthbenefitstimes.com/9/gallery/indian-barberry/Indian-Barberry-flower.jpg"/><p class="herb-description">Daruharidra is a traditional Himalayan and Indian botanical known from Ayurvedic materia medica.</p><div class="herb-count">HERB 82</div><h2>Daruharidra</h2><p class="botanical"><i>Berberis aristata</i></p><p class="muted">Indian Barberry</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Daruharidra?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Rasna Pluchea lanceolata Rasna"><img alt="Rasna" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://ask-ayurveda.com/media/uploads/wiki/Pluchea_lanceolata.png"/><p class="herb-description">Rasna is a traditional Ayurvedic herb recorded in classical herbal formulations.</p><div class="herb-count">HERB 83</div><h2>Rasna</h2><p class="botanical"><i>Pluchea lanceolata</i></p><p class="muted">Rasna</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Rasna?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Ativisha Aconitum heterophyllum Indian Atees"><img alt="Ativisha" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://www.thepahadistory.com/cdn/shop/articles/Aconitum_Heterophyllum_e2a26f3f-eb21-4e0e-9cd1-8335999e2387.jpg?v=1784113764&amp;width=2048"/><p class="herb-description">Ativisha is a classical Ayurvedic root; botanical identity and safe use should be verified carefully.</p><div class="herb-count">HERB 84</div><h2>Ativisha</h2><p class="botanical"><i>Aconitum heterophyllum</i></p><p class="muted">Indian Atees</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Ativisha?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Aragvadha Cassia fistula Indian Laburnum"><img alt="Aragvadha" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://www.biobaxy.com/uploads/products/2020/12/65a2071abf14ef6504642d11eeba446c.jpg"/><p class="herb-description">Aragvadha, the Indian Laburnum, is a familiar Ayurvedic tree used in traditional preparations.</p><div class="herb-count">HERB 85</div><h2>Aragvadha</h2><p class="botanical"><i>Cassia fistula</i></p><p class="muted">Indian Laburnum</p><div class="tags"><span class="tag muted-tag">Botanical photo</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Aragvadha?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Mandukaparni Centella asiatica Gotu Kola"><img alt="Mandukaparni" class="herb-photo" loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/6/64/Centella_asiatica_%28L.%29_Urb._%286935470969%29.jpg"/><p class="herb-description">Mandukaparni is a well-known traditional herb also known internationally as Gotu Kola.</p><div class="herb-count">HERB 86</div><h2>Mandukaparni</h2><p class="botanical"><i>Centella asiatica</i></p><p class="muted">Gotu Kola</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Mandukaparni?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Nirgundi Vitex negundo Five-Leaved Chaste Tree"><img alt="Nirgundi" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://www.iafaforallergy.com/wp-content/uploads/2025/11/Nirgundi-Vitex-negundo.jpg"/><p class="herb-description">Nirgundi is an aromatic Indian shrub with a long history in traditional herbal practice.</p><div class="herb-count">HERB 87</div><h2>Nirgundi</h2><p class="botanical"><i>Vitex negundo</i></p><p class="muted">Five-Leaved Chaste Tree</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Nirgundi?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Eranda Ricinus communis Castor Bean"><img alt="Eranda" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://www.ishanayurved.com/Herbal-Garden/24a.jpeg"/><p class="herb-description">Eranda is a traditional medicinal plant associated with classical Ayurvedic preparations.</p><div class="herb-count">HERB 88</div><h2>Eranda</h2><p class="botanical"><i>Ricinus communis</i></p><p class="muted">Castor Bean</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Eranda?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Bala Sida cordifolia Country Mallow"><img alt="Bala" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://www.frozenseeds.com/cdn/shop/products/bala-seeds-sida-cordifolia_2.jpg?v=1525222291"/><p class="herb-description">Bala is a classical Ayurvedic botanical traditionally associated with strengthening formulations.</p><div class="herb-count">HERB 89</div><h2>Bala</h2><p class="botanical"><i>Sida cordifolia</i></p><p class="muted">Country Mallow</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Bala?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Vidarikand Pueraria tuberosa Indian Kudzu"><img alt="Vidarikand" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://ask-ayurveda.com/media/uploads/wiki/Pueraria_tuberosa_-_Vidarikanda.png"/><p class="herb-description">Vidarikand is a traditional tuber used in Ayurvedic food and herbal formulations.</p><div class="herb-count">HERB 90</div><h2>Vidarikand</h2><p class="botanical"><i>Pueraria tuberosa</i></p><p class="muted">Indian Kudzu</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Vidarikand?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Jivanti Leptadenia reticulata Jivanti"><img alt="Jivanti" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://upload.wikimedia.org/wikipedia/commons/6/60/Leptadenia_reticulata_climber.JPG"/><p class="herb-description">Jivanti is a traditional Indian climber represented in Ayurvedic botanical literature.</p><div class="herb-count">HERB 91</div><h2>Jivanti</h2><p class="botanical"><i>Leptadenia reticulata</i></p><p class="muted">Jivanti</p><div class="tags"><span class="tag muted-tag">Botanical photo</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Jivanti?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Akarakarabha Anacyclus pyrethrum Pellitory Root"><img alt="Akarakarabha" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://feeds.abplive.com/onecms/images/uploaded-images/2022/08/13/37dd5b85ce63a25f2551d2606e37fee61660398582111455_original.jpg"/><p class="herb-description">Akarakarabha is a traditional medicinal root recorded in Ayurvedic sources.</p><div class="herb-count">HERB 92</div><h2>Akarakarabha</h2><p class="botanical"><i>Anacyclus pyrethrum</i></p><p class="muted">Pellitory Root</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Akarakarabha?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Bharangi Clerodendrum serratum Blue Fountain Bush"><img alt="Bharangi" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://www.healthbenefitstimes.com/9/gallery/bharangi/Leaves-of-Clerodendrum-serratum.jpg"/><p class="herb-description">Bharangi is an Ayurvedic shrub traditionally included in respiratory and herbal formulations.</p><div class="herb-count">HERB 93</div><h2>Bharangi</h2><p class="botanical"><i>Clerodendrum serratum</i></p><p class="muted">Blue Fountain Bush</p><div class="tags"><span class="tag muted-tag">Botanical photo</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Bharangi?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Chirata Swertia chirata Chirayata"><img alt="Chirata" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://cpimg.tistatic.com/08048156/b/4/extra-08048156.png"/><p class="herb-description">Chirata is a well-known bitter herb used in South Asian traditional medicine.</p><div class="herb-count">HERB 94</div><h2>Chirata</h2><p class="botanical"><i>Swertia chirata</i></p><p class="muted">Chirayata</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Chirata?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Shalaparni Desmodium gangeticum Salparni"><img alt="Shalaparni" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://i.ebayimg.com/images/g/gOEAAOSw~JhkRvCY/s-l1200.jpg"/><p class="herb-description">Shalaparni is a classical Ayurvedic botanical and one of the Dashamoola group plants.</p><div class="herb-count">HERB 95</div><h2>Shalaparni</h2><p class="botanical"><i>Desmodium gangeticum</i></p><p class="muted">Salparni</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Shalaparni?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Prishniparni Uraria picta Prishniparni"><img alt="Prishniparni" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://portal.wiktrop.org/files-api/api/get/raw/img/Uraria%20picta/811.JPG"/><p class="herb-description">Prishniparni is another classical Dashamoola botanical found in Ayurvedic herbal literature.</p><div class="herb-count">HERB 96</div><h2>Prishniparni</h2><p class="botanical"><i>Uraria picta</i></p><p class="muted">Prishniparni</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Prishniparni?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Shyonaka Oroxylum indicum Indian Trumpet Tree"><img alt="Shyonaka" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://indiabiodiversity.org/files-api/api/get/raw/observations/f3ac1c49-e3e8-4f69-8c76-7fb3b1bb5776/691e15848ebb4cc8a3f8f580aa855758.jpg"/><p class="herb-description">Shyonaka is a traditional Indian tree and a member of the Dashamoola group.</p><div class="herb-count">HERB 97</div><h2>Shyonaka</h2><p class="botanical"><i>Oroxylum indicum</i></p><p class="muted">Indian Trumpet Tree</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Shyonaka?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Gambhari Gmelina arborea Beechwood Tree"><img alt="Gambhari" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://ask-ayurveda.com/media/uploads/wiki/Gmelina_arborea_-_Gambhari_1.png"/><p class="herb-description">Gambhari is a traditional tree included among the classical Dashamoola botanicals.</p><div class="herb-count">HERB 98</div><h2>Gambhari</h2><p class="botanical"><i>Gmelina arborea</i></p><p class="muted">Beechwood Tree</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Gambhari?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Patala Stereospermum suaveolens Trumpet Flower Tree"><img alt="Patala" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://www.hugaplant.com/cdn/shop/files/1_3cf76bcb-c013-45c0-a9ee-7786028be73c.png?v=1755082665&amp;width=1080"/><p class="herb-description">Patala is a traditional medicinal tree represented in classical Ayurvedic botanical knowledge.</p><div class="herb-count">HERB 99</div><h2>Patala</h2><p class="botanical"><i>Stereospermum suaveolens</i></p><p class="muted">Trumpet Flower Tree</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Patala?">Ask AI →</a></article>
+<article class="card herb-card" data-search="Brihati Solanum indicum Indian Nightshade"><img alt="Brihati" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://ask-ayurveda.com/media/uploads/wiki/Solanum_indicum_-_Brhati.png"/><p class="herb-description">Brihati is a traditional Ayurvedic botanical from the Solanum group used in classical herbal knowledge.</p><div class="herb-count">HERB 100</div><h2>Brihati</h2><p class="botanical"><i>Solanum indicum</i></p><p class="muted">Indian Nightshade</p><div class="tags"><span class="tag muted-tag">Knowledge record</span><span class="tag">Ask AI</span></div><a class="btn secondary" href="/assistant?q=What are the traditional uses of Brihati?">Ask AI →</a></article>
+<div class="empty" id="empty">
+<h2>No matching herb found</h2>
+<p class="muted">Try another common, traditional or botanical name.</p>
+</div><article class="card herb-card" data-search="Sweet Basil Ocimum basilicum Basil">
+<img alt="Sweet Basil" class="herb-photo" loading="lazy" src="https://goldenseeds.ro/ro/files/goldenseeds.bg/deals/2023/09/05/id1206/3ab0421efcb30c3311aa05d27531e541_large.webp"/>
+<p class="herb-description">Botanical record for Sweet Basil (Ocimum basilicum) — Basil.</p>
+<div class="herb-count">HERB 101</div>
+<h2>Sweet Basil</h2>
+<p class="botanical"><i>Ocimum basilicum</i></p>
+<p class="muted">Basil</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What are the traditional uses of Sweet Basil?">Ask AI →</a>
+</article><article class="card herb-card" data-search="Parsley Petroselinum crispum Parsley">
+<img alt="Parsley" class="herb-photo" loading="lazy" src="https://ask-ayurveda.com/media/uploads/wiki/Petroselinum_crispum.png"/>
+<p class="herb-description">Botanical record for Parsley (Petroselinum crispum) — Parsley.</p>
+<div class="herb-count">HERB 102</div>
+<h2>Parsley</h2>
+<p class="botanical"><i>Petroselinum crispum</i></p>
+<p class="muted">Parsley</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What are the traditional uses of Parsley?">Ask AI →</a>
+</article><article class="card herb-card" data-search="Sage Salvia officinalis Sage">
+<img alt="Sage" class="herb-photo" loading="lazy" src="https://plantes-avenue.fr/87335-large_default/sauge-officinale.jpg"/>
+<p class="herb-description">Botanical record for Sage (Salvia officinalis) — Sage.</p>
+<div class="herb-count">HERB 103</div>
+<h2>Sage</h2>
+<p class="botanical"><i>Salvia officinalis</i></p>
+<p class="muted">Sage</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What are the traditional uses of Sage?">Ask AI →</a>
+</article><article class="card herb-card" data-search="Thyme Thymus vulgaris Thyme">
+<img alt="Thyme" class="herb-photo" loading="lazy" src="https://media.hornbach.de/mp/detail/ad716ca0-5ca3-4f80-949a-7f6aebbbf0d5?size=1400"/>
+<p class="herb-description">Botanical record for Thyme (Thymus vulgaris) — Thyme.</p>
+<div class="herb-count">HERB 104</div>
+<h2>Thyme</h2>
+<p class="botanical"><i>Thymus vulgaris</i></p>
+<p class="muted">Thyme</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What are the traditional uses of Thyme?">Ask AI →</a>
+</article><article class="card herb-card" data-search="Dill Anethum graveolens Dill">
+<img alt="Dill" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Dill_(Anethum_graveolens).jpg?width=960"/>
+<p class="herb-description">Botanical record for Dill (Anethum graveolens) — Dill.</p>
+<div class="herb-count">HERB 105</div>
+<h2>Dill</h2>
+<p class="botanical"><i>Anethum graveolens</i></p>
+<p class="muted">Dill</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What are the traditional uses of Dill?">Ask AI →</a>
+</article><article class="card herb-card" data-search="Eucalyptus Eucalyptus globulus Eucalyptus">
+<img alt="Eucalyptus" class="herb-photo" loading="lazy" src="https://enfo.hu/sites/default/files/eukaliptusz.jpg"/>
+<p class="herb-description">Botanical record for Eucalyptus (Eucalyptus globulus) — Eucalyptus.</p>
+<div class="herb-count">HERB 106</div>
+<h2>Eucalyptus</h2>
+<p class="botanical"><i>Eucalyptus globulus</i></p>
+<p class="muted">Eucalyptus</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What are the traditional uses of Eucalyptus?">Ask AI →</a>
+</article><article class="card herb-card" data-search="Butterfly Pea Clitoria ternatea Aparajita">
+<img alt="Butterfly Pea" class="herb-photo" loading="lazy" src="https://dukaan.b-cdn.net/2000x2000/webp/730950/570a0a01-8039-4174-b518-9bf54edfe5fb/clitoria-ternatea-gokarna-blue-plant-16968788148364-600x600-9c68f04d-ba7f-43b7-b56b-0cc487e95f26.jpg"/>
+<p class="herb-description">Botanical record for Butterfly Pea (Clitoria ternatea) — Aparajita.</p>
+<div class="herb-count">HERB 107</div>
+<h2>Butterfly Pea</h2>
+<p class="botanical"><i>Clitoria ternatea</i></p>
+<p class="muted">Aparajita</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What are the traditional uses of Butterfly Pea?">Ask AI →</a>
+</article><article class="card herb-card" data-search="Stevia Stevia rebaudiana Stevia">
+<img alt="Stevia" class="herb-photo" loading="lazy" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Stevia_rebaudiana_(potted_plant).jpg?width=960"/>
+<p class="herb-description">Botanical record for Stevia (Stevia rebaudiana) — Stevia.</p>
+<div class="herb-count">HERB 108</div>
+<h2>Stevia</h2>
+<p class="botanical"><i>Stevia rebaudiana</i></p>
+<p class="muted">Stevia</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What are the traditional uses of Stevia?">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Agrimony Agrimonia eupatoria Agrimony">
+<img alt="Agrimony" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Agrimonia_eupatoria.jpg?width=960"/>
+<p class="herb-description">Botanical record for Agrimony (Agrimonia eupatoria) — Agrimony.</p>
+<div class="herb-count">HERB 109</div>
+<h2>Agrimony</h2>
+<p class="botanical"><i>Agrimonia eupatoria</i></p>
+<p class="muted">Agrimony</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Agrimony%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Alfalfa Medicago sativa Lucerne">
+<img alt="Alfalfa" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://www.eagff.ch/files/_processed_/7/0/csm_Luzerne_AK_00496_53606e9368.jpg"/>
+<p class="herb-description">Botanical record for Alfalfa (Medicago sativa) — Lucerne.</p>
+<div class="herb-count">HERB 110</div>
+<h2>Alfalfa</h2>
+<p class="botanical"><i>Medicago sativa</i></p>
+<p class="muted">Lucerne</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Alfalfa%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Anise Pimpinella anisum Aniseed">
+<img alt="Anise" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://cdn11.bigcommerce.com/s-q83qdckkjh/products/125/images/2523/Anise-PlantBC__17272.1703701960.500.750.jpg?c=2"/>
+<p class="herb-description">Botanical record for Anise (Pimpinella anisum) — Aniseed.</p>
+<div class="herb-count">HERB 111</div>
+<h2>Anise</h2>
+<p class="botanical"><i>Pimpinella anisum</i></p>
+<p class="muted">Aniseed</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Anise%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Artichoke Cynara cardunculus Globe Artichoke">
+<img alt="Artichoke" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" src="https://commons.wikimedia.org/wiki/Special:FilePath/Artichoke.jpg?width=960"/>
+<p class="herb-description">Botanical record for Artichoke (Cynara cardunculus) — Globe Artichoke.</p>
+<div class="herb-count">HERB 112</div>
+<h2>Artichoke</h2>
+<p class="botanical"><i>Cynara cardunculus</i></p>
+<p class="muted">Globe Artichoke</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Artichoke%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Astragalus Astragalus membranaceus Huang Qi">
+<img alt="Astragalus" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Astragalus_membranaceus.jpg?width=960"/>
+<p class="herb-description">Botanical record for Astragalus (Astragalus membranaceus) — Huang Qi.</p>
+<div class="herb-count">HERB 113</div>
+<h2>Astragalus</h2>
+<p class="botanical"><i>Astragalus membranaceus</i></p>
+<p class="muted">Huang Qi</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Astragalus%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Barberry Berberis vulgaris Barberry">
+<img alt="Barberry" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Berberis-vulgaris.jpg?width=960"/>
+<p class="herb-description">Botanical record for Barberry (Berberis vulgaris) — Barberry.</p>
+<div class="herb-count">HERB 114</div>
+<h2>Barberry</h2>
+<p class="botanical"><i>Berberis vulgaris</i></p>
+<p class="muted">Barberry</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Barberry%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Bay Leaf Laurus nobilis Bay Laurel">
+<img alt="Bay Leaf" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" src="https://commons.wikimedia.org/wiki/Special:FilePath/Bay%20Leaf.jpg?width=960"/>
+<p class="herb-description">Botanical record for Bay Leaf (Laurus nobilis) — Bay Laurel.</p>
+<div class="herb-count">HERB 115</div>
+<h2>Bay Leaf</h2>
+<p class="botanical"><i>Laurus nobilis</i></p>
+<p class="muted">Bay Laurel</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Bay%20Leaf%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Bee Balm Monarda didyma Wild Bergamot">
+<img alt="Bee Balm" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" src="https://commons.wikimedia.org/wiki/Special:FilePath/Bee%20Balm.jpg?width=960"/>
+<p class="herb-description">Botanical record for Bee Balm (Monarda didyma) — Wild Bergamot.</p>
+<div class="herb-count">HERB 116</div>
+<h2>Bee Balm</h2>
+<p class="botanical"><i>Monarda didyma</i></p>
+<p class="muted">Wild Bergamot</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Bee%20Balm%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Bilberry Vaccinium myrtillus Bilberry">
+<img alt="Bilberry" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" src="https://commons.wikimedia.org/wiki/Special:FilePath/Bilberry.jpg?width=960"/>
+<p class="herb-description">Botanical record for Bilberry (Vaccinium myrtillus) — Bilberry.</p>
+<div class="herb-count">HERB 117</div>
+<h2>Bilberry</h2>
+<p class="botanical"><i>Vaccinium myrtillus</i></p>
+<p class="muted">Bilberry</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Bilberry%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Birch Betula pendula Silver Birch">
+<img alt="Birch" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" src="https://commons.wikimedia.org/wiki/Special:FilePath/Birch.jpg?width=960"/>
+<p class="herb-description">Botanical record for Birch (Betula pendula) — Silver Birch.</p>
+<div class="herb-count">HERB 118</div>
+<h2>Birch</h2>
+<p class="botanical"><i>Betula pendula</i></p>
+<p class="muted">Silver Birch</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Birch%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Caraway Carum carvi Caraway">
+<img alt="Caraway" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Carum_carvi.JPG?width=960"/>
+<p class="herb-description">Botanical record for Caraway (Carum carvi) — Caraway.</p>
+<div class="herb-count">HERB 119</div>
+<h2>Caraway</h2>
+<p class="botanical"><i>Carum carvi</i></p>
+<p class="muted">Caraway</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Caraway%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Cayenne Pepper Capsicum annuum Cayenne">
+<img alt="Cayenne Pepper" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" src="https://commons.wikimedia.org/wiki/Special:FilePath/Cayenne%20Pepper.jpg?width=960"/>
+<p class="herb-description">Botanical record for Cayenne Pepper (Capsicum annuum) — Cayenne.</p>
+<div class="herb-count">HERB 120</div>
+<h2>Cayenne Pepper</h2>
+<p class="botanical"><i>Capsicum annuum</i></p>
+<p class="muted">Cayenne</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Cayenne%20Pepper%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Chia Salvia hispanica Chia Seed">
+<img alt="Chia" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Salvia_hispanica_(10461546364).jpg?width=960"/>
+<p class="herb-description">Botanical record for Chia (Salvia hispanica) — Chia Seed.</p>
+<div class="herb-count">HERB 121</div>
+<h2>Chia</h2>
+<p class="botanical"><i>Salvia hispanica</i></p>
+<p class="muted">Chia Seed</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Chia%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Chives Allium schoenoprasum Chives">
+<img alt="Chives" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" src="https://commons.wikimedia.org/wiki/Special:FilePath/Chives.jpg?width=960"/>
+<p class="herb-description">Botanical record for Chives (Allium schoenoprasum) — Chives.</p>
+<div class="herb-count">HERB 122</div>
+<h2>Chives</h2>
+<p class="botanical"><i>Allium schoenoprasum</i></p>
+<p class="muted">Chives</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Chives%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Coltsfoot Tussilago farfara Coltsfoot">
+<img alt="Coltsfoot" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" src="https://commons.wikimedia.org/wiki/Special:FilePath/Coltsfoot.jpg?width=960"/>
+<p class="herb-description">Botanical record for Coltsfoot (Tussilago farfara) — Coltsfoot.</p>
+<div class="herb-count">HERB 123</div>
+<h2>Coltsfoot</h2>
+<p class="botanical"><i>Tussilago farfara</i></p>
+<p class="muted">Coltsfoot</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Coltsfoot%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Cornflower Centaurea cyanus Cornflower">
+<img alt="Cornflower" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" src="https://commons.wikimedia.org/wiki/Special:FilePath/Cornflower.jpg?width=960"/>
+<p class="herb-description">Botanical record for Cornflower (Centaurea cyanus) — Cornflower.</p>
+<div class="herb-count">HERB 124</div>
+<h2>Cornflower</h2>
+<p class="botanical"><i>Centaurea cyanus</i></p>
+<p class="muted">Cornflower</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Cornflower%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Damiana Turnera diffusa Damiana">
+<img alt="Damiana" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" src="https://commons.wikimedia.org/wiki/Special:FilePath/Damiana.jpg?width=960"/>
+<p class="herb-description">Botanical record for Damiana (Turnera diffusa) — Damiana.</p>
+<div class="herb-count">HERB 125</div>
+<h2>Damiana</h2>
+<p class="botanical"><i>Turnera diffusa</i></p>
+<p class="muted">Damiana</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Damiana%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Elderflower Sambucus nigra Elderflower">
+<img alt="Elderflower" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://saimnieks.lv/public/upload/1_1770732488.jpg"/>
+<p class="herb-description">Botanical record for Elderflower (Sambucus nigra) — Elderflower.</p>
+<div class="herb-count">HERB 126</div>
+<h2>Elderflower</h2>
+<p class="botanical"><i>Sambucus nigra</i></p>
+<p class="muted">Elderflower</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Elderflower%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Evening Primrose Oenothera biennis Evening Primrose">
+<img alt="Evening Primrose" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://inaturalist-open-data.s3.amazonaws.com/photos/8163247/large.jpg"/>
+<p class="herb-description">Botanical record for Evening Primrose (Oenothera biennis) — Evening Primrose.</p>
+<div class="herb-count">HERB 127</div>
+<h2>Evening Primrose</h2>
+<p class="botanical"><i>Oenothera biennis</i></p>
+<p class="muted">Evening Primrose</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Evening%20Primrose%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Feverfew Tanacetum parthenium Feverfew">
+<img alt="Feverfew" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" src="https://commons.wikimedia.org/wiki/Special:FilePath/Feverfew.jpg?width=960"/>
+<p class="herb-description">Botanical record for Feverfew (Tanacetum parthenium) — Feverfew.</p>
+<div class="herb-count">HERB 128</div>
+<h2>Feverfew</h2>
+<p class="botanical"><i>Tanacetum parthenium</i></p>
+<p class="muted">Feverfew</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Feverfew%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Guggul Commiphora wightii Guggul">
+<img alt="Guggul" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" src="https://commons.wikimedia.org/wiki/Special:FilePath/Guggul.jpg?width=960"/>
+<p class="herb-description">Botanical record for Guggul (Commiphora wightii) — Guggul.</p>
+<div class="herb-count">HERB 129</div>
+<h2>Guggul</h2>
+<p class="botanical"><i>Commiphora wightii</i></p>
+<p class="muted">Guggul</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Guggul%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Hawthorn Crataegus monogyna Hawthorn">
+<img alt="Hawthorn" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://www.treesandshrubsonline.org/site/assets/files/5094/crataegus-monogyna-10.jpg"/>
+<p class="herb-description">Botanical record for Hawthorn (Crataegus monogyna) — Hawthorn.</p>
+<div class="herb-count">HERB 130</div>
+<h2>Hawthorn</h2>
+<p class="botanical"><i>Crataegus monogyna</i></p>
+<p class="muted">Hawthorn</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Hawthorn%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Horehound Marrubium vulgare White Horehound">
+<img alt="Horehound" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" src="https://commons.wikimedia.org/wiki/Special:FilePath/Horehound.jpg?width=960"/>
+<p class="herb-description">Botanical record for Horehound (Marrubium vulgare) — White Horehound.</p>
+<div class="herb-count">HERB 131</div>
+<h2>Horehound</h2>
+<p class="botanical"><i>Marrubium vulgare</i></p>
+<p class="muted">White Horehound</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Horehound%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Hyssop Hyssopus officinalis Hyssop">
+<img alt="Hyssop" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Hyssopus_officinalis.jpg?width=960"/>
+<p class="herb-description">Botanical record for Hyssop (Hyssopus officinalis) — Hyssop.</p>
+<div class="herb-count">HERB 132</div>
+<h2>Hyssop</h2>
+<p class="botanical"><i>Hyssopus officinalis</i></p>
+<p class="muted">Hyssop</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Hyssop%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Juniper Juniperus communis Juniper">
+<img alt="Juniper" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" src="https://commons.wikimedia.org/wiki/Special:FilePath/Juniper.jpg?width=960"/>
+<p class="herb-description">Botanical record for Juniper (Juniperus communis) — Juniper.</p>
+<div class="herb-count">HERB 133</div>
+<h2>Juniper</h2>
+<p class="botanical"><i>Juniperus communis</i></p>
+<p class="muted">Juniper</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Juniper%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Kava Piper methysticum Kava">
+<img alt="Kava" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Starr_070515-7055_Piper_methysticum.jpg?width=960"/>
+<p class="herb-description">Botanical record for Kava (Piper methysticum) — Kava.</p>
+<div class="herb-count">HERB 134</div>
+<h2>Kava</h2>
+<p class="botanical"><i>Piper methysticum</i></p>
+<p class="muted">Kava</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Kava%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Marjoram Origanum majorana Marjoram">
+<img alt="Marjoram" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" src="https://commons.wikimedia.org/wiki/Special:FilePath/Marjoram.jpg?width=960"/>
+<p class="herb-description">Botanical record for Marjoram (Origanum majorana) — Marjoram.</p>
+<div class="herb-count">HERB 135</div>
+<h2>Marjoram</h2>
+<p class="botanical"><i>Origanum majorana</i></p>
+<p class="muted">Marjoram</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Marjoram%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Milk Thistle Silybum marianum Milk Thistle">
+<img alt="Milk Thistle" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" src="https://commons.wikimedia.org/wiki/Special:FilePath/Milk%20Thistle.jpg?width=960"/>
+<p class="herb-description">Botanical record for Milk Thistle (Silybum marianum) — Milk Thistle.</p>
+<div class="herb-count">HERB 136</div>
+<h2>Milk Thistle</h2>
+<p class="botanical"><i>Silybum marianum</i></p>
+<p class="muted">Milk Thistle</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Milk%20Thistle%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Motherwort Leonurus cardiaca Motherwort">
+<img alt="Motherwort" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" src="https://commons.wikimedia.org/wiki/Special:FilePath/Motherwort.jpg?width=960"/>
+<p class="herb-description">Botanical record for Motherwort (Leonurus cardiaca) — Motherwort.</p>
+<div class="herb-count">HERB 137</div>
+<h2>Motherwort</h2>
+<p class="botanical"><i>Leonurus cardiaca</i></p>
+<p class="muted">Motherwort</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Motherwort%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Oregano Origanum vulgare Oregano">
+<img alt="Oregano" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" src="https://commons.wikimedia.org/wiki/Special:FilePath/Oregano.jpg?width=960"/>
+<p class="herb-description">Botanical record for Oregano (Origanum vulgare) — Oregano.</p>
+<div class="herb-count">HERB 138</div>
+<h2>Oregano</h2>
+<p class="botanical"><i>Origanum vulgare</i></p>
+<p class="muted">Oregano</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Oregano%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Passionflower Passiflora incarnata Passionflower">
+<img alt="Passionflower" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" src="https://commons.wikimedia.org/wiki/Special:FilePath/Passionflower.jpg?width=960"/>
+<p class="herb-description">Botanical record for Passionflower (Passiflora incarnata) — Passionflower.</p>
+<div class="herb-count">HERB 139</div>
+<h2>Passionflower</h2>
+<p class="botanical"><i>Passiflora incarnata</i></p>
+<p class="muted">Passionflower</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Passionflower%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Red Clover Trifolium pratense Red Clover">
+<img alt="Red Clover" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://static.wixstatic.com/media/054863_d4b2e5cb23ca48ca8a7f78c2fd16dea5~mv2_d_1312_1749_s_2.jpg/v1/fill/w_568%2Ch_758%2Cal_c%2Cq_85%2Cusm_0.66_1.00_0.01%2Cenc_avif%2Cquality_auto/054863_d4b2e5cb23ca48ca8a7f78c2fd16dea5~mv2_d_1312_1749_s_2.jpg"/>
+<p class="herb-description">Botanical record for Red Clover (Trifolium pratense) — Red Clover.</p>
+<div class="herb-count">HERB 140</div>
+<h2>Red Clover</h2>
+<p class="botanical"><i>Trifolium pratense</i></p>
+<p class="muted">Red Clover</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Red%20Clover%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Rhodiola Rhodiola rosea Rhodiola">
+<img alt="Rhodiola" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Rhodiola_rosea_(Rhodiole_-_Roseroot).jpg?width=960"/>
+<p class="herb-description">Botanical record for Rhodiola (Rhodiola rosea) — Rhodiola.</p>
+<div class="herb-count">HERB 141</div>
+<h2>Rhodiola</h2>
+<p class="botanical"><i>Rhodiola rosea</i></p>
+<p class="muted">Rhodiola</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Rhodiola%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Rue Ruta graveolens Rue">
+<img alt="Rue" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Ruta_graveolens_MHNT.BOT.2005.0.973.jpg?width=960"/>
+<p class="herb-description">Botanical record for Rue (Ruta graveolens) — Rue.</p>
+<div class="herb-count">HERB 142</div>
+<h2>Rue</h2>
+<p class="botanical"><i>Ruta graveolens</i></p>
+<p class="muted">Rue</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Rue%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Sarsaparilla Smilax ornata Sarsaparilla">
+<img alt="Sarsaparilla" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Sarsaparilla-1271142_1920.jpg?width=960"/>
+<p class="herb-description">Botanical record for Sarsaparilla (Smilax ornata) — Sarsaparilla.</p>
+<div class="herb-count">HERB 143</div>
+<h2>Sarsaparilla</h2>
+<p class="botanical"><i>Smilax ornata</i></p>
+<p class="muted">Sarsaparilla</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Sarsaparilla%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Skullcap Scutellaria lateriflora Skullcap">
+<img alt="Skullcap" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" src="https://commons.wikimedia.org/wiki/Special:FilePath/Skullcap.jpg?width=960"/>
+<p class="herb-description">Botanical record for Skullcap (Scutellaria lateriflora) — Skullcap.</p>
+<div class="herb-count">HERB 144</div>
+<h2>Skullcap</h2>
+<p class="botanical"><i>Scutellaria lateriflora</i></p>
+<p class="muted">Skullcap</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Skullcap%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Slippery Elm Ulmus rubra Slippery Elm">
+<img alt="Slippery Elm" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Ulmus_rubra_11zz.jpg?width=960"/>
+<p class="herb-description">Botanical record for Slippery Elm (Ulmus rubra) — Slippery Elm.</p>
+<div class="herb-count">HERB 145</div>
+<h2>Slippery Elm</h2>
+<p class="botanical"><i>Ulmus rubra</i></p>
+<p class="muted">Slippery Elm</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Slippery%20Elm%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Spearmint Mentha spicata Spearmint">
+<img alt="Spearmint" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Mentha_spicata_L..jpg?width=960"/>
+<p class="herb-description">Botanical record for Spearmint (Mentha spicata) — Spearmint.</p>
+<div class="herb-count">HERB 146</div>
+<h2>Spearmint</h2>
+<p class="botanical"><i>Mentha spicata</i></p>
+<p class="muted">Spearmint</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Spearmint%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="St Johns Wort Hypericum perforatum St John's Wort">
+<img alt="St Johns Wort" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/(Hypericum_perforatum)_St._John%27s_wort.jpg?width=960"/>
+<p class="herb-description">Botanical record for St Johns Wort (Hypericum perforatum) — St John's Wort.</p>
+<div class="herb-count">HERB 147</div>
+<h2>St Johns Wort</h2>
+<p class="botanical"><i>Hypericum perforatum</i></p>
+<p class="muted">St John's Wort</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20St%20Johns%20Wort%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Tarragon Artemisia dracunculus Tarragon">
+<img alt="Tarragon" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Artemisia_dracunculus_1.jpg?width=960"/>
+<p class="herb-description">Botanical record for Tarragon (Artemisia dracunculus) — Tarragon.</p>
+<div class="herb-count">HERB 148</div>
+<h2>Tarragon</h2>
+<p class="botanical"><i>Artemisia dracunculus</i></p>
+<p class="muted">Tarragon</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Tarragon%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Valerian Valeriana officinalis Valerian">
+<img alt="Valerian" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Valeriana_officinalis_-_Valerian.jpg?width=960"/>
+<p class="herb-description">Botanical record for Valerian (Valeriana officinalis) — Valerian.</p>
+<div class="herb-count">HERB 149</div>
+<h2>Valerian</h2>
+<p class="botanical"><i>Valeriana officinalis</i></p>
+<p class="muted">Valerian</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Valerian%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Yarrow Achillea millefolium Yarrow">
+<img alt="Yarrow" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" src="https://commons.wikimedia.org/wiki/Special:FilePath/Yarrow.jpg?width=960"/>
+<p class="herb-description">Botanical record for Yarrow (Achillea millefolium) — Yarrow.</p>
+<div class="herb-count">HERB 150</div>
+<h2>Yarrow</h2>
+<p class="botanical"><i>Achillea millefolium</i></p>
+<p class="muted">Yarrow</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Yarrow%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Yerba Mate Ilex paraguariensis Yerba Mate">
+<img alt="Yerba Mate" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" src="https://commons.wikimedia.org/wiki/Special:FilePath/Yerba%20Mate.jpg?width=960"/>
+<p class="herb-description">Botanical record for Yerba Mate (Ilex paraguariensis) — Yerba Mate.</p>
+<div class="herb-count">HERB 151</div>
+<h2>Yerba Mate</h2>
+<p class="botanical"><i>Ilex paraguariensis</i></p>
+<p class="muted">Yerba Mate</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Yerba%20Mate%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Yucca Yucca filamentosa Yucca">
+<img alt="Yucca" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" src="https://commons.wikimedia.org/wiki/Special:FilePath/Yucca.jpg?width=960"/>
+<p class="herb-description">Botanical record for Yucca (Yucca filamentosa) — Yucca.</p>
+<div class="herb-count">HERB 152</div>
+<h2>Yucca</h2>
+<p class="botanical"><i>Yucca filamentosa</i></p>
+<p class="muted">Yucca</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Yucca%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Andrographis Andrographis paniculata Kalmegh / Andrographis">
+<img alt="Andrographis" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" src="https://commons.wikimedia.org/wiki/Special:FilePath/Andrographis.jpg?width=960"/>
+<p class="herb-description">Botanical record for Andrographis (Andrographis paniculata) — Kalmegh / Andrographis.</p>
+<div class="herb-count">HERB 153</div>
+<h2>Andrographis</h2>
+<p class="botanical"><i>Andrographis paniculata</i></p>
+<p class="muted">Kalmegh / Andrographis</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Andrographis%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Boswellia Boswellia serrata Indian Frankincense">
+<img alt="Boswellia" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Boswellia_serrata_(4399783209).jpg?width=960"/>
+<p class="herb-description">Botanical record for Boswellia (Boswellia serrata) — Indian Frankincense.</p>
+<div class="herb-count">HERB 154</div>
+<h2>Boswellia</h2>
+<p class="botanical"><i>Boswellia serrata</i></p>
+<p class="muted">Indian Frankincense</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Boswellia%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Chicory Cichorium intybus Chicory">
+<img alt="Chicory" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" src="https://commons.wikimedia.org/wiki/Special:FilePath/Chicory.jpg?width=960"/>
+<p class="herb-description">Botanical record for Chicory (Cichorium intybus) — Chicory.</p>
+<div class="herb-count">HERB 155</div>
+<h2>Chicory</h2>
+<p class="botanical"><i>Cichorium intybus</i></p>
+<p class="muted">Chicory</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Chicory%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Myrrh Commiphora myrrha Myrrh">
+<img alt="Myrrh" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Commiphora_myrrha.jpg?width=960"/>
+<p class="herb-description">Botanical record for Myrrh (Commiphora myrrha) — Myrrh.</p>
+<div class="herb-count">HERB 156</div>
+<h2>Myrrh</h2>
+<p class="botanical"><i>Commiphora myrrha</i></p>
+<p class="muted">Myrrh</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Myrrh%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Olive Leaf Olea europaea Olive Leaf">
+<img alt="Olive Leaf" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Olea_europaea.jpg?width=960"/>
+<p class="herb-description">Botanical record for Olive Leaf (Olea europaea) — Olive Leaf.</p>
+<div class="herb-count">HERB 157</div>
+<h2>Olive Leaf</h2>
+<p class="botanical"><i>Olea europaea</i></p>
+<p class="muted">Olive Leaf</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Olive%20Leaf%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Pomegranate Punica granatum Pomegranate">
+<img alt="Pomegranate" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" src="https://commons.wikimedia.org/wiki/Special:FilePath/Pomegranate.jpg?width=960"/>
+<p class="herb-description">Botanical record for Pomegranate (Punica granatum) — Pomegranate.</p>
+<div class="herb-count">HERB 158</div>
+<h2>Pomegranate</h2>
+<p class="botanical"><i>Punica granatum</i></p>
+<p class="muted">Pomegranate</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Pomegranate%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Saw Palmetto Serenoa repens Saw Palmetto">
+<img alt="Saw Palmetto" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Serenoa_repens.jpg?width=960"/>
+<p class="herb-description">Botanical record for Saw Palmetto (Serenoa repens) — Saw Palmetto.</p>
+<div class="herb-count">HERB 159</div>
+<h2>Saw Palmetto</h2>
+<p class="botanical"><i>Serenoa repens</i></p>
+<p class="muted">Saw Palmetto</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Saw%20Palmetto%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Witch Hazel Hamamelis virginiana Witch Hazel">
+<img alt="Witch Hazel" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" src="https://commons.wikimedia.org/wiki/Special:FilePath/Witch%20Hazel.jpg?width=960"/>
+<p class="herb-description">Botanical record for Witch Hazel (Hamamelis virginiana) — Witch Hazel.</p>
+<div class="herb-count">HERB 160</div>
+<h2>Witch Hazel</h2>
+<p class="botanical"><i>Hamamelis virginiana</i></p>
+<p class="muted">Witch Hazel</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Witch%20Hazel%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Borage Borago officinalis Borage">
+<img alt="Borage" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" src="https://commons.wikimedia.org/wiki/Special:FilePath/Borage.jpg?width=960"/>
+<p class="herb-description">Botanical record for Borage (Borago officinalis) — Borage.</p>
+<div class="herb-count">HERB 161</div>
+<h2>Borage</h2>
+<p class="botanical"><i>Borago officinalis</i></p>
+<p class="muted">Borage</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Borage%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Khadira Senegalia catechu Khadira">
+<img alt="Khadira" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Khadira_(Sanskrit-_खदिरः_or_खादिरः)_(517656743).jpg?width=960"/>
+<p class="herb-description">Botanical record for Khadira (Senegalia catechu) — Khadira.</p>
+<div class="herb-count">HERB 162</div>
+<h2>Khadira</h2>
+<p class="botanical"><i>Senegalia catechu</i></p>
+<p class="muted">Khadira</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Khadira%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Bakuchi Cullen corylifolium Bakuchi / Babchi">
+<img alt="Bakuchi" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Psoralea_corylifolia_-_Agri-Horticultural_Society_of_India_-_Alipore_-_Kolkata_2013-01-05_2279.JPG?width=960"/>
+<p class="herb-description">Botanical record for Bakuchi (Cullen corylifolium) — Bakuchi / Babchi.</p>
+<div class="herb-count">HERB 163</div>
+<h2>Bakuchi</h2>
+<p class="botanical"><i>Cullen corylifolium</i></p>
+<p class="muted">Bakuchi / Babchi</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Bakuchi%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Lajjalu Mimosa pudica Touch-Me-Not">
+<img alt="Lajjalu" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Lajalu_(Marathi-_लाजाळू)_(371556271).jpg?width=960"/>
+<p class="herb-description">Botanical record for Lajjalu (Mimosa pudica) — Touch-Me-Not.</p>
+<div class="herb-count">HERB 164</div>
+<h2>Lajjalu</h2>
+<p class="botanical"><i>Mimosa pudica</i></p>
+<p class="muted">Touch-Me-Not</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Lajjalu%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Karpura Cinnamomum camphora Camphor Tree">
+<img alt="Karpura" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Cinnamomum_camphora_1zz.jpg?width=960"/>
+<p class="herb-description">Botanical record for Karpura (Cinnamomum camphora) — Camphor Tree.</p>
+<div class="herb-count">HERB 165</div>
+<h2>Karpura</h2>
+<p class="botanical"><i>Cinnamomum camphora</i></p>
+<p class="muted">Camphor Tree</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Karpura%3F">Ask AI →</a>
+</article>
+<article class="card herb-card" data-search="Kulinjan Alpinia galanga Greater Galangal">
+<img alt="Kulinjan" class="herb-photo" loading="lazy" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Medicinal_Herbs.jpg?width=960';" referrerpolicy="no-referrer" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Alpinia_galanga.jpg?width=960"/>
+<p class="herb-description">Botanical record for Kulinjan (Alpinia galanga) — Greater Galangal.</p>
+<div class="herb-count">HERB 166</div>
+<h2>Kulinjan</h2>
+<p class="botanical"><i>Alpinia galanga</i></p>
+<p class="muted">Greater Galangal</p>
+<div class="tags"><span class="tag">Botanical photo</span><span class="tag">Ask AI</span></div>
+<a class="btn secondary" href="/assistant?q=What%20are%20the%20traditional%20uses%20of%20Kulinjan%3F">Ask AI →</a>
+</article>
+</section>
+<div class="footer">Existing herb cards and prototype images are preserved. Only the specifically requested herb images were restored and the requested additional herb cards were added.</div>
+</main>
+<script>
+function filterHerbs(){
+  const q=document.getElementById('search').value.toLowerCase().trim();
+  const cards=document.querySelectorAll('.herb-card');
+  let visible=0;
+  cards.forEach(card=>{
+    const text=card.textContent.toLowerCase();
+    const show=!q || text.includes(q);
+    card.style.display=show?'block':'none';
+    if(show) visible++;
+  });
+  document.getElementById('visibleCount').textContent=visible;
+  document.getElementById('empty').style.display=visible?'none':'block';
+}
+</script>
+</body>
+</html>
