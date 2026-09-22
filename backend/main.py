@@ -8,6 +8,10 @@ from unittest import result
 from collections import defaultdict, deque
 from time import monotonic
 from dotenv import load_dotenv
+from fastapi import Header
+from sqlalchemy.orm import Session
+from db import SessionLocal
+from auth import User
 
 from fastapi import FastAPI, HTTPException, status, Depends, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -366,6 +370,43 @@ async def process_query(
 app.mount("/app", StaticFiles(directory=PROJECT_ROOT, html=True), name="app")
 app.mount("/assets", StaticFiles(directory=os.path.join(PROJECT_ROOT, "assets"), check_dir=False), name="assets")
 
-if __name__ == "__main__":
+# ============================================================
+# ADMIN - VIEW REGISTERED USERS
+# ============================================================
+
+@app.get("/api/v1/admin/users")
+def view_registered_users(x_admin_key: str = Header(default="")):
+
+    admin_key = os.getenv("ADMIN_VIEW_KEY")
+
+    if not admin_key or x_admin_key != admin_key:
+        raise HTTPException(
+            status_code=403,
+            detail="Unauthorized"
+        )
+
+    db = SessionLocal()
+
+    try:
+        users = (
+            db.query(User)
+            .order_by(User.created_at.desc())
+            .all()
+        )
+
+        return [
+            {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+                "role": user.role,
+                "created_at": user.created_at
+            }
+            for user in users
+        ]
+
+    finally:
+        db.close()
+    if __name__ == "__main__":
     print("[INFO] Starting IP-SAKTI Sahayak API Server on port 8000 ...", flush=True)
     uvicorn.run(app, host="127.0.0.1", port=8000)
