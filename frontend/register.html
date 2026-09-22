@@ -23,26 +23,31 @@ lang.onchange = () => {
 };
 
 
-/* ==============================
-   REGISTER FORM
-============================== */
+/* =========================
+   REGISTRATION
+========================= */
 
-const registerForm = document.getElementById('registerForm');
-const registerBtn = document.getElementById('registerBtn');
-const message = document.getElementById('message');
-
-registerForm.addEventListener('submit', async function (e) {
+document.getElementById('registerForm').addEventListener('submit', async function(e) {
 
     e.preventDefault();
+
+    const btn = document.getElementById('registerBtn');
+    const message = document.getElementById('message');
 
     const username = document.getElementById('username').value.trim();
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
 
-    registerBtn.disabled = true;
-    registerBtn.textContent = 'Creating account...';
-
     message.style.display = 'none';
+
+    if (!username || !email || !password) {
+        message.textContent = 'Please fill all fields.';
+        message.style.display = 'block';
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Creating account...';
 
     try {
 
@@ -61,28 +66,33 @@ registerForm.addEventListener('submit', async function (e) {
         const data = await response.json().catch(() => ({}));
 
         if (!response.ok) {
-            throw new Error(data.detail || 'Registration failed.');
+            throw new Error(
+                data.detail ||
+                data.message ||
+                'Registration failed.'
+            );
         }
 
+        message.textContent = 'Account created successfully. Redirecting to login...';
         message.style.display = 'block';
-        message.style.background = '#e8f5e9';
-        message.style.color = '#256029';
-        message.textContent =
-            'Account created successfully. Redirecting to login...';
 
+        /*
+         * Wait briefly so user can see success message
+         * then go to login page.
+         */
         setTimeout(() => {
             window.location.href = '/login';
-        }, 1200);
+        }, 800);
 
     } catch (error) {
 
-        message.style.display = 'block';
-        message.style.background = '#fdecea';
-        message.style.color = '#b3261e';
-        message.textContent = error.message;
+        console.error('Registration error:', error);
 
-        registerBtn.disabled = false;
-        registerBtn.textContent = 'Create account';
+        message.textContent = error.message || 'Registration failed.';
+        message.style.display = 'block';
+
+        btn.disabled = false;
+        btn.textContent = 'Create account';
     }
 
 });
