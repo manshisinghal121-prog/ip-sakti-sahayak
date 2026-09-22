@@ -407,6 +407,6 @@ def view_registered_users(x_admin_key: str = Header(default="")):
 
     finally:
         db.close()
-    if __name__ == "__main__":
+if __name__ == "__main__":
     print("[INFO] Starting IP-SAKTI Sahayak API Server on port 8000 ...", flush=True)
     uvicorn.run(app, host="127.0.0.1", port=8000)
