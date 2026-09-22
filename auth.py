@@ -7,10 +7,10 @@ from dotenv import load_dotenv
 from jose import JWTError, jwt
 import bcrypt
 from pydantic import BaseModel, Field
-from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import Session
 
-from db import Base
+# Import the database User model
+from db import User
 
 
 # ============================================================
@@ -21,13 +21,15 @@ load_dotenv()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+
 ACCESS_TOKEN_EXPIRE_MINUTES = int(
     os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60")
 )
 
 if not SECRET_KEY:
     raise RuntimeError(
-        "SECRET_KEY is not configured. Add SECRET_KEY to the project .env file."
+        "SECRET_KEY is not configured. "
+        "Add SECRET_KEY to the project .env file."
     )
 
 if len(SECRET_KEY) < 32:
@@ -37,51 +39,10 @@ if len(SECRET_KEY) < 32:
 
 
 # ============================================================
-# USER DATABASE MODEL
-# ============================================================
-
-class User(Base):
-    __tablename__ = "users"
-
-    id = Column(Integer, primary_key=True, index=True)
-
-    username = Column(
-        String(50),
-        unique=True,
-        index=True,
-        nullable=False
-    )
-
-    email = Column(
-        String(255),
-        unique=True,
-        index=True,
-        nullable=False
-    )
-
-    hashed_password = Column(
-        String(255),
-        nullable=False
-    )
-
-    role = Column(
-        String(20),
-        default="user",
-        nullable=False
-    )
-
-    created_at = Column(
-        DateTime,
-        default=lambda: datetime.now(timezone.utc)
-    )
-
-
-# ============================================================
 # REQUEST MODELS
 # ============================================================
 
 class UserCreate(BaseModel):
-
     username: str = Field(
         ...,
         min_length=3,
@@ -102,7 +63,6 @@ class UserCreate(BaseModel):
 
 
 class UserLogin(BaseModel):
-
     username: str = Field(
         ...,
         min_length=1,
@@ -122,7 +82,7 @@ class Token(BaseModel):
 
 
 # ============================================================
-# BASIC EMAIL VALIDATION
+# EMAIL VALIDATION
 # ============================================================
 
 def validate_email(email: str) -> bool:
@@ -223,6 +183,20 @@ def get_user(
         db.query(User)
         .filter(
             User.username == username
+        )
+        .first()
+    )
+
+
+def get_user_by_email(
+    db: Session,
+    email: str
+):
+
+    return (
+        db.query(User)
+        .filter(
+            User.email == email.strip().lower()
         )
         .first()
     )
