@@ -72,6 +72,12 @@ document.getElementById('registerForm').addEventListener('submit', async functio
                 'Registration failed.'
             );
         }
+        console.log("REGISTER SUCCESS", data);
+
+setTimeout(() => {
+    console.log("REDIRECTING TO LOGIN");
+    window.location.href = '/login';
+}, 800);
 
         message.textContent = 'Account created successfully. Redirecting to login...';
         message.style.display = 'block';

@@ -91,7 +91,6 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
         btn.textContent = 'Sign in';
     }
 });
-</script>
 const lang=document.getElementById('loginLanguage');
  (window.IPSAKTI_I18N?.LANGS||[]).forEach(([v,n])=>{const o=document.createElement('option');
  o.value=v;o.textContent=n;lang.appendChild(o)}); lang.value=localStorage.getItem('ipSaktiLanguage')||'en'; 
@@ -107,4 +106,5 @@ const next=new URLSearchParams(location.search).get('next')||'/assistant';locati
 }
 catch(err){msg.textContent=err.message;msg.style.display='block';
 msg.style.background='#9E4624';msg.style.color='#fff'}finally{btn.disabled=false;btn.textContent='Sign in'}});
-</script></body></html>
+</script>
+</body></html>
