@@ -397,6 +397,7 @@ body::before{
     <a href="/compliance">Compliance</a>
     <a href="/herbs">Herb Library</a>
     <a class="active" href="/assistant">AI Sahayak</a>
+    <button id="logoutBtn" class="logout-btn">Logout</button>
   </span>
 </nav>
 
@@ -913,6 +914,8 @@ body::before{
         });
 
         const data = await response.json().catch(() => ({}));
+        console.log("QUERY RESPONSE:", data);
+        console.log("ANSWER:", data.answer);
 
         if (!response.ok) {
           throw new Error(data.detail || "Login failed.");
@@ -1340,12 +1343,34 @@ body::before{
       </p>
     </div>
   </div>
+<script>
+document.getElementById('logoutBtn').addEventListener('click', function () {
 
+    localStorage.removeItem('ipSaktiAccessToken');
+    localStorage.removeItem('ipSaktiUsername');
+
+    window.location.href = '/login';
+});
+</script>
 </body>
 </html>
 
 
 <style id="ip-sakti-direct-mandala-fix">
+.logout-btn {
+    margin-left: 15px;
+    padding: 8px 16px;
+    border: 1px solid #9E4624;
+    border-radius: 8px;
+    background: #9E4624;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+    background: #7f351b;
+}
 /* DIRECT FINAL VISUAL FIX — actual page code, no mockup */
 html,body{background:#F5F2EC!important;background-image:none!important;}
 body{position:relative!important;}
