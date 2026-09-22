@@ -23,77 +23,69 @@ lang.onchange = () => {
 };
 
 
-/* =========================
-   REGISTRATION
-========================= */
+/* ==============================
+   REGISTER FORM
+============================== */
 
 const registerForm = document.getElementById('registerForm');
 const registerBtn = document.getElementById('registerBtn');
 const message = document.getElementById('message');
 
-if (registerForm) {
+registerForm.addEventListener('submit', async function (e) {
 
-    registerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-        e.preventDefault();
+    const username = document.getElementById('username').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
 
-        const username = document.getElementById('username').value.trim();
-        const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value;
+    registerBtn.disabled = true;
+    registerBtn.textContent = 'Creating account...';
 
-        registerBtn.disabled = true;
-        registerBtn.textContent = 'Creating account...';
+    message.style.display = 'none';
 
-        message.style.display = 'none';
+    try {
 
-        try {
+        const response = await fetch('/api/v1/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: username,
+                email: email,
+                password: password
+            })
+        });
 
-            const response = await fetch('/api/v1/auth/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    username: username,
-                    email: email,
-                    password: password
-                })
-            });
+        const data = await response.json().catch(() => ({}));
 
-            const data = await response.json().catch(() => ({}));
-
-            if (!response.ok) {
-                throw new Error(
-                    data.detail || 'Registration failed.'
-                );
-            }
-
-            message.style.display = 'block';
-            message.style.background = '#e8f5e9';
-            message.style.color = '#256029';
-            message.textContent =
-                'Account created successfully. Redirecting to login...';
-
-            registerBtn.textContent = 'Account created';
-
-            setTimeout(() => {
-                window.location.href = '/login';
-            }, 1200);
-
-        } catch (error) {
-
-            message.style.display = 'block';
-            message.style.background = '#fdecea';
-            message.style.color = '#b3261e';
-            message.textContent = error.message;
-
-            registerBtn.disabled = false;
-            registerBtn.textContent = 'Create account';
+        if (!response.ok) {
+            throw new Error(data.detail || 'Registration failed.');
         }
 
-    });
+        message.style.display = 'block';
+        message.style.background = '#e8f5e9';
+        message.style.color = '#256029';
+        message.textContent =
+            'Account created successfully. Redirecting to login...';
 
-}
+        setTimeout(() => {
+            window.location.href = '/login';
+        }, 1200);
+
+    } catch (error) {
+
+        message.style.display = 'block';
+        message.style.background = '#fdecea';
+        message.style.color = '#b3261e';
+        message.textContent = error.message;
+
+        registerBtn.disabled = false;
+        registerBtn.textContent = 'Create account';
+    }
+
+});
 </script>
 </body>
 </html>
