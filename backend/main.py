@@ -164,6 +164,10 @@ app = FastAPI(
     version="1.1.0"
 )
 
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
 
 # ============================================================
 # DATABASE INITIALIZATION
