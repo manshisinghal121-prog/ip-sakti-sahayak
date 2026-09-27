@@ -37,7 +37,7 @@ FRONTEND_DIR = BASE_DIR / "frontend"
 # DATABASE
 # ============================================================
 
-from db import (
+from backend.db import (
     init_db,
     save_query,
     SessionLocal
@@ -48,7 +48,7 @@ from db import (
 # AUTHENTICATION
 # ============================================================
 
-from auth import (
+from backend.auth import (
     User,
     UserCreate,
     UserLogin,
