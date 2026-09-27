@@ -277,11 +277,20 @@ def _term_overlap_score(query: str, content: str) -> float:
 
 def query_legal_database(query_text: str, top_k: int = 3) -> List[Dict]:
     """
-    Query the offline legal knowledge base using hybrid retrieval.
+    Query the offline legal knowledge base using query-focused hybrid retrieval.
 
-    The public return structure remains backward-compatible with the
-    existing RAG assistant while exposing additional retrieval metadata.
+    Keeps the existing return structure so rag_assistant.py does not need
+    to be changed.
+
+    Retrieval strategy:
+    1. TF-IDF similarity
+    2. Legal metadata matching
+    3. Exact legal-reference matching
+    4. Important-term overlap
+    5. Query-specific filtering
+    6. Diversity across source documents
     """
+
     offline_db_path = os.path.join(DB_DIR, "offline_vectorstore.pkl")
 
     if not os.path.exists(offline_db_path):
@@ -297,8 +306,12 @@ def query_legal_database(query_text: str, top_k: int = 3) -> List[Dict]:
         pf("[ERROR] scikit-learn is required for retrieval.")
         return []
 
-    with open(offline_db_path, "rb") as f:
-        data = pickle.load(f)
+    try:
+        with open(offline_db_path, "rb") as f:
+            data = pickle.load(f)
+    except Exception as e:
+        pf(f"[ERROR] Could not load vector database: {e}")
+        return []
 
     chunks = data.get("chunks", [])
     vectorizer = data.get("vectorizer")
@@ -309,47 +322,257 @@ def query_legal_database(query_text: str, top_k: int = 3) -> List[Dict]:
         return []
 
     query = str(query_text or "").strip()
+
     if not query:
         return []
 
-    # Lexical retrieval from the existing vector store.
-    query_vec = vectorizer.transform([query])
-    lexical_scores = cosine_similarity(query_vec, matrix).flatten()
+    # ---------------------------------------------------------
+    # NORMALIZE QUERY
+    # ---------------------------------------------------------
+
+    query_lower = query.lower()
+
+    # Remove common filler words.
+    stop_words = {
+        "what", "is", "are", "the", "a", "an", "of", "for",
+        "to", "in", "on", "and", "or", "with", "can", "could",
+        "should", "would", "how", "why", "when", "where",
+        "does", "do", "i", "my", "this", "that", "it",
+        "be", "from", "about", "please", "tell", "me"
+    }
+
+    query_terms = [
+        word
+        for word in re.findall(r"[a-zA-Z0-9]+", query_lower)
+        if word not in stop_words and len(word) > 2
+    ]
+
+    query_term_set = set(query_terms)
+
+    # ---------------------------------------------------------
+    # TF-IDF RETRIEVAL
+    # ---------------------------------------------------------
+
+    try:
+        query_vec = vectorizer.transform([query])
+        lexical_scores = cosine_similarity(
+            query_vec,
+            matrix
+        ).flatten()
+    except Exception as e:
+        pf(f"[ERROR] Retrieval similarity failed: {e}")
+        return []
 
     matched_topics = _matched_topics(query)
     matched_authorities = _matched_authorities(query)
 
     candidates = []
 
+    # ---------------------------------------------------------
+    # SCORE EVERY CHUNK
+    # ---------------------------------------------------------
+
     for idx, item in enumerate(chunks):
-        lexical_score = float(lexical_scores[idx])
+
+        content = str(
+            item.get("content", "") or ""
+        ).strip()
+
+        if not content:
+            continue
+
+        document_title = str(
+            item.get("document_title", "") or ""
+        )
+
+        section = str(
+            item.get("section", "") or ""
+        )
+
+        topic = str(
+            item.get("topic", "") or ""
+        )
+
+        authority = str(
+            item.get("authority", "") or ""
+        )
+
+        knowledge_source = str(
+            item.get("knowledge_source", "") or ""
+        )
+
+        searchable_text = (
+            document_title
+            + " "
+            + section
+            + " "
+            + topic
+            + " "
+            + authority
+            + " "
+            + knowledge_source
+            + " "
+            + content
+        ).lower()
+
+        # -----------------------------------------------------
+        # BASE TF-IDF SCORE
+        # -----------------------------------------------------
+
+        lexical_score = float(
+            lexical_scores[idx]
+        )
+
+        # -----------------------------------------------------
+        # TERM MATCHING
+        # -----------------------------------------------------
+
+        matched_query_terms = 0
+
+        for term in query_term_set:
+            if term in searchable_text:
+                matched_query_terms += 1
+
+        if query_term_set:
+            term_match_ratio = (
+                matched_query_terms /
+                len(query_term_set)
+            )
+        else:
+            term_match_ratio = 0.0
+
+        # -----------------------------------------------------
+        # EXISTING METADATA SCORING
+        # -----------------------------------------------------
+
         metadata_score = _metadata_score(
             query,
             item,
             matched_topics,
             matched_authorities,
         )
+
+        # -----------------------------------------------------
+        # EXISTING TERM OVERLAP
+        # -----------------------------------------------------
+
         overlap_score = _term_overlap_score(
             query,
-            item.get("content", ""),
+            content,
         )
-        exact_reference_score = _exact_reference_score(query, item)
 
-        # Weighted hybrid score.
-        #
-        # TF-IDF remains the primary evidence signal.
-        # Metadata routes legal queries to the right topic/source.
-        # Exact legal references get an additional precision boost.
-        # Term overlap remains a small stability signal.
+        # -----------------------------------------------------
+        # EXACT LEGAL REFERENCE
+        # -----------------------------------------------------
+
+        exact_reference_score = _exact_reference_score(
+            query,
+            item
+        )
+
+        # -----------------------------------------------------
+        # QUESTION-SPECIFIC SIGNALS
+        # -----------------------------------------------------
+
+        question_signals = 0.0
+
+        # Patentability
+        patent_terms = {
+            "patent", "patentability", "novelty",
+            "prior art", "claim", "invention",
+            "section 3", "section 3p", "traditional knowledge",
+            "tkdl"
+        }
+
+        if any(term in query_lower for term in patent_terms):
+            if any(
+                term in searchable_text
+                for term in patent_terms
+            ):
+                question_signals += 0.20
+
+        # Licensing / compliance
+        compliance_terms = {
+            "license", "licence", "licensing",
+            "compliance", "gmp", "manufacturing",
+            "ayush", "rule 158b", "approval"
+        }
+
+        if any(term in query_lower for term in compliance_terms):
+            if any(
+                term in searchable_text
+                for term in compliance_terms
+            ):
+                question_signals += 0.20
+
+        # Safety
+        safety_terms = {
+            "safety", "safe", "dosage",
+            "dose", "side effect",
+            "contraindication", "interaction",
+            "toxicity"
+        }
+
+        if any(term in query_lower for term in safety_terms):
+            if any(
+                term in searchable_text
+                for term in safety_terms
+            ):
+                question_signals += 0.20
+
+        # Traditional use
+        traditional_terms = {
+            "traditional", "traditional use",
+            "ayurveda", "herb", "uses",
+            "medicinal use"
+        }
+
+        if any(term in query_lower for term in traditional_terms):
+            if any(
+                term in searchable_text
+                for term in traditional_terms
+            ):
+                question_signals += 0.15
+
+        # Biodiversity / ABS
+        biodiversity_terms = {
+            "biodiversity", "biological resource",
+            "abs", "access benefit sharing",
+            "benefit sharing", "nba"
+        }
+
+        if any(term in query_lower for term in biodiversity_terms):
+            if any(
+                term in searchable_text
+                for term in biodiversity_terms
+            ):
+                question_signals += 0.20
+
+        # WIPO
+        if "wipo" in query_lower:
+            if "wipo" in searchable_text:
+                question_signals += 0.20
+
+        # WHO
+        if "who" in query_lower:
+            if "who" in searchable_text:
+                question_signals += 0.20
+
+        # -----------------------------------------------------
+        # FINAL QUERY-FOCUSED SCORE
+        # -----------------------------------------------------
+
         hybrid_score = (
-            0.55 * lexical_score
+            0.40 * lexical_score
             + 0.15 * metadata_score
             + 0.20 * exact_reference_score
             + 0.10 * overlap_score
+            + 0.15 * term_match_ratio
+            + question_signals
         )
 
-        # Avoid returning completely unrelated zero-score chunks.
-        if hybrid_score <= 0.005:
+        # Completely unrelated chunks should not enter retrieval.
+        if hybrid_score <= 0.015:
             continue
 
         candidates.append(
@@ -359,6 +582,8 @@ def query_legal_database(query_text: str, top_k: int = 3) -> List[Dict]:
                 metadata_score,
                 overlap_score,
                 exact_reference_score,
+                term_match_ratio,
+                question_signals,
                 idx,
                 item,
             )
@@ -367,44 +592,75 @@ def query_legal_database(query_text: str, top_k: int = 3) -> List[Dict]:
     if not candidates:
         return []
 
+    # ---------------------------------------------------------
+    # RANKING
+    # ---------------------------------------------------------
+
     candidates.sort(
         key=lambda row: (
-            row[4],  # exact legal-reference score
-            row[0],  # hybrid score
+            row[0],   # final query-focused score
+            row[4],   # exact legal reference
+            row[5],   # query term coverage
+            row[1],   # TF-IDF
         ),
         reverse=True,
     )
 
-    # Keep results diverse across documents where possible.
+    # ---------------------------------------------------------
+    # DIVERSITY
+    # ---------------------------------------------------------
+
     selected = []
     seen_documents = set()
 
+    # First pass:
+    # Prefer different documents so the answer has multiple
+    # independent pieces of evidence.
     for candidate in candidates:
-        document_title = str(candidate[6].get("document_title", "") or "")
 
-        if (
-            document_title
-            and document_title in seen_documents
-            and len(selected) < top_k
-        ):
+        item = candidate[8]
+
+        document_title = str(
+            item.get("document_title", "") or ""
+        ).strip()
+
+        document_key = document_title.lower()
+
+        if document_key and document_key in seen_documents:
             continue
 
         selected.append(candidate)
-        if document_title:
-            seen_documents.add(document_title)
+
+        if document_key:
+            seen_documents.add(document_key)
 
         if len(selected) >= top_k:
             break
 
-    # If document diversity left us short, fill from the remaining ranking.
+    # ---------------------------------------------------------
+    # SECOND PASS
+    # ---------------------------------------------------------
+
     if len(selected) < top_k:
-        selected_indices = {row[4] for row in selected}
+
+        selected_ids = {
+            candidate[7]
+            for candidate in selected
+        }
+
         for candidate in candidates:
-            if candidate[4] in selected_indices:
+
+            if candidate[7] in selected_ids:
                 continue
+
             selected.append(candidate)
+
             if len(selected) >= top_k:
                 break
+
+    # ---------------------------------------------------------
+    # BUILD RETURN STRUCTURE
+    # ---------------------------------------------------------
 
     retrieved = []
 
@@ -414,30 +670,116 @@ def query_legal_database(query_text: str, top_k: int = 3) -> List[Dict]:
         metadata_score,
         overlap_score,
         exact_reference_score,
+        term_match_ratio,
+        question_signals,
         idx,
         item,
     ) in selected:
+
         retrieved.append(
             {
-                "chunk_id": item.get("chunk_id", ""),
-                "document_title": item.get("document_title", ""),
-                "section": item.get("section", ""),
-                "page": item.get("page", item.get("page_number")),
-                "jurisdiction": item.get("jurisdiction", "India"),
-                "authority": item.get("authority", ""),
-                "topic": item.get("topic", ""),
-                "knowledge_source": item.get("knowledge_source", ""),
-                "content": item.get("content", ""),
-                "relevance_score": round(float(hybrid_score), 4),
-                "lexical_score": round(float(lexical_score), 4),
-                "metadata_score": round(float(metadata_score), 4),
-                "exact_reference_score": round(float(exact_reference_score), 4),
-                "term_overlap_score": round(float(overlap_score), 4),
+                "chunk_id": item.get(
+                    "chunk_id",
+                    ""
+                ),
+
+                "document_title": item.get(
+                    "document_title",
+                    ""
+                ),
+
+                "section": item.get(
+                    "section",
+                    ""
+                ),
+
+                "page": item.get(
+                    "page",
+                    item.get("page_number")
+                ),
+
+                "jurisdiction": item.get(
+                    "jurisdiction",
+                    "India"
+                ),
+
+                "authority": item.get(
+                    "authority",
+                    ""
+                ),
+
+                "topic": item.get(
+                    "topic",
+                    ""
+                ),
+
+                "knowledge_source": item.get(
+                    "knowledge_source",
+                    ""
+                ),
+
+                "content": item.get(
+                    "content",
+                    ""
+                ),
+
+                "relevance_score": round(
+                    float(hybrid_score),
+                    4
+                ),
+
+                "lexical_score": round(
+                    float(lexical_score),
+                    4
+                ),
+
+                "metadata_score": round(
+                    float(metadata_score),
+                    4
+                ),
+
+                "exact_reference_score": round(
+                    float(exact_reference_score),
+                    4
+                ),
+
+                "term_overlap_score": round(
+                    float(overlap_score),
+                    4
+                ),
+
+                "query_term_match": round(
+                    float(term_match_ratio),
+                    4
+                ),
+
+                "question_specific_score": round(
+                    float(question_signals),
+                    4
+                ),
             }
         )
 
-    return retrieved
+    # ---------------------------------------------------------
+    # DEBUG OUTPUT
+    # ---------------------------------------------------------
 
+    pf(
+        f"[RETRIEVAL] Query: {query}"
+    )
+
+    for index, result in enumerate(
+        retrieved,
+        1
+    ):
+        pf(
+            f"[RETRIEVAL {index}] "
+            f"{result.get('document_title', '')} | "
+            f"score={result.get('relevance_score', 0)} | "
+            f"term_match={result.get('query_term_match', 0)}"
+        )
+
+    return retrieved
 
 if __name__ == "__main__":
     test_query = (

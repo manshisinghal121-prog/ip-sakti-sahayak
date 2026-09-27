@@ -313,16 +313,6 @@ body::before{
 #workspaceHeader select{
   color:#2B2523!important;
 }
-#workspaceHeader select option{
-  background:#2B2523!important;
-  color:#F5F2EC!important;
-}
-
-#workspaceHeader #personaSelect option,
-#workspaceHeader #langSelect option{
-  background-color:#2B2523!important;
-  color:#F5F2EC!important;
-}
 #workspaceHeader #micBtn{
   background:#9E4624!important;
   color:#FFFDF8!important;
@@ -384,6 +374,89 @@ body::before{
 }
 </style>
 
+
+<style id="ipsakti-last-fix">
+/* FINAL FIX: keep the existing design. Only repair toolbar position and query controls. */
+#workspaceHeader{
+  position:fixed!important;
+  top:58px!important;
+  right:22px!important;
+  left:auto!important;
+  bottom:auto!important;
+  z-index:150!important;
+  width:max-content!important;
+  max-width:calc(100vw - 44px)!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  padding:0!important;
+  margin:0!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+#workspaceHeader>div:first-child{display:none!important;}
+#workspaceHeader>div:last-child{
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:8px!important;
+  width:auto!important;
+}
+#workspaceHeader>div:last-child>div{
+  flex:0 0 auto!important;
+  width:auto!important;
+  min-width:0!important;
+  white-space:nowrap!important;
+  padding:5px 9px!important;
+}
+#workspaceHeader>div:last-child>div:first-child::before{
+  content:"Persona:";
+  color:rgba(43,37,35,.62);
+  font-size:11px;
+  margin-right:5px;
+}
+#workspaceHeader>div:last-child>div:first-child>span{display:none!important;}
+#workspaceHeader select{
+  font-size:13px!important;
+  line-height:1.2!important;
+  min-height:26px!important;
+  max-width:260px!important;
+  background:#FFFDF8!important;
+  color:#2B2523!important;
+}
+#workspaceHeader #langSelect{min-width:170px!important;}
+#workspaceHeader #personaSelect{min-width:220px!important;}
+#workspaceHeader #micBtn{width:34px!important;height:34px!important;padding:7px!important;}
+
+/* Make native dropdown menus readable. */
+#workspaceHeader select option{
+  background:#FFFDF8!important;
+  color:#2B2523!important;
+}
+
+/* Query area stays exactly where it belongs and remains clickable. */
+#chatStream{position:relative!important;z-index:2!important;}
+#chatStream + div{position:relative!important;z-index:20!important;pointer-events:auto!important;}
+#chatStream + div form{position:relative!important;z-index:21!important;pointer-events:auto!important;}
+#chatStream + div form input,
+#chatStream + div form button{pointer-events:auto!important;}
+#chatStream + div form button[type="submit"]{cursor:pointer!important;}
+
+@media(max-width:900px){
+  #workspaceHeader{
+    top:54px!important;
+    right:10px!important;
+    max-width:calc(100vw - 20px)!important;
+  }
+  #workspaceHeader>div:last-child{gap:5px!important;}
+  #workspaceHeader>div:last-child>div{padding:4px 7px!important;}
+  #workspaceHeader #personaSelect{min-width:170px!important;}
+  #workspaceHeader #langSelect{min-width:140px!important;}
+}
+</style>
+
 </head>
 <body class="h-screen flex flex-col overflow-hidden bg-mandala" style="padding-top:38px">
 <nav class="ipsakti-top-nav" aria-label="Primary navigation">
@@ -397,7 +470,6 @@ body::before{
     <a href="/compliance">Compliance</a>
     <a href="/herbs">Herb Library</a>
     <a class="active" href="/assistant">AI Sahayak</a>
-    <button id="logoutBtn" class="logout-btn">Logout</button>
   </span>
 </nav>
 
@@ -562,7 +634,7 @@ body::before{
       <div class="p-3.5 bg-[#EFEAE1]/60 border-t border-[#9E4624]/20">
         <form onsubmit="handleUserSubmit(event)" class="flex items-center bg-[#FFFDF8] border border-[#C58529]/50 rounded-xl px-4 py-2 focus-within:border-[#9E4624] transition shadow-xs">
           <input id="userQueryInput" type="text" placeholder="Ask about Ashwagandha, Haridra, Section 3(p), or AYUSH rules..." class="bg-transparent flex-1 text-sm text-[#2B2523] focus:outline-none placeholder-[#2B2523]/50">
-          <button type="submit" class="bg-[#9E4624] hover:bg-[#8B3A1B] text-white p-2 rounded-lg transition ml-2 shadow-xs flex items-center gap-1 text-xs font-semibold">
+          <button type="submit" onclick="handleUserSubmit(event)" class="bg-[#9E4624] hover:bg-[#8B3A1B] text-white p-2 rounded-lg transition ml-2 shadow-xs flex items-center gap-1 text-xs font-semibold">
             <span>Query</span> 
           </button>
         </form>
@@ -914,8 +986,6 @@ body::before{
         });
 
         const data = await response.json().catch(() => ({}));
-        console.log("QUERY RESPONSE:", data);
-        console.log("ANSWER:", data.answer);
 
         if (!response.ok) {
           throw new Error(data.detail || "Login failed.");
@@ -957,11 +1027,21 @@ body::before{
     }
 
     async function sendQueryToBackend(queryText) {
+      queryText = String(queryText || "").trim();
+      if (!queryText) return;
+
       if (!requireAuthentication(queryText)) return;
 
       const chatStream = document.getElementById("chatStream");
-      const persona = document.getElementById("personaSelect").value;
-      const lang = document.getElementById("langSelect").value;
+      const personaEl = document.getElementById("personaSelect");
+      const langEl = document.getElementById("langSelect");
+
+      if (!chatStream || !personaEl || !langEl) {
+        throw new Error("AI Sahayak controls are not loaded correctly. Please refresh the page.");
+      }
+
+      const persona = personaEl.value || "innovator";
+      const lang = langEl.value || "en";
       const apiHost = window.location.hostname || "127.0.0.1";
       const apiBase = window.location.protocol === "file:" ? "http://127.0.0.1:8000" : window.location.origin;
 
@@ -984,6 +1064,7 @@ body::before{
       chatStream.scrollTop = chatStream.scrollHeight;
 
       try {
+        console.log("IP-SAKTI query ->", `${apiBase}/api/v1/query`, { query: queryText, persona, language: lang });
         const response = await fetch(`${apiBase}/api/v1/query`, {
           method: "POST",
           headers: {
@@ -1089,6 +1170,7 @@ body::before{
         // Unique ID for speech playback
         const msgId = "ans_" + Date.now();
         window[msgId] = data.answer;
+        window[msgId + "_lang"] = data.language || document.getElementById("langSelect").value || "en";
 
         // AI Message Bubble
         const mlSummaryHTML = `
@@ -1125,7 +1207,7 @@ body::before{
               <div class="pt-2 border-t border-[#C58529]/20 flex flex-wrap gap-2 items-center">
                 <span class="text-xs text-[#8B3A1B] font-semibold">Sources:</span>
                 ${citationButtonsHTML}
-                <button onclick="speakText('${msgId}', this)" class="ml-auto text-xs bg-[#9E4624] hover:bg-[#8B3A1B] text-white px-2.5 py-1 rounded font-medium flex items-center gap-1 shadow-xs">
+                <button onclick="speakText('${msgId}', window['${msgId}_lang'])" class="ml-auto text-xs bg-[#9E4624] hover:bg-[#8B3A1B] text-white px-2.5 py-1 rounded font-medium flex items-center gap-1 shadow-xs">
                   🔊 Listen
                 </button>
               </div>
@@ -1224,12 +1306,36 @@ body::before{
       `;
     }
 
-    function handleUserSubmit(e) {
-      e.preventDefault();
+    async function handleUserSubmit(e) {
+      if (e) e.preventDefault();
+
       const input = document.getElementById("userQueryInput");
-      if (!input.value.trim()) return;
-      sendQueryToBackend(input.value.trim());
-      input.value = "";
+      if (!input) {
+        console.error("IP-SAKTI: userQueryInput not found");
+        return false;
+      }
+
+      const queryText = input.value.trim();
+      if (!queryText) {
+        input.focus();
+        return false;
+      }
+
+      try {
+        await sendQueryToBackend(queryText);
+        input.value = "";
+      } catch (error) {
+        console.error("IP-SAKTI query error:", error);
+        const chatStream = document.getElementById("chatStream");
+        if (chatStream) {
+          chatStream.innerHTML += `
+            <div class="my-2 p-3 rounded-lg border border-[#9E4624]/30 bg-[#9E4624]/10 text-[#8B3A1B] text-xs">
+              Query could not be sent: ${escapeHTML(error.message || "Unknown error")}
+            </div>`;
+          chatStream.scrollTop = chatStream.scrollHeight;
+        }
+      }
+      return false;
     }
 
     function sendSampleQuery(text) {
@@ -1253,69 +1359,136 @@ body::before{
       }
     });
 
-    // TEXT-TO-SPEECH (AUDIO VOICE OUTPUT)
-    let activeSpeechMsgId = null;
-let activeSpeechButton = null;
+    // ============================================================
+    // MULTILINGUAL TEXT-TO-SPEECH
+    // ============================================================
+    const ttsLanguageMap = {
+      en: "en-IN",
+      hi: "hi-IN",
+      sa: "sa-IN",
+      ta: "ta-IN",
+      te: "te-IN",
+      bn: "bn-IN",
+      mr: "mr-IN",
+      kn: "kn-IN",
+      ml: "ml-IN"
+    };
 
-function speakText(msgId, button) {
-  if (!('speechSynthesis' in window)) {
-    alert("Text-to-Speech is not supported in this browser.");
-    return;
-  }
-
-  // If this message is already speaking → STOP
-  if (
-    window.speechSynthesis.speaking &&
-    activeSpeechMsgId === msgId
-  ) {
-    window.speechSynthesis.cancel();
-
-    if (activeSpeechButton) {
-      activeSpeechButton.innerHTML = "🔊 Listen";
+    function getSpeechVoices() {
+      return window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
     }
 
-    activeSpeechMsgId = null;
-    activeSpeechButton = null;
-    return;
-  }
+    function findBestVoice(languageCode) {
+      const voices = getSpeechVoices();
+      if (!voices.length) return null;
 
-  // Stop any previous speech
-  window.speechSynthesis.cancel();
+      const wanted = languageCode.toLowerCase();
+      const base = wanted.split("-")[0];
 
-  if (activeSpeechButton) {
-    activeSpeechButton.innerHTML = "🔊 Listen";
-  }
+      // Exact locale first.
+      let voice = voices.find(v =>
+        String(v.lang || "").toLowerCase() === wanted
+      );
 
-  const text = window[msgId] || "No guidance text available";
-  const cleanMsg = text.replace(/[*#_]/g, '');
+      // Then any regional voice for the same language.
+      if (!voice) {
+        voice = voices.find(v =>
+          String(v.lang || "").toLowerCase().startsWith(base + "-")
+        );
+      }
 
-  const utterance = new SpeechSynthesisUtterance(cleanMsg);
-  utterance.rate = 0.95;
+      // Finally try a voice whose language contains the base code.
+      if (!voice) {
+        voice = voices.find(v =>
+          String(v.lang || "").toLowerCase().includes(base)
+        );
+      }
 
-  activeSpeechMsgId = msgId;
-  activeSpeechButton = button;
-
-  button.innerHTML = "⏹ Stop";
-
-  utterance.onend = function () {
-    if (activeSpeechButton === button) {
-      button.innerHTML = "🔊 Listen";
-      activeSpeechMsgId = null;
-      activeSpeechButton = null;
+      return voice || null;
     }
-  };
 
-  utterance.onerror = function () {
-    if (activeSpeechButton === button) {
-      button.innerHTML = "🔊 Listen";
-      activeSpeechMsgId = null;
-      activeSpeechButton = null;
+    function speakText(msgId, selectedLang) {
+    const text = window[msgId] || "No guidance text available";
+
+    if (!("speechSynthesis" in window)) {
+        alert("Text-to-Speech is not supported in this browser.");
+        return;
     }
-  };
 
-  window.speechSynthesis.speak(utterance);
+    // SECOND CLICK = STOP SPEAKING
+    if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.resume();
+        return;
+    }
+
+    const langCode = ttsLanguageMap[selectedLang] || "en-IN";
+
+    const cleanMsg = String(text)
+        .replace(/[*#_]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+
+    if (!cleanMsg) return;
+
+    const utterance = new SpeechSynthesisUtterance(cleanMsg);
+
+    utterance.lang = langCode;
+    utterance.rate = 0.90;
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+
+    // Select a voice matching the selected language
+    function setVoice() {
+        const voices = window.speechSynthesis.getVoices();
+
+        if (!voices || voices.length === 0) {
+            return;
+        }
+
+        const target = langCode.toLowerCase();
+        const baseLang = target.split("-")[0];
+
+        const exactVoice = voices.find(
+            voice => String(voice.lang).toLowerCase() === target
+        );
+
+        const regionalVoice = voices.find(
+            voice => String(voice.lang).toLowerCase().startsWith(baseLang + "-")
+        );
+
+        const baseVoice = voices.find(
+            voice => String(voice.lang).toLowerCase() === baseLang
+        );
+
+        utterance.voice = exactVoice || regionalVoice || baseVoice || null;
+    }
+
+    setVoice();
+
+    // If Chrome loads voices later
+    if (window.speechSynthesis.getVoices().length === 0) {
+        window.speechSynthesis.onvoiceschanged = function () {
+            setVoice();
+            window.speechSynthesis.onvoiceschanged = null;
+
+            if (!window.speechSynthesis.speaking) {
+                window.speechSynthesis.speak(utterance);
+            }
+        };
+    } else {
+        window.speechSynthesis.speak(utterance);
+    }
+
+    // Clean up when speech finishes
+    utterance.onend = function () {
+        window.speechSynthesis.cancel();
+    };
+
+    utterance.onerror = function () {
+        window.speechSynthesis.cancel();
+    };
 }
-
     // SPEECH-TO-TEXT VOICE INPUT (MICROPHONE)
     function startVoiceInput() {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1324,7 +1497,7 @@ function speakText(msgId, button) {
         return;
       }
       const recognition = new SpeechRecognition();
-      const speechLanguages = { en: "en-IN", hi: "hi-IN", sa: "hi-IN", ta: "ta-IN", te: "te-IN", bn: "bn-IN", mr: "mr-IN", kn: "kn-IN", ml: "ml-IN" };
+      const speechLanguages = { en: "en-IN", hi: "hi-IN", sa: "sa-IN", ta: "ta-IN", te: "te-IN", bn: "bn-IN", mr: "mr-IN", kn: "kn-IN", ml: "ml-IN" };
       recognition.lang = speechLanguages[document.getElementById("langSelect").value] || "en-IN";
       
       const micBtn = document.getElementById("micBtn");
@@ -1380,46 +1553,18 @@ function speakText(msgId, button) {
           Sign in
         </button>
       </form>
-      <div class="text-center mt-4 text-xs text-[#2B2523]/70">
-  Don't have an account?
-  <a href="/register" class="text-[#9E4624] font-bold hover:underline">
-    Create Account
-  </a>
-</div>
 
       <p class="mt-4 text-[10px] text-[#2B2523]/50 leading-relaxed">
         Your session token is stored locally in this browser and sent as a Bearer token to the protected AI query API.
       </p>
     </div>
   </div>
-<script>
-document.getElementById('logoutBtn').addEventListener('click', function () {
 
-    localStorage.removeItem('ipSaktiAccessToken');
-    localStorage.removeItem('ipSaktiUsername');
-
-    window.location.href = '/login';
-});
-</script>
 </body>
 </html>
 
 
 <style id="ip-sakti-direct-mandala-fix">
-.logout-btn {
-    margin-left: 15px;
-    padding: 8px 16px;
-    border: 1px solid #9E4624;
-    border-radius: 8px;
-    background: #9E4624;
-    color: white;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.logout-btn:hover {
-    background: #7f351b;
-}
 /* DIRECT FINAL VISUAL FIX — actual page code, no mockup */
 html,body{background:#F5F2EC!important;background-image:none!important;}
 body{position:relative!important;}

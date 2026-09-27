@@ -632,7 +632,106 @@ body{padding-top:48px!important;}
   </span>
 </nav>
 <div class="ipsakti-botanical-side" aria-hidden="true"></div>
-<div class="ipsakti-page-content"><main class="page"><section class="hero ipsakti-editorial-hero"><div style="color:#D49A37;font-size:12px;font-weight:700;letter-spacing:.18em">PATENTABILITY WORKSPACE</div><h1>Patentability Checker</h1><p>Enter a specific formulation or invention question. The existing ML classifier will route the question to the patentability RAG pathway and return relevant sources.</p></section><section class="card"><div class="form-grid"><div class="field full"><label>Your invention / formulation question</label><textarea id="q" rows="4" placeholder="Example: Can I patent an Indian Ginseng formulation?"></textarea></div><div class="field"><label>Persona</label><select id="persona"><option value="innovator">Startup / Innovator</option><option value="practitioner">Practitioner / Vaidya</option><option value="exporter">Exporter / Regulatory Specialist</option></select></div><div class="field"><label>Language</label><select id="lang"><option value="en">English</option><option value="hi">Hindi</option></select></div></div><div style="margin-top:16px"><button class="btn" onclick="runCheck()">Run Patentability Analysis</button> <a class="btn secondary" href="/assistant">Ask AI Sahayak</a></div></section><section id="result" class="result"></section></main></div><script>async function runCheck(){const q=document.getElementById('q').value.trim();if(!q)return alert('Enter a question first.');const box=document.getElementById('result');box.innerHTML='<div class="card">⏳ Classifying and retrieving sources...</div>';try{const r=await fetch('/api/v1/query',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:q,persona:document.getElementById('persona').value,language:document.getElementById('lang').value})});const d=await r.json();const citations=(d.citations||[]).map(c=>`<li><b>${c.document}</b> · Section ${c.section}</li>`).join('');box.innerHTML=`<div class="card"><span class="pill">${d.ml_category}</span><div class="metric">${Number(d.ml_confidence||0).toFixed(2)}%</div><div class="muted">ML confidence · ${d.ml_confidence_level}</div><hr style="border:0;border-top:1px solid #C5852933;margin:18px 0"><h2>Assessment</h2><p>${escapeHtml(d.answer||'')}</p><h3>Relevant sources</h3><ul class="list">${citations||'<li>No citations returned.</li>'}</ul><div class="status">This is preliminary guidance, not a legal opinion or guarantee of patent grant.</div></div>`}catch(e){box.innerHTML=`<div class="card">Could not connect to backend: ${escapeHtml(e.message)}</div>`}}function escapeHtml(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}</script></body></html>
+<div class="ipsakti-page-content"><main class="page"><section class="hero ipsakti-editorial-hero"><div style="color:#D49A37;font-size:12px;font-weight:700;letter-spacing:.18em">PATENTABILITY WORKSPACE</div><h1>Patentability Checker</h1><p>Enter a specific formulation or invention question. The existing ML classifier will route the question to the patentability RAG pathway and return relevant sources.</p></section><section class="card"><div class="form-grid"><div class="field full"><label>Your invention / formulation question</label><textarea id="q" rows="4" placeholder="Example: Can I patent an Indian Ginseng formulation?"></textarea></div><div class="field"><label>Persona</label><select id="persona"><option value="innovator">Startup / Innovator</option><option value="practitioner">Practitioner / Vaidya</option><option value="exporter">Exporter / Regulatory Specialist</option></select></div><div class="field"><label>Language</label><select id="lang">
+<option value="en">English</option>
+<option value="hi">Hindi (हिंदी)</option>
+<option value="sa">Sanskrit (संस्कृतम्)</option>
+<option value="ta">Tamil (தமிழ்)</option>
+<option value="te">Telugu (తెలుగు)</option>
+<option value="bn">Bengali (বাংলা)</option>
+<option value="mr">Marathi (मराठी)</option>
+<option value="kn">Kannada (ಕನ್ನಡ)</option>
+<option value="ml">Malayalam (മലയാളം)</option>
+</select></div></div><div style="margin-top:16px"><button class="btn" onclick="runCheck()">Run Patentability Analysis</button> <a class="btn secondary" href="/assistant">Ask AI Sahayak</a></div></section><section id="result" class="result"></section></main></div><script>
+function getToken(){
+  return localStorage.getItem("ipSaktiAccessToken");
+}
+
+function apiHeaders(){
+  const token = getToken();
+  const headers = {"Content-Type":"application/json"};
+  if(token) headers["Authorization"] = "Bearer " + token;
+  return headers;
+}
+
+function showResult(box, html){
+  box.style.display = "block";
+  box.innerHTML = html;
+  box.scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+async function runCheck(){
+  const q = document.getElementById("q").value.trim();
+  const persona = document.getElementById("persona").value;
+  const language = document.getElementById("lang").value;
+  const box = document.getElementById("result");
+
+  if(!q){
+    alert("Enter a question first.");
+    return;
+  }
+
+  const token = getToken();
+  if(!token){
+    window.location.href = "/login?next=/patentability";
+    return;
+  }
+
+  showResult(box,'<div class="card">⏳ Classifying and retrieving sources...</div>');
+
+  try{
+    const r = await fetch("/api/v1/query",{
+      method:"POST",
+      headers:apiHeaders(),
+      body:JSON.stringify({
+    query:q,
+    persona:document.getElementById('persona').value,
+    language:document.getElementById('lang').value,
+    mode:"patentability"
+  })
+    });
+
+    const d = await r.json().catch(()=>({}));
+
+    if(r.status === 401){
+      localStorage.removeItem("ipSaktiAccessToken");
+      localStorage.removeItem("ipSaktiUsername");
+      window.location.href = "/login?next=/patentability";
+      return;
+    }
+
+    if(!r.ok){
+      throw new Error(d.detail || ("API request failed (" + r.status + ")"));
+    }
+
+    const citations=(d.citations||[]).map(c=>
+      `<li><b>${escapeHtml(c.document||"Source")}</b> · Section ${escapeHtml(c.section||"")}</li>`
+    ).join("");
+
+    showResult(box,`
+      <div class="card">
+        <span class="pill">${escapeHtml(d.ml_category||"General")}</span>
+        <div class="metric">${Number(d.ml_confidence||0).toFixed(2)}%</div>
+        <div class="muted">ML confidence · ${escapeHtml(d.ml_confidence_level||"Unknown")}</div>
+        <hr style="border:0;border-top:1px solid #C5852933;margin:18px 0">
+        <h2>Assessment</h2>
+        <p>${escapeHtml(d.answer||"No answer returned.")}</p>
+        <h3>Relevant sources</h3>
+        <ul class="list">${citations||"<li>No citations returned.</li>"}</ul>
+        <div class="status">This is preliminary guidance, not a legal opinion or guarantee of patent grant.</div>
+      </div>
+    `);
+  }catch(e){
+    showResult(box,`<div class="card"><b>Could not complete the analysis.</b><p>${escapeHtml(e.message)}</p></div>`);
+  }
+}
+
+function escapeHtml(s){
+  const d=document.createElement("div");
+  d.textContent=String(s ?? "");
+  return d.innerHTML;
+}
+</script></body></html>
 
 <style id="ip-sakti-direct-mandala-fix">
 /* DIRECT FINAL VISUAL FIX — actual page code, no mockup */

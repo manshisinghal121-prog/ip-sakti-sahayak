@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet"><title>Compliance Checker · IP-SAKTI</title>  
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet"><title>compliance Checker · IP-SAKTI</title>  
 <style id="ip-sakti-inline-theme">
 /* =========================================================
    IP-SAKTI SAHAYAK · ORIGINAL AYURVEDIC VISUAL THEME
@@ -540,12 +540,11 @@ body{color:var(--ip-ink);}
 .card,.form,.search-card,.herb-card,.module-card,.tool,.capability-card,.process-card{background:#FFFDF8!important;}
 </style>
 
-<style id="ip-sakti-compliance-final">
+<style id="ip-sakti-patentability-final">
 .page{background:transparent!important;}
 .hero{padding:42px!important;border-radius:18px!important;}
 .hero h1{font-family:Georgia,'Times New Roman',serif!important;font-size:42px!important;line-height:1.15!important;}
 </style>
-
 
 
 <style id="ipsakti-shared-final-update">
@@ -590,7 +589,6 @@ html,body{background:#F5F2EC!important;color:#2B2523!important;}
     linear-gradient(120deg,transparent 46%,rgba(74,107,93,.09) 47%,transparent 48%);
 }
 .ipsakti-page-content{position:relative;z-index:2;}
-/* Consistent checker/library editorial hero */
 .ipsakti-editorial-hero{
   background:#FFFDF8!important;color:#2B2523!important;
   border:1px solid rgba(197,133,41,.38)!important;
@@ -608,72 +606,262 @@ html,body{background:#F5F2EC!important;color:#2B2523!important;}
   .ipsakti-brand small{display:none;}
 }
 </style>
-
-<style id="ipsakti-compliance-final-update">
-  body{padding-top:48px!important;}
-  .page{padding-top:32px!important;}
-  .hero{
-    background:#FFFDF8!important;
-    border:1px solid rgba(197,133,41,.38)!important;
-    border-radius:18px!important;
-    box-shadow:0 5px 18px rgba(43,37,35,.07)!important;
-  }
-  .hero h1{color:#2D4A3E!important;}
-  .form,.card{background:#FFFDF8!important;}
+<style id="ipsakti-patentability-final-update">
+body{padding-top:48px!important;}
+.page{padding-top:32px!important;}
+.hero{
+  background:#FFFDF8!important;
+  border:1px solid rgba(197,133,41,.38)!important;
+  border-radius:18px!important;
+  box-shadow:0 5px 18px rgba(43,37,35,.07)!important;
+}
+.hero h1{color:#2D4A3E!important;}
+.form,.card{background:#FFFDF8!important;}
 </style>
-</head><body><nav class="ipsakti-top-nav" aria-label="Primary navigation">
+</head>
+<body>
+<nav class="ipsakti-top-nav" aria-label="Primary navigation">
   <a class="ipsakti-brand" href="/">
     <span class="ipsakti-brand-mark">𑁍</span>
-    <span><strong>IP-SAKTI SAHAYAK</strong><small>Ayurvedic IP • Regulatory • AI Assistance</small></span>
+    <span>
+      <strong>IP-SAKTI SAHAYAK</strong>
+      <small>Ayurvedic IP • Regulatory • AI Assistance</small>
+    </span>
   </a>
   <span class="ipsakti-nav-links">
-    <a class="active" href="/">Home</a>
+    <a href="/">Home</a>
     <a href="/patentability">Patentability</a>
-    <a href="/compliance">Compliance</a>
+    <a class="active" href="/compliance">Compliance</a>
     <a href="/herbs">Herb Library</a>
     <a href="/assistant">AI Sahayak</a>
   </span>
 </nav>
-<div class="ipsakti-botanical-side" aria-hidden="true"></div>
-<div class="ipsakti-page-content"><main class="page"><section class="hero"><div style="color:#D49A37;font-size:12px;font-weight:700;letter-spacing:.18em">REGULATORY WORKSPACE</div><h1>Compliance Checker</h1><p>Build a preliminary compliance pathway for an Ayurvedic or traditional-medicine product. The result is generated from the same ML + RAG backend used by AI Sahayak.</p></section><section class="card"><div class="form-grid"><div class="field"><label>Product category</label><select id="product"><option>Ayurvedic medicine</option><option>Classical formulation</option><option>New / modified formulation</option><option>Botanical product</option></select></div><div class="field"><label>Biological resource involved?</label><select id="bio"><option>Yes</option><option>No</option><option>Not sure</option></select></div><div class="field"><label>Traditional knowledge involved?</label><select id="tk"><option>Yes</option><option>No</option><option>Not sure</option></select></div><div class="field"><label>Manufacturing in India?</label><select id="mfg"><option>Yes</option><option>No</option><option>Not sure</option></select></div><div class="field full"><label>Describe your compliance question</label><textarea id="q" rows="4" placeholder="Example: What licence and GMP requirements apply to a new Ayurvedic formulation?"></textarea></div></div><div style="margin-top:16px"><button class="btn" onclick="runCheck()">Build Compliance Pathway</button> <a class="btn secondary" href="/assistant">Ask AI Sahayak</a></div></section><section id="result" class="result"></section></main><script>async function runCheck(){const q=document.getElementById('q').value.trim()||`What AYUSH licensing, GMP and compliance requirements apply to a ${document.getElementById('product').value}? Biological resource: ${document.getElementById('bio').value}. Traditional knowledge: ${document.getElementById('tk').value}. Manufacturing in India: ${document.getElementById('mfg').value}.`;const box=document.getElementById('result');box.innerHTML='<div class="card">⏳ Building compliance pathway...</div>';try{const r=await fetch('/api/v1/query',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:q,persona:'innovator',language:'en'})});const d=await r.json();const steps=(d.compliance_roadmap||[]).map(x=>`<li><b>${x.title}</b> · ${x.status}</li>`).join('');box.innerHTML=`<div class="card"><span class="pill">${d.ml_category}</span><div class="metric">${Number(d.ml_confidence||0).toFixed(2)}%</div><div class="muted">ML confidence · ${d.ml_confidence_level}</div><hr style="border:0;border-top:1px solid #C5852933;margin:18px 0"><h2>Guidance</h2><p>${escapeHtml(d.answer||'')}</p><h3>Compliance pathway</h3><ol class="list">${steps||'<li>Review the retrieved regulatory sources and product-specific requirements.</li>'}</ol><div class="status">Requirements depend on the exact product, claims, manufacturing setup and applicable law. Verify with the relevant authority.</div></div>`}catch(e){box.innerHTML=`<div class="card">Could not connect to backend: ${escapeHtml(e.message)}</div>`}}function escapeHtml(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}</script></div></body></html>
 
-<style id="ip-sakti-direct-mandala-fix">
-/* DIRECT FINAL VISUAL FIX — actual page code, no mockup */
-html,body{background:#F5F2EC!important;background-image:none!important;}
-body{position:relative!important;}
-body::before{
-  content:"";
-  position:fixed;
-  left:0;
-  top:42px;
-  width:285px;
-  height:calc(100vh - 42px);
-  background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzNjAgOTAwIj48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNDNTg1MjkiIHN0cm9rZS13aWR0aD0iMi4xIiBvcGFjaXR5PSIwLjMwIj48Y2lyY2xlIGN4PSIxMTgiIGN5PSIyMzUiIHI9IjExMiIvPjxjaXJjbGUgY3g9IjExOCIgY3k9IjIzNSIgcj0iOTIiLz48Y2lyY2xlIGN4PSIxMTgiIGN5PSIyMzUiIHI9IjcyIi8+PGNpcmNsZSBjeD0iMTE4IiBjeT0iMjM1IiByPSI1MiIvPjxjaXJjbGUgY3g9IjExOCIgY3k9IjIzNSIgcj0iMzAiLz48ZWxsaXBzZSBjeD0iMTE4IiBjeT0iMjM1IiByeD0iMjgiIHJ5PSIxMTIiIHRyYW5zZm9ybT0icm90YXRlKDAuMCAxMTggMjM1KSIvPjxlbGxpcHNlIGN4PSIxMTgiIGN5PSIyMzUiIHJ4PSIyOCIgcnk9IjExMiIgdHJhbnNmb3JtPSJyb3RhdGUoMjIuNSAxMTggMjM1KSIvPjxlbGxpcHNlIGN4PSIxMTgiIGN5PSIyMzUiIHJ4PSIyOCIgcnk9IjExMiIgdHJhbnNmb3JtPSJyb3RhdGUoNDUuMCAxMTggMjM1KSIvPjxlbGxpcHNlIGN4PSIxMTgiIGN5PSIyMzUiIHJ4PSIyOCIgcnk9IjExMiIgdHJhbnNmb3JtPSJyb3RhdGUoNjcuNSAxMTggMjM1KSIvPjxlbGxpcHNlIGN4PSIxMTgiIGN5PSIyMzUiIHJ4PSIyOCIgcnk9IjExMiIgdHJhbnNmb3JtPSJyb3RhdGUoOTAuMCAxMTggMjM1KSIvPjxlbGxpcHNlIGN4PSIxMTgiIGN5PSIyMzUiIHJ4PSIyOCIgcnk9IjExMiIgdHJhbnNmb3JtPSJyb3RhdGUoMTEyLjUgMTE4IDIzNSkiLz48ZWxsaXBzZSBjeD0iMTE4IiBjeT0iMjM1IiByeD0iMjgiIHJ5PSIxMTIiIHRyYW5zZm9ybT0icm90YXRlKDEzNS4wIDExOCAyMzUpIi8+PGVsbGlwc2UgY3g9IjExOCIgY3k9IjIzNSIgcng9IjI4IiByeT0iMTEyIiB0cmFuc2Zvcm09InJvdGF0ZSgxNTcuNSAxMTggMjM1KSIvPjxlbGxpcHNlIGN4PSIxMTgiIGN5PSIyMzUiIHJ4PSIyOCIgcnk9IjExMiIgdHJhbnNmb3JtPSJyb3RhdGUoMTgwLjAgMTE4IDIzNSkiLz48ZWxsaXBzZSBjeD0iMTE4IiBjeT0iMjM1IiByeD0iMjgiIHJ5PSIxMTIiIHRyYW5zZm9ybT0icm90YXRlKDIwMi41IDExOCAyMzUpIi8+PGVsbGlwc2UgY3g9IjExOCIgY3k9IjIzNSIgcng9IjI4IiByeT0iMTEyIiB0cmFuc2Zvcm09InJvdGF0ZSgyMjUuMCAxMTggMjM1KSIvPjxlbGxpcHNlIGN4PSIxMTgiIGN5PSIyMzUiIHJ4PSIyOCIgcnk9IjExMiIgdHJhbnNmb3JtPSJyb3RhdGUoMjQ3LjUgMTE4IDIzNSkiLz48ZWxsaXBzZSBjeD0iMTE4IiBjeT0iMjM1IiByeD0iMjgiIHJ5PSIxMTIiIHRyYW5zZm9ybT0icm90YXRlKDI3MC4wIDExOCAyMzUpIi8+PGVsbGlwc2UgY3g9IjExOCIgY3k9IjIzNSIgcng9IjI4IiByeT0iMTEyIiB0cmFuc2Zvcm09InJvdGF0ZSgyOTIuNSAxMTggMjM1KSIvPjxlbGxpcHNlIGN4PSIxMTgiIGN5PSIyMzUiIHJ4PSIyOCIgcnk9IjExMiIgdHJhbnNmb3JtPSJyb3RhdGUoMzE1LjAgMTE4IDIzNSkiLz48ZWxsaXBzZSBjeD0iMTE4IiBjeT0iMjM1IiByeD0iMjgiIHJ5PSIxMTIiIHRyYW5zZm9ybT0icm90YXRlKDMzNy41IDExOCAyMzUpIi8+PGVsbGlwc2UgY3g9IjExOCIgY3k9IjIzNSIgcng9IjE4IiByeT0iNzAiIHRyYW5zZm9ybT0icm90YXRlKDAgMTE4IDIzNSkiLz48ZWxsaXBzZSBjeD0iMTE4IiBjeT0iMjM1IiByeD0iMTgiIHJ5PSI3MCIgdHJhbnNmb3JtPSJyb3RhdGUoMzAgMTE4IDIzNSkiLz48ZWxsaXBzZSBjeD0iMTE4IiBjeT0iMjM1IiByeD0iMTgiIHJ5PSI3MCIgdHJhbnNmb3JtPSJyb3RhdGUoNjAgMTE4IDIzNSkiLz48ZWxsaXBzZSBjeD0iMTE4IiBjeT0iMjM1IiByeD0iMTgiIHJ5PSI3MCIgdHJhbnNmb3JtPSJyb3RhdGUoOTAgMTE4IDIzNSkiLz48ZWxsaXBzZSBjeD0iMTE4IiBjeT0iMjM1IiByeD0iMTgiIHJ5PSI3MCIgdHJhbnNmb3JtPSJyb3RhdGUoMTIwIDExOCAyMzUpIi8+PGVsbGlwc2UgY3g9IjExOCIgY3k9IjIzNSIgcng9IjE4IiByeT0iNzAiIHRyYW5zZm9ybT0icm90YXRlKDE1MCAxMTggMjM1KSIvPjxlbGxpcHNlIGN4PSIxMTgiIGN5PSIyMzUiIHJ4PSIxOCIgcnk9IjcwIiB0cmFuc2Zvcm09InJvdGF0ZSgxODAgMTE4IDIzNSkiLz48ZWxsaXBzZSBjeD0iMTE4IiBjeT0iMjM1IiByeD0iMTgiIHJ5PSI3MCIgdHJhbnNmb3JtPSJyb3RhdGUoMjEwIDExOCAyMzUpIi8+PGVsbGlwc2UgY3g9IjExOCIgY3k9IjIzNSIgcng9IjE4IiByeT0iNzAiIHRyYW5zZm9ybT0icm90YXRlKDI0MCAxMTggMjM1KSIvPjxlbGxpcHNlIGN4PSIxMTgiIGN5PSIyMzUiIHJ4PSIxOCIgcnk9IjcwIiB0cmFuc2Zvcm09InJvdGF0ZSgyNzAgMTE4IDIzNSkiLz48ZWxsaXBzZSBjeD0iMTE4IiBjeT0iMjM1IiByeD0iMTgiIHJ5PSI3MCIgdHJhbnNmb3JtPSJyb3RhdGUoMzAwIDExOCAyMzUpIi8+PGVsbGlwc2UgY3g9IjExOCIgY3k9IjIzNSIgcng9IjE4IiByeT0iNzAiIHRyYW5zZm9ybT0icm90YXRlKDMzMCAxMTggMjM1KSIvPjxwYXRoIGQ9Ik0xNDguMCAyMzUuMCBMMjMwLjAgMjM1LjAiLz48cGF0aCBkPSJNMTM5LjIgMjU2LjIgTDE5Ny4yIDMxNC4yIi8+PHBhdGggZD0iTTExOC4wIDI2NS4wIEwxMTguMCAzNDcuMCIvPjxwYXRoIGQ9Ik05Ni44IDI1Ni4yIEwzOC44IDMxNC4yIi8+PHBhdGggZD0iTTg4LjAgMjM1LjAgTDYuMCAyMzUuMCIvPjxwYXRoIGQ9Ik05Ni44IDIxMy44IEwzOC44IDE1NS44Ii8+PHBhdGggZD0iTTExOC4wIDIwNS4wIEwxMTguMCAxMjMuMCIvPjxwYXRoIGQ9Ik0xMzkuMiAyMTMuOCBMMTk3LjIgMTU1LjgiLz48L2c+PGcgZmlsbD0iIzRBNkI1RCIgb3BhY2l0eT0iMC4xNiI+PGVsbGlwc2UgY3g9IjcyIiBjeT0iNDU1IiByeD0iNDUiIHJ5PSIxNiIgdHJhbnNmb3JtPSJyb3RhdGUoLTI4IDcyIDQ1NSkiLz48ZWxsaXBzZSBjeD0iOTYiIGN5PSI1MDAiIHJ4PSI0NiIgcnk9IjE2IiB0cmFuc2Zvcm09InJvdGF0ZSgyMiA5NiA1MDApIi8+PGVsbGlwc2UgY3g9IjY4IiBjeT0iNTU1IiByeD0iNDgiIHJ5PSIxNiIgdHJhbnNmb3JtPSJyb3RhdGUoLTI4IDY4IDU1NSkiLz48ZWxsaXBzZSBjeD0iMTAyIiBjeT0iNjE1IiByeD0iNTAiIHJ5PSIxNiIgdHJhbnNmb3JtPSJyb3RhdGUoMjIgMTAyIDYxNSkiLz48ZWxsaXBzZSBjeD0iNzAiIGN5PSI2ODAiIHJ4PSI0OCIgcnk9IjE2IiB0cmFuc2Zvcm09InJvdGF0ZSgtMjUgNzAgNjgwKSIvPjxlbGxpcHNlIGN4PSIxMDUiIGN5PSI3NDAiIHJ4PSI0OCIgcnk9IjE2IiB0cmFuc2Zvcm09InJvdGF0ZSgyMiAxMDUgNzQwKSIvPjxlbGxpcHNlIGN4PSI3MiIgY3k9IjgwNSIgcng9IjQ0IiByeT0iMTYiIHRyYW5zZm9ybT0icm90YXRlKC0yNSA3MiA4MDUpIi8+PHBhdGggZD0iTTkyIDQyMCBDODIgNTIwIDg4IDY1MCA5MiA4MzUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzRBNkI1RCIgc3Ryb2tlLXdpZHRoPSI1IiBvcGFjaXR5PSIwLjM1Ii8+PC9nPjwvc3ZnPg==");
-  background-repeat:no-repeat;
-  background-position:left 0 top 0;
-  background-size:285px 760px;
-  pointer-events:none;
-  z-index:0!important;
+<div class="ipsakti-botanical-side" aria-hidden="true"></div>
+
+<div class="ipsakti-page-content">
+<main class="page">
+
+  <section class="hero ipsakti-editorial-hero">
+    <div style="color:#D49A37;font-size:12px;font-weight:700;letter-spacing:.18em">
+      REGULATORY WORKSPACE
+    </div>
+    <h1>Compliance Checker</h1>
+    <p>
+      Build a preliminary compliance pathway for an Ayurvedic or traditional-medicine
+      product. The result is generated from the same ML + RAG backend used by AI Sahayak.
+    </p>
+  </section>
+
+  <section class="card">
+    <div class="form-grid">
+
+      <div class="field">
+        <label>Product category</label>
+        <select id="product">
+          <option>Ayurvedic medicine</option>
+          <option>Classical formulation</option>
+          <option>New / modified formulation</option>
+          <option>Botanical product</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Biological resource involved?</label>
+        <select id="bio">
+          <option>Yes</option>
+          <option>No</option>
+          <option>Not sure</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Traditional knowledge involved?</label>
+        <select id="tk">
+          <option>Yes</option>
+          <option>No</option>
+          <option>Not sure</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Manufacturing in India?</label>
+        <select id="mfg">
+          <option>Yes</option>
+          <option>No</option>
+          <option>Not sure</option>
+        </select>
+      </div>
+
+      <div class="field full">
+        <label>Describe your compliance question</label>
+        <textarea id="q" rows="4"
+          placeholder="Example: What licence and GMP requirements apply to a new Ayurvedic formulation?"></textarea>
+      </div>
+
+    </div>
+
+    <div style="margin-top:16px">
+      <button type="button" class="btn" onclick="runCheck()">Build Compliance Pathway</button>
+      <a class="btn secondary" href="/assistant">Ask AI Sahayak</a>
+    </div>
+  </section>
+
+  <section id="result" class="result"></section>
+
+</main>
+</div>
+
+<script>
+function getToken(){
+  return localStorage.getItem("ipSaktiAccessToken");
 }
-/* Keep the artwork visible beside the content without covering controls. */
-.nav,#workspaceHeader,#workspaceMain,#welcomeScreen,.page,main,.hero,.card,.library-toolbar,.herb-grid,.footer{position:relative;z-index:1;}
-/* Stronger, clean mandala on the three editorial pages. */
-.page{margin-left:190px!important;max-width:calc(100% - 220px)!important;}
-/* Never show an accidental search overlay/text in the AI workspace. */
-#workspaceMain [aria-label="Search"],#workspaceMain [title="Search"],#workspaceMain .search-overlay,body > .search-overlay{display:none!important;}
-/* AI right inspector: clean, compact, no overflow into the left pane. */
-#workspaceMain{position:relative!important;display:flex!important;gap:16px!important;padding:20px 24px!important;overflow:hidden!important;}
-#workspaceMain>section:first-child{flex:1 1 auto!important;min-width:0!important;}
-#workspaceMain>section:nth-child(2){flex:0 0 360px!important;width:360px!important;min-width:320px!important;max-width:360px!important;box-sizing:border-box!important;overflow-y:auto!important;overflow-x:hidden!important;}
-@media(max-width:900px){
-  body::before{width:190px;background-size:190px 620px;opacity:.75;}
-  .page{margin-left:145px!important;max-width:calc(100% - 165px)!important;}
-  #workspaceMain>section:nth-child(2){flex-basis:300px!important;width:300px!important;min-width:280px!important;}
+
+function apiHeaders(){
+  const token = getToken();
+  const headers = {"Content-Type":"application/json"};
+  if(token) headers["Authorization"] = "Bearer " + token;
+  return headers;
 }
-@media(max-width:720px){
-  body::before{width:130px;background-size:130px 500px;opacity:.65;}
-  .page{margin-left:92px!important;max-width:calc(100% - 105px)!important;}
-  #workspaceMain{display:block!important;overflow-y:auto!important;}
-  #workspaceMain>section:nth-child(2){width:100%!important;max-width:none!important;margin-top:14px!important;}
+
+function showResult(box, html){
+  box.style.display = "block";
+  box.innerHTML = html;
+  box.scrollIntoView({behavior:"smooth", block:"start"});
 }
-</style>
+
+async function runCheck(){
+
+  const q =
+    document.getElementById("q").value.trim() ||
+    `What AYUSH licensing, GMP and compliance requirements apply to a ${document.getElementById("product").value}? Biological resource: ${document.getElementById("bio").value}. Traditional knowledge: ${document.getElementById("tk").value}. Manufacturing in India: ${document.getElementById("mfg").value}.`;
+
+  const box = document.getElementById("result");
+
+  showResult(box,
+    '<div class="card">⏳ Classifying and retrieving regulatory sources...</div>');
+
+  try {
+
+    /*
+     * IMPORTANT:
+     * Compliance previously redirected to /login when there was no token.
+     * That caused:
+     * #no-compliance-login-redirect
+     * {"detail":"Not Found"}
+     *
+     * Patentability does not require that redirect.
+     * Compliance now uses the same direct API flow as Patentability.
+     */
+
+    const r = await fetch("/api/v1/query", {
+      method: "POST",
+      headers: apiHeaders(),
+      body: JSON.stringify({
+        query: q,
+        persona: "innovator",
+        language: "en"
+      })
+    });
+
+    const d = await r.json().catch(() => ({}));
+
+    if(r.status === 401){
+      throw new Error("Authentication required. Please log in first and then run the Compliance Checker again.");
+    }
+
+    if(!r.ok){
+      throw new Error(
+        d.detail || ("API request failed (" + r.status + ")")
+      );
+    }
+
+    const citations = (d.citations || [])
+      .map(c =>
+        `<li><b>${escapeHtml(c.document || "Source")}</b>` +
+        `${c.section ? " · Section " + escapeHtml(c.section) : ""}` +
+        `${c.page ? " · Page " + escapeHtml(c.page) : ""}</li>`
+      )
+      .join("");
+
+    const steps = (d.compliance_roadmap || [])
+      .map(x =>
+        `<li><b>${escapeHtml(x.title || "Step")}</b> — ` +
+        `${escapeHtml(x.status || "Review")}</li>`
+      )
+      .join("");
+
+    /*
+     * Preserve the RAG answer exactly as returned.
+     * Newlines are displayed properly instead of collapsing into one line.
+     */
+    const answer = escapeHtml(d.answer || "No answer returned.")
+      .replace(/\n/g, "<br>");
+
+    showResult(box, `
+      <div class="card">
+
+        <span class="pill">
+          ${escapeHtml(d.ml_category || "General")}
+        </span>
+
+        <div class="metric">
+          ${Number(d.ml_confidence || 0).toFixed(2)}%
+        </div>
+
+        <div class="muted">
+          ML confidence · ${escapeHtml(d.ml_confidence_level || "Unknown")}
+        </div>
+
+        <hr style="border:0;border-top:1px solid #C5852933;margin:18px 0">
+
+        <h2>Guidance</h2>
+        <p>${answer}</p>
+
+        <h3>Compliance pathway</h3>
+        <ol class="list">
+          ${
+            steps ||
+            "<li>Review the retrieved regulatory sources and product-specific requirements.</li>"
+          }
+        </ol>
+
+        <h3>Relevant sources</h3>
+        <ul class="list">
+          ${citations || "<li>No citations returned.</li>"}
+        </ul>
+
+        <div class="status">
+          Requirements depend on the exact product, claims, manufacturing setup
+          and applicable law. Verify with the relevant authority.
+        </div>
+
+      </div>
+    `);
+
+    box.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+
+  } catch(e) {
+
+    showResult(box, `
+      <div class="card">
+        <b>Could not complete the compliance analysis.</b>
+        <p>${escapeHtml(e.message)}</p>
+      </div>
+    `);
+
+  }
+}
+
+function escapeHtml(s){
+  const d = document.createElement("div");
+  d.textContent = String(s ?? "");
+  return d.innerHTML;
+}
+</script>
+
+</body>
+</html>

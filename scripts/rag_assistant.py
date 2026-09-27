@@ -326,6 +326,61 @@ def _source_sentences(chunks: List[Dict], query: str, limit: int = 4) -> List[st
     return selected
 
 
+def _normalize_language(language: Optional[str]) -> str:
+    """Normalize language values coming from the frontend/API."""
+    value = str(language or "en").strip().lower()
+    aliases = {
+        "english": "en",
+        "en-us": "en",
+        "en-in": "en",
+        "hindi": "hi",
+        "hindi (हिंदी)": "hi",
+        "हिंदी": "hi",
+        "हिन्दी": "hi",
+        "hi-in": "hi",
+        "sanskrit": "sa",
+        "संस्कृत": "sa",
+    }
+    return aliases.get(value, value)
+
+
+def _hindi_herb_description(herb_visual: Dict) -> str:
+    """Return a Hindi description for the main Ayurvedic herb records."""
+    key = str(herb_visual.get("common_name", "")).strip().lower()
+    botanical = str(herb_visual.get("botanical_name", "")).strip().lower()
+
+    descriptions = {
+        "indian ginseng": "अश्वगंधा को पारंपरिक आयुर्वेदिक ज्ञान में वात को संतुलित करने वाली, शारीरिक शक्ति बढ़ाने वाली और रसायन के रूप में वर्णित किया गया है। इसे उष्ण वीर्य वाला माना जाता है।",
+        "turmeric": "हरिद्रा को पारंपरिक आयुर्वेदिक ज्ञान में कटु और तिक्त गुणों वाली तथा उष्ण वीर्य वाली माना गया है। इसे त्वचा और घाव से जुड़ी पारंपरिक तैयारियों में भी वर्णित किया जाता है।",
+        "amrita / heart-leaved moonseed": "गुडूची को पारंपरिक आयुर्वेदिक ज्ञान में तिक्त, रसायन और पाचन को सहारा देने वाली वनस्पति के रूप में वर्णित किया गया है।",
+        "holy basil": "तुलसी को पारंपरिक रूप से सुगंधित और उष्ण वनस्पति माना जाता है तथा इसे श्वसन और शुद्धिकरण से जुड़ी पारंपरिक तैयारियों में उपयोग किया जाता है।",
+        "neem": "नीम को पारंपरिक रूप से शीतल, हल्का और तिक्त माना जाता है। इसे त्वचा और अन्य पारंपरिक तैयारियों में उपयोग किया जाता है।",
+        "brahmi": "ब्राह्मी को पारंपरिक आयुर्वेदिक ज्ञान में स्मृति, मेधा, रसायन और जीवन शक्ति से जोड़ा जाता है।",
+        "indian gooseberry": "आमलकी को पारंपरिक रूप से रसायन फल माना जाता है और इसे पोषण तथा जीवन शक्ति से जोड़ा जाता है।",
+        "wild asparagus": "शतावरी को पारंपरिक रूप से पोषक, बलवर्धक और रसायन वनस्पति के रूप में वर्णित किया जाता है।",
+        "drumstick tree": "मोरिंगा को पारंपरिक रूप से कटु और उष्ण माना जाता है तथा इसे कफ और वात संतुलन से जोड़ा जाता है।",
+    }
+
+    if key in descriptions:
+        return descriptions[key]
+
+    # A small fallback for the extended reference herb list.
+    if "aloe" in key or "aloe" in botanical:
+        return "एलोवेरा का उपयोग पारंपरिक रूप से त्वचा को आराम देने वाली और कुछ पाचन संबंधी तैयारियों में किया जाता है।"
+    if "ginger" in key or "zingiber" in botanical:
+        return "अदरक का उपयोग पारंपरिक रूप से पाचन संबंधी आराम और मतली से जुड़ी तैयारियों में किया जाता है।"
+    if "ginseng" in key or "panax" in botanical:
+        return "जिनसेंग का उपयोग पारंपरिक रूप से ऊर्जा और सामान्य स्वास्थ्य से जुड़ी तैयारियों में किया जाता है।"
+
+    original = str(herb_visual.get("shloka_translation", "")).strip()
+    if original:
+        return (
+            "इस वनस्पति के बारे में उपलब्ध रिकॉर्ड में पारंपरिक उपयोग का विवरण दिया गया है। "
+            "विस्तृत उपयोग के लिए संबंधित मूल स्रोत और सुरक्षा जानकारी की जाँच करना आवश्यक है।"
+        )
+    return "इस वनस्पति के पारंपरिक उपयोग का रिकॉर्ड उपलब्ध है, लेकिन वर्तमान जानकारी में पर्याप्त विवरण नहीं है।"
+
+
 def synthesize_natural_answer(
     user_query: str,
     category: Optional[str],
@@ -335,14 +390,114 @@ def synthesize_natural_answer(
     language: str = "en",
     persona: str = "innovator",
 ) -> str:
-    """Create a direct, conversational answer instead of returning document text as the answer."""
+    """Create a direct conversational answer in the language selected by the user."""
+    language = _normalize_language(language)
     intent = _question_intent(user_query)
     category = category or "General"
     subject = None
+
     if herb_visual:
         subject = f"{herb_visual['common_name']} ({herb_visual['botanical_name']})"
 
-    # Herb questions should be answered from the herb record first, then supported by RAG.
+    # ---------------------------------------------------------
+    # HINDI ANSWER
+    # ---------------------------------------------------------
+    if language == "hi":
+        # Herb questions should be answered from the herb record first.
+        if herb_visual and focus == "herb identity and traditional use":
+            description = _hindi_herb_description(herb_visual)
+            return (
+                f"**{subject}** के बारे में आपके प्रश्न का उत्तर उपलब्ध हर्ब रिकॉर्ड के आधार पर है।\n\n"
+                f"{description}\n\n"
+                "यह पारंपरिक उपयोग की जानकारी है। इसे हर व्यक्ति के लिए प्रभावशीलता या सुरक्षा का प्रमाण नहीं माना जाना चाहिए। "
+                "किसी उत्पाद या चिकित्सीय उपयोग के लिए तैयारी, मात्रा, संभावित दवा-परस्पर क्रिया और उपलब्ध वैज्ञानिक प्रमाण की अलग से जाँच करनी चाहिए।"
+            )
+
+        source_points = _source_sentences(relevant_chunks, user_query, limit=4)
+        evidence = " ".join(source_points[:3])
+
+        if category == "Patentability" or focus == "patentability":
+            if intent == "eligibility":
+                opening = "संभव है, लेकिन केवल किसी जड़ी-बूटी या उसके पारंपरिक उपयोग के आधार पर पेटेंटेबिलिटी तय नहीं होती।"
+            else:
+                opening = "पेटेंटेबिलिटी के प्रश्न में मुख्य बात यह देखना है कि आपके दावे में वास्तव में नया क्या है। केवल यह तथ्य कि कोई सामग्री पहले से ज्ञात है या नहीं है, पर्याप्त नहीं है।"
+            middle = (
+                "व्यावहारिक समीक्षा में नवीनता और prior art को देखना चाहिए। इसमें दस्तावेजीकृत पारंपरिक ज्ञान भी शामिल हो सकता है। "
+                "इसके बाद लागू पेटेंट आवश्यकताओं और exclusions की जाँच करनी चाहिए।"
+            )
+            if source_points:
+                middle += " उपलब्ध स्रोत सामग्री में भी इसी प्रकार के बिंदु मिलते हैं: " + evidence
+            return (
+                opening + " " + middle +
+                " यदि आप अपनी exact formulation, process या claimed use बताएं तो मैं उसी के अनुसार विश्लेषण को अधिक specific कर सकता हूँ।"
+            )
+
+        if category in {"AYUSH_Licensing", "Regulatory_Compliance"} or focus == "ayush licensing":
+            if intent == "requirements":
+                opening = "सटीक आवश्यकताएँ इस बात पर निर्भर करती हैं कि आपका उत्पाद क्या है और वह classical formulation है या modified/new formulation।"
+            elif intent == "howto":
+                opening = "पहले उत्पाद की सही regulatory category तय करें। इसके बाद उसी category के अनुसार licensing और manufacturing requirements को map करें।"
+            else:
+                opening = "AYUSH compliance के प्रश्न में सबसे पहले product category तय करना जरूरी है क्योंकि licensing pathway उसी पर निर्भर करता है।"
+            middle = (
+                "इसके बाद लागू licensing route, manufacturing controls, safety और evidence requirements, documentation तथा GMP provisions की जाँच करनी चाहिए।"
+            )
+            if source_points:
+                middle += " उपलब्ध स्रोतों में विशेष रूप से ये बिंदु मिलते हैं: " + evidence
+            return (
+                opening + " " + middle +
+                " यदि आप product type और manufacturing arrangement बताएं तो मैं checklist को अधिक specific कर सकता हूँ।"
+            )
+
+        if category == "Safety" or focus == "safety and use":
+            opening = (
+                f"**{subject}** की safety उसकी exact preparation, मात्रा, उपयोग के तरीके और उपयोग करने वाले व्यक्ति पर निर्भर करती है।"
+                if subject else
+                "Safety exact preparation, मात्रा, उपयोग के तरीके और उपयोग करने वाले व्यक्ति पर निर्भर करती है।"
+            )
+            middle = (
+                "पारंपरिक उपयोग को safety या effectiveness का प्रमाण नहीं माना जाना चाहिए। "
+                "Contraindications, दवाओं के साथ interactions, botanical identity और material quality पर विशेष ध्यान देना चाहिए।"
+            )
+            if source_points:
+                middle += " उपलब्ध evidence भी इन पहलुओं पर ध्यान देने की आवश्यकता बताता है: " + evidence
+            return middle + " " + "यदि आप preparation और intended use बताएं तो मैं उत्तर को अधिक specific कर सकता हूँ।"
+
+        if category == "Biodiversity_ABS" or focus == "biodiversity and abs":
+            opening = (
+                "यदि आपका काम किसी Indian biological resource या उससे जुड़े traditional knowledge का उपयोग करता है तो biodiversity और access-and-benefit-sharing requirements लागू हो सकती हैं।"
+            )
+            middle = (
+                "अगला कदम resource की पहचान करना, यह देखना है कि वह कहाँ से और कैसे प्राप्त हुआ, उसका उपयोग क्या है और क्या आपकी activity applicable approval या benefit-sharing framework के अंतर्गत आती है।"
+            )
+            if source_points:
+                middle += " उपलब्ध स्रोत सामग्री में ये संबंधित बिंदु मिलते हैं: " + evidence
+            return opening + " " + middle + " Exact obligation आपके activity के facts पर निर्भर करेगी।"
+
+        if category == "Traditional_Knowledge" or focus == "herb identity and traditional use":
+            opening = (
+                "मुख्य बात यह है कि संबंधित ज्ञान या उपयोग पहले से documented है या नहीं। "
+                "यदि documented है तो वह prior art या traditional-knowledge evidence के रूप में relevant हो सकता है।"
+            )
+            if source_points:
+                opening += " उपलब्ध स्रोत सामग्री में संबंधित बिंदु हैं: " + evidence
+            return opening + " यदि आप herb, formulation या traditional use बताएं तो मैं उसी specific case से जोड़कर समझा सकता हूँ।"
+
+        if category == "WIPO_Guidance":
+            opening = "WIPO की सामग्री traditional knowledge, genetic resources और संबंधित IP rights के लिए एक international framework देती है।"
+        elif category == "WHO_Guidance":
+            opening = "WHO की सामग्री traditional medicine, botanical quality, safety और manufacturing से जुड़े evidence और guidance के लिए उपयोगी है।"
+        else:
+            opening = "आपके प्रश्न से सीधे संबंधित उपलब्ध जानकारी यह है:"
+
+        if source_points:
+            return opening + "\n\n" + evidence
+        return opening + "\n\nवर्तमान knowledge base में इस प्रश्न का विश्वसनीय उत्तर देने के लिए पर्याप्त सीधे संबंधित evidence नहीं मिला।"
+
+    # ---------------------------------------------------------
+    # ENGLISH ANSWER
+    # ---------------------------------------------------------
+    # Keep the existing English behaviour unchanged.
     if herb_visual and focus == "herb identity and traditional use":
         description = str(herb_visual.get("shloka_translation", "")).strip()
         if description:
@@ -414,174 +569,7 @@ def synthesize_natural_answer(
         return opening + " " + evidence
     return opening + " I could not find enough directly relevant evidence in the current knowledge base to answer this confidently."
 
-def _localize_answer(
-    answer: str,
-    language: str,
-    user_query: str,
-    category: Optional[str],
-) -> str:
-    """Localize the conversational part of the RAG answer."""
 
-    language = (language or "en").lower()
-
-    if language == "en":
-        return answer
-
-    # Keep legal/source evidence unchanged.
-    # Localize the common conversational guidance around it.
-    translations = {
-        "hi": {
-            "prefix": "आपके प्रश्न के आधार पर मुख्य बात यह है:",
-            "note": "नोट: कानूनी और स्रोत सामग्री को उनकी मूल भाषा में रखा गया है।",
-            "ayush": "AYUSH अनुपालन के प्रश्न में सबसे पहले उत्पाद की श्रेणी निर्धारित करना आवश्यक है, क्योंकि लाइसेंसिंग प्रक्रिया इसी पर निर्भर करती है। इसके बाद संबंधित लाइसेंस, निर्माण नियंत्रण, सुरक्षा और प्रमाण संबंधी आवश्यकताओं, दस्तावेज़ों तथा GMP प्रावधानों की जाँच की जानी चाहिए।",
-            "patent": "पेटेंट से संबंधित प्रश्न में मुख्य बात यह है कि आपके दावे में वास्तव में क्या नया है। केवल किसी ज्ञात जड़ी-बूटी या पारंपरिक उपयोग के आधार पर पेटेंट योग्यता स्थापित नहीं होती। नवीनता, पूर्व कला और पारंपरिक ज्ञान से संबंधित अभिलेखों की जाँच आवश्यक है।",
-            "safety": "सुरक्षा का मूल्यांकन तैयारी के प्रकार, मात्रा, उपयोग के तरीके और व्यक्ति की स्थिति पर निर्भर करता है। पारंपरिक उपयोग को सुरक्षा या प्रभावशीलता का निश्चित प्रमाण नहीं माना जाना चाहिए।",
-            "biodiversity": "यदि आपके कार्य में भारतीय जैविक संसाधन या उससे संबंधित पारंपरिक ज्ञान का उपयोग होता है, तो जैव-विविधता और Access and Benefit Sharing की आवश्यकताएँ प्रासंगिक हो सकती हैं।",
-            "traditional": "मुख्य प्रश्न यह है कि संबंधित ज्ञान या उपयोग पहले से दस्तावेजीकृत है या नहीं। ऐसा दस्तावेजीकृत पारंपरिक ज्ञान पूर्व कला या पारंपरिक-ज्ञान साक्ष्य के रूप में प्रासंगिक हो सकता है।",
-        },
-        "sa": {
-            "prefix": "भवतः प्रश्नस्य मुख्यः विषयः अयम् अस्ति:",
-            "note": "टिप्पणी: कानूनी तथा स्रोतसामग्री मूलभाषायामेव संरक्षिता अस्ति।",
-            "ayush": "आयुष्-अनुपालनस्य प्रश्नेषु प्रथमं उत्पादस्य वर्गीकरणं करणीयम्, यतः अनुज्ञापनस्य मार्गः तस्मिन् निर्भरति। ततः सम्बन्धित अनुज्ञापनं, निर्माण-नियन्त्रणं, सुरक्षा, दस्तावेजानि तथा GMP-विधानानि परीक्षितव्यानि।",
-            "patent": "पेटेण्ट्-विषये मुख्यः प्रश्नः अस्ति यत् दावे वास्तवतः किं नवीनम् अस्ति। केवलं ज्ञातस्य औषधीय-पादपस्य अथवा पारम्परिक-उपयोगस्य आधारेण पेटेण्ट्-योग्यता सिद्धा न भवति।",
-            "safety": "सुरक्षा पदार्थस्य निर्माणप्रकारे, मात्रायां, उपयोगविधौ तथा उपयोगकर्तुः अवस्थायां निर्भरति। पारम्परिकः उपयोगः सुरक्षा अथवा प्रभावकारितायाः निश्चितं प्रमाणं नास्ति।",
-            "biodiversity": "यदि भारतीय-जैविक-संसाधनस्य अथवा सम्बद्धस्य पारम्परिक-ज्ञानस्य उपयोगः भवति, तर्हि जैवविविधता तथा लाभ-विभाजनसम्बन्धिनः नियमाः प्रासंगिकाः भवितुम् अर्हन्ति।",
-            "traditional": "मुख्यः प्रश्नः अस्ति यत् सम्बद्धं ज्ञानं वा उपयोगः पूर्वमेव दस्तावेजीकृतः अस्ति वा न।",
-        },
-        "ta": {
-            "prefix": "உங்கள் கேள்வியின் அடிப்படையில் முக்கியமான விஷயம்:",
-            "note": "குறிப்பு: சட்ட மற்றும் ஆதாரத் தகவல்கள் அவற்றின் அசல் மொழியில் வைக்கப்பட்டுள்ளன.",
-            "ayush": "AYUSH இணக்கக் கேள்வியில் முதலில் தயாரிப்பின் வகையைத் தீர்மானிக்க வேண்டும், ஏனெனில் உரிமம் பெறும் நடைமுறை அதைப் பொறுத்தது.",
-            "patent": "காப்புரிமை தொடர்பான கேள்வியில் முக்கியமானது உங்கள் கோரிக்கையில் உண்மையில் புதுமையானது என்ன என்பதாகும். அறியப்பட்ட மூலிகை அல்லது பாரம்பரிய பயன்பாடு மட்டும் காப்புரிமை பெறுவதற்கு போதுமானதல்ல.",
-            "safety": "பாதுகாப்பு தயாரிப்பு, அளவு, பயன்படுத்தும் முறை மற்றும் பயன்படுத்தும் நபரின் நிலையைப் பொறுத்தது.",
-            "biodiversity": "இந்திய உயிரியல் வளம் அல்லது அதனுடன் தொடர்புடைய பாரம்பரிய அறிவைப் பயன்படுத்தினால் உயிரியல் பல்வகைமை மற்றும் நன்மைப் பகிர்வு விதிகள் பொருந்தக்கூடும்.",
-            "traditional": "முக்கியமான கேள்வி, தொடர்புடைய அறிவு அல்லது பயன்பாடு ஏற்கனவே ஆவணப்படுத்தப்பட்டுள்ளதா என்பதாகும்.",
-        },
-        "te": {
-            "prefix": "మీ ప్రశ్న ఆధారంగా ముఖ్యమైన విషయం:",
-            "note": "గమనిక: చట్టపరమైన మరియు మూల ఆధారాలను వాటి అసలు భాషలో ఉంచాము.",
-            "ayush": "AYUSH అనుసరణ ప్రశ్నలో ముందుగా ఉత్పత్తి వర్గాన్ని నిర్ణయించాలి, ఎందుకంటే లైసెన్సింగ్ విధానం దానిపై ఆధారపడి ఉంటుంది.",
-            "patent": "పేటెంట్ ప్రశ్నలో మీ క్లెయిమ్‌లో నిజంగా కొత్తది ఏమిటో చూడటం ముఖ్యమైన విషయం. తెలిసిన మూలిక లేదా సంప్రదాయ వినియోగం మాత్రమే పేటెంట్‌కు సరిపోదు.",
-            "safety": "భద్రత తయారీ విధానం, పరిమాణం, వినియోగ పద్ధతి మరియు ఉపయోగించే వ్యక్తి పరిస్థితిపై ఆధారపడి ఉంటుంది.",
-            "biodiversity": "భారతీయ జీవ వనరు లేదా సంబంధిత సంప్రదాయ జ్ఞానాన్ని ఉపయోగిస్తే జీవ వైవిధ్యం మరియు ప్రయోజన భాగస్వామ్య నియమాలు వర్తించవచ్చు.",
-            "traditional": "సంబంధిత జ్ఞానం లేదా వినియోగం ఇప్పటికే పత్రబద్ధం చేయబడిందా అనేది ముఖ్యమైన ప్రశ్న.",
-        },
-        "bn": {
-            "prefix": "আপনার প্রশ্নের ভিত্তিতে মূল বিষয়টি হলো:",
-            "note": "নোট: আইনগত ও উৎস-সংক্রান্ত তথ্য মূল ভাষায় রাখা হয়েছে।",
-            "ayush": "AYUSH সংক্রান্ত প্রশ্নে প্রথমে পণ্যের শ্রেণি নির্ধারণ করা জরুরি, কারণ লাইসেন্সিং প্রক্রিয়া তার উপর নির্ভর করে।",
-            "patent": "পেটেন্ট সংক্রান্ত প্রশ্নে আপনার দাবিতে প্রকৃতপক্ষে কী নতুন তা দেখা গুরুত্বপূর্ণ। পরিচিত ভেষজ বা প্রচলিত ব্যবহার একাই পেটেন্টের জন্য যথেষ্ট নয়।",
-            "safety": "নিরাপত্তা প্রস্তুতি, মাত্রা, ব্যবহারের পদ্ধতি এবং ব্যবহারকারীর অবস্থার উপর নির্ভর করে।",
-            "biodiversity": "ভারতীয় জৈব সম্পদ বা সংশ্লিষ্ট ঐতিহ্যগত জ্ঞান ব্যবহার করলে জীববৈচিত্র্য ও সুবিধা-বণ্টনের নিয়ম প্রযোজ্য হতে পারে।",
-            "traditional": "সম্পর্কিত জ্ঞান বা ব্যবহার আগে থেকেই নথিভুক্ত হয়েছে কি না সেটিই গুরুত্বপূর্ণ প্রশ্ন।",
-        },
-        "mr": {
-            "prefix": "तुमच्या प्रश्नाच्या आधारावर मुख्य मुद्दा असा आहे:",
-            "note": "टीप: कायदेशीर आणि स्रोत सामग्री त्यांच्या मूळ भाषेत ठेवली आहे.",
-            "ayush": "AYUSH अनुपालनाच्या प्रश्नात प्रथम उत्पादनाची श्रेणी निश्चित करणे आवश्यक आहे, कारण परवाना प्रक्रिया त्यावर अवलंबून असते.",
-            "patent": "पेटंटच्या प्रश्नात तुमच्या दाव्यामध्ये प्रत्यक्षात नवीन काय आहे हे पाहणे महत्त्वाचे आहे. ज्ञात वनस्पती किंवा पारंपरिक वापर केवळ पेटंटसाठी पुरेसा नसतो.",
-            "safety": "सुरक्षितता तयारी, मात्रा, वापरण्याची पद्धत आणि वापरणाऱ्या व्यक्तीच्या स्थितीवर अवलंबून असते.",
-            "biodiversity": "भारतीय जैविक संसाधन किंवा संबंधित पारंपरिक ज्ञानाचा वापर केल्यास जैवविविधता आणि लाभ-वाटपाचे नियम लागू होऊ शकतात.",
-            "traditional": "संबंधित ज्ञान किंवा वापर आधीपासून दस्तऐवजीकरण केलेला आहे का हा महत्त्वाचा प्रश्न आहे.",
-        },
-        "kn": {
-            "prefix": "ನಿಮ್ಮ ಪ್ರಶ್ನೆಯ ಆಧಾರದ ಮೇಲೆ ಮುಖ್ಯ ವಿಷಯ:",
-            "note": "ಸೂಚನೆ: ಕಾನೂನು ಮತ್ತು ಮೂಲ ಮಾಹಿತಿಯನ್ನು ಅದರ ಮೂಲ ಭಾಷೆಯಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ.",
-            "ayush": "AYUSH ಅನುಸರಣೆ ಪ್ರಶ್ನೆಯಲ್ಲಿ ಮೊದಲು ಉತ್ಪನ್ನದ ವರ್ಗವನ್ನು ನಿರ್ಧರಿಸಬೇಕು, ಏಕೆಂದರೆ ಪರವಾನಗಿ ಪ್ರಕ್ರಿಯೆ ಅದರ ಮೇಲೆ ಅವಲಂಬಿತವಾಗಿರುತ್ತದೆ.",
-            "patent": "ಪೇಟೆಂಟ್ ಪ್ರಶ್ನೆಯಲ್ಲಿ ನಿಮ್ಮ ಕ್ಲೇಮ್‌ನಲ್ಲಿ ನಿಜವಾಗಿ ಹೊಸದೇನು ಎಂಬುದನ್ನು ಪರಿಶೀಲಿಸುವುದು ಮುಖ್ಯ.",
-            "safety": "ಸುರಕ್ಷತೆ ತಯಾರಿ, ಪ್ರಮಾಣ, ಬಳಕೆಯ ವಿಧಾನ ಮತ್ತು ಬಳಕೆದಾರರ ಸ್ಥಿತಿಯನ್ನು ಅವಲಂಬಿಸಿರುತ್ತದೆ.",
-            "biodiversity": "ಭಾರತೀಯ ಜೈವಿಕ ಸಂಪನ್ಮೂಲ ಅಥವಾ ಸಂಬಂಧಿತ ಸಾಂಪ್ರದಾಯಿಕ ಜ್ಞಾನವನ್ನು ಬಳಸಿದರೆ ಜೀವವೈವಿಧ್ಯ ಮತ್ತು ಲಾಭ ಹಂಚಿಕೆ ನಿಯಮಗಳು ಅನ್ವಯಿಸಬಹುದು.",
-            "traditional": "ಸಂಬಂಧಿತ ಜ್ಞಾನ ಅಥವಾ ಬಳಕೆ ಈಗಾಗಲೇ ದಾಖಲಾಗಿದೆಯೇ ಎಂಬುದು ಮುಖ್ಯ ಪ್ರಶ್ನೆಯಾಗಿದೆ.",
-        },
-        "ml": {
-            "prefix": "നിങ്ങളുടെ ചോദ്യത്തിന്റെ അടിസ്ഥാനത്തിൽ പ്രധാന കാര്യം:",
-            "note": "കുറിപ്പ്: നിയമപരവും ഉറവിടപരവുമായ വിവരങ്ങൾ അവയുടെ യഥാർത്ഥ ഭാഷയിൽ നിലനിർത്തിയിരിക്കുന്നു.",
-            "ayush": "AYUSH അനുസരണ ചോദ്യത്തിൽ ആദ്യം ഉൽപ്പന്നത്തിന്റെ വിഭാഗം നിർണ്ണയിക്കണം, കാരണം ലൈസൻസിംഗ് നടപടിക്രമം അതിനെ ആശ്രയിച്ചിരിക്കുന്നു.",
-            "patent": "പേറ്റന്റ് ചോദ്യത്തിൽ നിങ്ങളുടെ ക്ലെയിമിൽ യഥാർത്ഥത്തിൽ പുതുമയുള്ളത് എന്താണെന്ന് പരിശോധിക്കുകയാണ് പ്രധാന കാര്യം.",
-            "safety": "സുരക്ഷ തയ്യാറാക്കുന്ന രീതി, അളവ്, ഉപയോഗരീതി, ഉപയോഗിക്കുന്ന വ്യക്തിയുടെ അവസ്ഥ എന്നിവയെ ആശ്രയിച്ചിരിക്കുന്നു.",
-            "biodiversity": "ഇന്ത്യൻ ജൈവ വിഭവമോ ബന്ധപ്പെട്ട പരമ്പരാഗത അറിവോ ഉപയോഗിക്കുന്നുവെങ്കിൽ ജൈവവൈവിധ്യവും ആനുകൂല്യ പങ്കിടൽ നിയമങ്ങളും ബാധകമായേക്കാം.",
-            "traditional": "ബന്ധപ്പെട്ട അറിവോ ഉപയോഗമോ ഇതിനകം രേഖപ്പെടുത്തിയിട്ടുണ്ടോ എന്നതാണ് പ്രധാന ചോദ്യം.",
-        },
-    }
-
-    lang = translations.get(language)
-
-    if not lang:
-        return answer
-
-    if category in {"AYUSH_Licensing", "Regulatory_Compliance"}:
-        localized = lang["ayush"]
-    elif category == "Patentability":
-        localized = lang["patent"]
-    elif category == "Safety":
-        localized = lang["safety"]
-    elif category == "Biodiversity_ABS":
-        localized = lang["biodiversity"]
-    elif category == "Traditional_Knowledge":
-        localized = lang["traditional"]
-    else:
-        localized = lang["prefix"]
-
-    return f"{lang['prefix']}\n\n{localized}\n\n{lang['note']}"
-
-    # Keep retrieved legal/source evidence intact; localize the conversational guidance.
-    if language == "hi":
-        return (
-            "आपके प्रश्न के आधार पर, मुख्य बात यह है:\n\n"
-            + answer
-            + "\n\nनोट: ऊपर दिए गए स्रोत/कानूनी संदर्भ मूल स्रोत की भाषा में रखे गए हैं।"
-        )
-
-    if language == "sa":
-        return (
-            "भवतः प्रश्नस्य मुख्यो विषयः अयम् अस्ति:\n\n"
-            + answer
-            + "\n\nटिप्पणी: स्रोतसन्दर्भाः मूलभाषायामेव संरक्षिताः सन्ति।"
-        )
-
-    if language == "ta":
-        return (
-            "உங்கள் கேள்வியின் அடிப்படையில் முக்கியமான விஷயம்:\n\n"
-            + answer
-            + "\n\nகுறிப்பு: ஆதாரங்கள் மற்றும் சட்ட குறிப்புகள் அவற்றின் அசல் மொழியில் வைக்கப்பட்டுள்ளன."
-        )
-
-    if language == "te":
-        return (
-            "మీ ప్రశ్న ఆధారంగా ముఖ్యమైన విషయం:\n\n"
-            + answer
-            + "\n\nగమనిక: మూల ఆధారాలు మరియు చట్టపరమైన సూచనలు వాటి అసలు భాషలో ఉంచబడ్డాయి."
-        )
-
-    if language == "bn":
-        return (
-            "আপনার প্রশ্নের ভিত্তিতে মূল বিষয়টি হলো:\n\n"
-            + answer
-            + "\n\nনোট: উৎস ও আইনি তথ্য মূল ভাষায় রাখা হয়েছে।"
-        )
-
-    if language == "mr":
-        return (
-            "तुमच्या प्रश्नाच्या आधारावर मुख्य मुद्दा असा आहे:\n\n"
-            + answer
-            + "\n\nटीप: स्रोत आणि कायदेशीर संदर्भ त्यांच्या मूळ भाषेत ठेवले आहेत."
-        )
-
-    if language == "kn":
-        return (
-            "ನಿಮ್ಮ ಪ್ರಶ್ನೆಯ ಆಧಾರದ ಮೇಲೆ ಮುಖ್ಯ ವಿಷಯ:\n\n"
-            + answer
-            + "\n\nಸೂಚನೆ: ಮೂಲ ಮೂಲಗಳು ಮತ್ತು ಕಾನೂನು ಉಲ್ಲೇಖಗಳನ್ನು ಅವುಗಳ ಮೂಲ ಭಾಷೆಯಲ್ಲಿ ಇರಿಸಲಾಗಿದೆ."
-        )
-
-    if language == "ml":
-        return (
-            "നിങ്ങളുടെ ചോദ്യത്തിന്റെ അടിസ്ഥാനത്തിൽ പ്രധാന കാര്യം:\n\n"
-            + answer
-            + "\n\nകുറിപ്പ്: ഉറവിടങ്ങളും നിയമപരമായ പരാമർശങ്ങളും അവയുടെ യഥാർത്ഥ ഭാഷയിൽ നിലനിർത്തിയിരിക്കുന്നു."
-        )
-
-    return answer
 def generate_rag_response(
     user_query: str,
     persona: str = "innovator",
@@ -722,26 +710,26 @@ def generate_rag_response(
         })
 
     answer_text = synthesize_natural_answer(
-    user_query=user_query,
-    category=category,
-    focus=question_focus,
-    herb_visual=herb_visual,
-    relevant_chunks=relevant_chunks,
-    language=language,
-    persona=persona,
-)
+        user_query=user_query,
+        category=category,
+        focus=question_focus,
+        herb_visual=herb_visual,
+        relevant_chunks=relevant_chunks,
+        language=language,
+        persona=persona,
+    )
 
     # Keep the answer conversational; citations are already exposed separately in the UI.
-    if relevant_chunks:
-        answer_text += f"\n\nI checked {len(citations)} relevant source passage(s) for this response."
+    if language == "hi":
+        if relevant_chunks:
+            answer_text += f"\n\nमैंने इस उत्तर के लिए {len(citations)} संबंधित स्रोत passage की जाँच की है।"
+        else:
+            answer_text += "\n\nइस प्रश्न के लिए पर्याप्त रूप से संबंधित source passage नहीं मिला।"
     else:
-        answer_text += "\n\nI did not find a sufficiently relevant source passage for this question."
-    answer_text = _localize_answer(
-    answer=answer_text,
-    language=language,
-    user_query=user_query,
-    category=category,
-)
+        if relevant_chunks:
+            answer_text += f"\n\nI checked {len(citations)} relevant source passage(s) for this response."
+        else:
+            answer_text += "\n\nI did not find a sufficiently relevant source passage for this question."
 
     q_lower = user_query.lower()
     risk_level = "MODERATE RISK"
@@ -765,7 +753,7 @@ def generate_rag_response(
     return {
         "user_query": user_query,
         "persona": persona,
-        "language": language,
+        "language": _normalize_language(language),
         "question_focus": question_focus,
         "answer": answer_text,
         "citations": citations,

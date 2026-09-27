@@ -14,7 +14,7 @@ from sklearn.metrics import (
 # 1. Load dataset
 # ---------------------------------------
 
-data = pd.read_csv("ml/dataset.csv")
+data = pd.read_csv("ml/semantic_training_dataset.csv")
 
 X = data["text"].astype(str)
 y = data["label"]

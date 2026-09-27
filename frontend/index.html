@@ -200,6 +200,14 @@ html,body{background:#F5F2EC!important;color:#2B2523!important;}
   #welcomeScreen p{color:rgba(245,242,236,.82)!important;}
   /* Workspace cards below the welcome remain warm and editorial. */
   #welcomeScreen~section .manuscript-card{background:#FFFDF8!important;border-color:rgba(197,133,41,.38)!important;}
+
+  /* Evidence map readability fix: the welcome hero sets all paragraph text to light
+     colors. Override that rule inside the white evidence card so the descriptions
+     stay clearly visible. */
+  #welcomeScreen .welcome-card{color:#2B2523!important;}
+  #welcomeScreen .welcome-card strong{color:#2B2523!important;}
+  #welcomeScreen .welcome-card p{color:rgba(43,37,35,.78)!important;}
+  #welcomeScreen .welcome-card .text-\[\#2B2523\]\/60{color:rgba(43,37,35,.78)!important;}
 </style>
 </head>
 <body class="min-h-screen bg-mandala" style="padding-top:48px">
@@ -251,9 +259,9 @@ html,body{background:#F5F2EC!important;color:#2B2523!important;}
             
           </div>
           <div class="relative space-y-3 text-sm">
-            <div class="flex gap-3 items-start border-b border-[#C58529]/25 pb-3"><span class="text-[#9E4624] font-bold">01</span><div><strong>Patentability</strong><p class="text-xs text-[#5F5148] mt-0.5">Section 3(c), 3(d), 3(j), 3(p) and TKDL review</p></div></div>
-            <div class="flex gap-3 items-start border-b border-[#C58529]/25 pb-3"><span class="text-[#9E4624] font-bold">02</span><div><strong>AYUSH pathway</strong><p class="text-xs text-[#5F5148] mt-0.5">Rule 158B, safety evidence and Schedule T GMP</p></div></div>
-            <div class="flex gap-3 items-start"><span class="text-[#9E4624] font-bold">03</span><div><strong>Biodiversity</strong><p class="text-xs text-[#5F5148] mt-0.5">NBA access and benefit-sharing before filing</p></div></div>
+            <div class="flex gap-3 items-start border-b border-[#C58529]/25 pb-3"><span class="text-[#9E4624] font-bold">01</span><div><strong>Patentability</strong><p class="text-xs text-[#2B2523]/60 mt-0.5">Section 3(c), 3(d), 3(j), 3(p) and TKDL review</p></div></div>
+            <div class="flex gap-3 items-start border-b border-[#C58529]/25 pb-3"><span class="text-[#9E4624] font-bold">02</span><div><strong>AYUSH pathway</strong><p class="text-xs text-[#2B2523]/60 mt-0.5">Rule 158B, safety evidence and Schedule T GMP</p></div></div>
+            <div class="flex gap-3 items-start"><span class="text-[#9E4624] font-bold">03</span><div><strong>Biodiversity</strong><p class="text-xs text-[#2B2523]/60 mt-0.5">NBA access and benefit-sharing before filing</p></div></div>
           </div>
           <div class="welcome-orbit relative mt-5 overflow-hidden rounded-xl border border-[#C58529]/35 h-28 bg-[#EFEAE1]">
             <img id="welcomeBotanicalImage" src="" alt="Botanical reference" class="w-full h-full object-cover opacity-80">
@@ -347,4 +355,3 @@ const evidenceCopy = {
 </script>
 </body>
 </html>
-
