@@ -1573,20 +1573,21 @@ document.addEventListener("DOMContentLoaded", function () {
     const logoutBtn = document.getElementById("logoutBtn");
 
     if (logoutBtn) {
+
         logoutBtn.addEventListener("click", function () {
 
-            // Clear authentication/session data
-            localStorage.removeItem("access_token");
-            localStorage.removeItem("token");
-            localStorage.removeItem("authToken");
-            localStorage.removeItem("user");
+            // Clear the actual IP-SAKTI login data
+            localStorage.removeItem("ipSaktiAccessToken");
+            localStorage.removeItem("ipSaktiUsername");
 
             // Clear session data
             sessionStorage.clear();
 
-            // Go back to login
-            window.location.href = "login.html";
+            // Go to the backend login route
+            window.location.href = "/login";
+
         });
+
     }
 
 });
