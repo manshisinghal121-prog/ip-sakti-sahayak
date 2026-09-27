@@ -29,10 +29,21 @@ from pydantic import BaseModel, Field
 from deep_translator import GoogleTranslator
 from pathlib import Path
 
+app = FastAPI()
+
+from pathlib import Path
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 FRONTEND_DIR = BASE_DIR / "frontend"
 
+@app.get("/login")
+def login_page():
+    return FileResponse(FRONTEND_DIR / "login.html")
 
+
+@app.get("/register")
+def register_page():
+    return FileResponse(FRONTEND_DIR / "register.html")
 # ============================================================
 # DATABASE
 # ============================================================
@@ -127,11 +138,6 @@ PROJECT_ROOT = os.path.dirname(
     SCRIPT_DIR
 )
 
-FRONTEND_DIR = os.path.join(
-    PROJECT_ROOT,
-    "frontend"
-)
-
 sys.path.insert(
     0,
     PROJECT_ROOT
@@ -154,15 +160,6 @@ from ml.predict import (
 # ============================================================
 # FASTAPI APP
 # ============================================================
-
-app = FastAPI(
-    title="IP-SAKTI Sahayak API Engine",
-    description=(
-        "Multilingual RAG Engine for "
-        "Ayurveda IP & Regulatory Guidance"
-    ),
-    version="1.1.0"
-)
 
 @app.get("/health")
 def health():
