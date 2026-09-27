@@ -16,3 +16,4 @@ psycopg2-binary
 python-jose[cryptography]
 bcrypt
 deep-translator
+psycopg[binary]
