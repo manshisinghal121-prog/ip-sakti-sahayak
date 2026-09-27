@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 # Import the database User model
-from db import User
+from backend.db import User
 
 
 # ============================================================
