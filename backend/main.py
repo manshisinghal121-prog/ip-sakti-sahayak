@@ -696,7 +696,7 @@ def read_root():
     return FileResponse(
         os.path.join(
             FRONTEND_DIR,
-            "register.html"
+            "index.html"
         )
     )
 

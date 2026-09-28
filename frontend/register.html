@@ -13,17 +13,100 @@
     >
 
     <style>
-        body {
-            margin: 0;
-            min-height: 100vh;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: #F5F2EC;
-            color: #2B2523;
-            display: grid;
-            place-items: center;
-        }
 
+  
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+
+    background:
+        radial-gradient(circle at 50% 50%,
+            rgba(197, 133, 41, 0.055) 0,
+            rgba(197, 133, 41, 0.055) 2px,
+            transparent 3px
+        ),
+        radial-gradient(circle at 50% 50%,
+            transparent 0,
+            transparent 95px,
+            rgba(45, 74, 62, 0.045) 96px,
+            transparent 98px
+        ),
+        radial-gradient(circle at 20% 25%,
+            rgba(45, 74, 62, 0.035) 0,
+            transparent 120px
+        ),
+        radial-gradient(circle at 80% 75%,
+            rgba(158, 70, 36, 0.03) 0,
+            transparent 140px
+        ),
+        #F5F2EC;
+
+    background-size:
+        220px 220px,
+        220px 220px,
+        100% 100%,
+        100% 100%,
+        100% 100%;
+
+    color: #2B2523;
+    display: grid;
+    place-items: center;
+    position: relative;
+    overflow: hidden;
+}
+body::before {
+    content: "";
+    position: fixed;
+    inset: -100px;
+    pointer-events: none;
+    opacity: 0.28;
+
+    background:
+        radial-gradient(
+            ellipse 45px 110px at 15% 30%,
+            rgba(45, 74, 62, 0.08) 0%,
+            rgba(45, 74, 62, 0.035) 35%,
+            transparent 70%
+        ),
+        radial-gradient(
+            ellipse 45px 110px at 85% 70%,
+            rgba(45, 74, 62, 0.07) 0%,
+            rgba(45, 74, 62, 0.03) 35%,
+            transparent 70%
+        );
+
+    transform: rotate(-25deg);
+}
+
+body::after {
+    content: "✦";
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+
+    width: 420px;
+    height: 420px;
+
+    border: 1px solid rgba(45, 74, 62, 0.045);
+    border-radius: 50%;
+
+    box-shadow:
+        0 0 0 25px rgba(197, 133, 41, 0.018),
+        0 0 0 50px rgba(45, 74, 62, 0.018),
+        0 0 0 75px rgba(197, 133, 41, 0.015);
+
+    color: rgba(45, 74, 62, 0.035);
+    font-size: 90px;
+    text-align: center;
+    line-height: 420px;
+    z-index: 0;
+}
         .shell {
+            position: relative;
+            z-index: 2;
             width: min(440px, 92vw);
             background: #FFFDF8;
             border: 1px solid rgba(197, 133, 41, .45);
